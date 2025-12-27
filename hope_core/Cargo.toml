@@ -12,9 +12,9 @@ categories = ["cryptography", "science"]
 [dependencies]
 serde = { version = "1.0.215", features = ["derive"] }
 serde_json = "1.0.132"
-rsa = "0.9.7"
+rsa = "0.9"
 sha2 = "0.10.8"
-rand = "0.8.5"
+rand = "0.8"
 chrono = { version = "0.4.38", features = ["serde"] }
 thiserror = "2.0.3"
 hex = "0.4.3"

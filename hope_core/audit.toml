@@ -1,0 +1,21 @@
+[advisories]
+ignore = [
+    # RUSTSEC-2023-0071: Marvin Attack on RSA
+    #
+    # This is a timing sidechannel vulnerability in the RSA crate. As of January 2025,
+    # there is no fixed version available. The maintainers are actively working on
+    # mitigation in https://github.com/RustCrypto/RSA/issues/390
+    #
+    # Risk Assessment: ACCEPTED
+    # - Hope Genome is designed for local execution, not network-facing environments
+    # - The attack requires the attacker to observe precise timing information
+    # - This would require local access to the machine running Hope Genome
+    # - If an attacker has local access, they have already compromised the system
+    #
+    # Mitigation: Users are advised not to deploy Hope Genome in environments where
+    # timing attacks are feasible (e.g., shared hosting, cloud environments with
+    # co-located VMs). For production use, deploy on dedicated hardware.
+    #
+    # Tracking: Will upgrade to rsa 0.10+ when stable version is released
+    "RUSTSEC-2023-0071",
+]

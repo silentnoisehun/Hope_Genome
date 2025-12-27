@@ -175,8 +175,16 @@ Err(ConsensusError::NoConsensus {
 - Use Hardware Security Modules (HSM) in production
 - Constant-time crypto implementations (where possible)
 - Physical security of servers
+- Deploy only on dedicated hardware, not shared hosting
 
-**Current Status**: Hope Genome uses standard RSA implementations which may be vulnerable to advanced side-channel attacks.
+**Current Status**: Hope Genome uses RSA 0.9.x which has a known timing sidechannel vulnerability ([RUSTSEC-2023-0071](https://rustsec.org/advisories/RUSTSEC-2023-0071) - Marvin Attack). As of January 2025, no fixed version exists. This vulnerability requires the attacker to:
+1. Have access to observe precise timing information
+2. Make millions of decryption requests
+3. Perform sophisticated statistical analysis
+
+**Risk Assessment**: ACCEPTED for local deployment scenarios. NOT recommended for network-facing services or shared hosting environments where timing attacks are feasible.
+
+**Tracking**: Will upgrade to RSA 0.10+ when stable release is available with Marvin Attack mitigation.
 
 ---
 
