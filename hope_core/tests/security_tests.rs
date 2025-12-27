@@ -288,16 +288,16 @@ fn test_consensus_byzantine_fault_tolerance() {
     let mut readings = vec![];
 
     // Honest sensors report correct value
-    for i in 0..3 {
+    for (i, keypair) in keypairs.iter().enumerate().take(3) {
         let mut reading = SensorReading::new(10.0, format!("sensor_{}", i));
-        reading.sign(&keypairs[i]).unwrap();
+        reading.sign(keypair).unwrap();
         readings.push(reading);
     }
 
     // Malicious sensors report wrong values
-    for i in 3..5 {
+    for (i, keypair) in keypairs.iter().enumerate().skip(3).take(2) {
         let mut reading = SensorReading::new(50.0, format!("sensor_{}", i)); // Outlier
-        reading.sign(&keypairs[i]).unwrap();
+        reading.sign(keypair).unwrap();
         readings.push(reading);
     }
 

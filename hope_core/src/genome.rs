@@ -132,12 +132,6 @@ impl SealedGenome {
     pub fn public_key(&self) -> &rsa::RsaPublicKey {
         self.keypair.public_key()
     }
-
-    /// Get a reference to the internal keypair (for testing)
-    #[cfg(test)]
-    pub(crate) fn keypair(&self) -> &KeyPair {
-        &self.keypair
-    }
 }
 
 #[cfg(test)]
