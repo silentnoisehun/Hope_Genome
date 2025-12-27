@@ -1,0 +1,28 @@
+[package]
+name = "hope_core"
+version = "1.2.0"
+edition = "2021"
+authors = ["Máté Róbert <stratosoiteam@gmail.com>", "Claude (Anthropic)"]
+description = "Tamper-evident cryptographic framework for AI accountability"
+license = "MIT"
+repository = "https://github.com/silentnoisehun/Hope-Genome"
+keywords = ["ai-safety", "cryptography", "audit", "blockchain", "ethics"]
+categories = ["cryptography", "science"]
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+rsa = "0.9"
+sha2 = "0.10"
+rand = "0.8"
+chrono = { version = "0.4", features = ["serde"] }
+thiserror = "1.0"
+hex = "0.4"
+unicode-normalization = "0.1"
+
+[dev-dependencies]
+tempfile = "3.8"
+
+[lib]
+name = "hope_core"
+path = "src/lib.rs"
