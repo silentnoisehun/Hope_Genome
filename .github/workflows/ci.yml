@@ -111,7 +111,7 @@ jobs:
         run: cd hope_core && cargo build --release --verbose
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: hope-genome-linux
           path: hope_core/target/release/libhope_core.*
