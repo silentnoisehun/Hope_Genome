@@ -1,0 +1,22 @@
+[package]
+name = "hope-genome-python"
+version = "1.2.0"
+edition = "2021"
+authors = ["Máté Róbert <stratosoiteam@gmail.com>", "Claude (Anthropic)"]
+description = "Python bindings for Hope Genome - Tamper-Evident Cryptographic Framework"
+license = "MIT"
+repository = "https://github.com/silentnoisehun/Hope_Genome"
+
+[lib]
+name = "_hope_genome"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.20", features = ["extension-module"] }
+hope_core = { path = "../hope_core" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = "0.4"
+
+[build-dependencies]
+pyo3-build-config = "0.20"
