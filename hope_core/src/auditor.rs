@@ -1,7 +1,7 @@
+use crate::crypto::KeyPair;
+use crate::proof::IntegrityProof;
 use std::collections::HashSet;
 use thiserror::Error;
-use crate::proof::IntegrityProof;
-use crate::crypto::KeyPair;
 
 #[derive(Debug, Error)]
 pub enum AuditorError {
@@ -9,11 +9,7 @@ pub enum AuditorError {
     InvalidSignature,
 
     #[error("Proof expired: issued at {issued}, now {now}, TTL {ttl}s")]
-    ProofExpired {
-        issued: u64,
-        now: u64,
-        ttl: u64,
-    },
+    ProofExpired { issued: u64, now: u64, ttl: u64 },
 
     #[error("Nonce already used (replay attack detected)")]
     NonceReused([u8; 32]),
@@ -81,7 +77,8 @@ impl ProofAuditor {
     /// Verify just the signature (without state changes)
     pub fn verify_signature(&self, proof: &IntegrityProof) -> Result<()> {
         let message = proof.signing_data();
-        self.keypair.verify(&message, &proof.signature)
+        self.keypair
+            .verify(&message, &proof.signature)
             .map_err(|_| AuditorError::InvalidSignature)?;
 
         Ok(())

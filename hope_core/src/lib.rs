@@ -67,24 +67,24 @@
 //! - **Máté Róbert** - Primary Author & Architect
 //! - **Claude (Anthropic)** - Technical Advisor & Co-Designer
 
-pub mod crypto;
-pub mod proof;
 pub mod audit_log;
 pub mod auditor;
-pub mod executor;
-pub mod genome;
 pub mod canonicalize;
 pub mod consensus;
+pub mod crypto;
+pub mod executor;
+pub mod genome;
+pub mod proof;
 
 // Re-export main types
-pub use crypto::{KeyPair, hash_bytes, generate_nonce};
-pub use proof::{Action, ActionType, IntegrityProof, VerificationStatus};
-pub use audit_log::{AuditLog, AuditEntry, Decision};
+pub use audit_log::{AuditEntry, AuditLog, Decision};
 pub use auditor::ProofAuditor;
-pub use executor::{SecureExecutor, ExecutionResult};
-pub use genome::SealedGenome;
-pub use canonicalize::{CanonicalAction, canonicalize_action, are_equivalent};
+pub use canonicalize::{are_equivalent, canonicalize_action, CanonicalAction};
 pub use consensus::{ConsensusVerifier, SensorReading};
+pub use crypto::{generate_nonce, hash_bytes, KeyPair};
+pub use executor::{ExecutionResult, SecureExecutor};
+pub use genome::SealedGenome;
+pub use proof::{Action, ActionType, IntegrityProof, VerificationStatus};
 
 /// Version of the Hope Genome framework
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -99,7 +99,8 @@ mod integration_tests {
         let mut genome = SealedGenome::new(vec![
             "Do no harm".to_string(),
             "Respect privacy".to_string(),
-        ]).unwrap();
+        ])
+        .unwrap();
 
         genome.seal().unwrap();
 

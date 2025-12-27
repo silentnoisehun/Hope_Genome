@@ -76,7 +76,10 @@ mod tests {
         let canon_decomposed = canonicalize_action(decomposed);
 
         // Both should normalize to same form
-        assert_eq!(canon_composed.canonical_form, canon_decomposed.canonical_form);
+        assert_eq!(
+            canon_composed.canonical_form,
+            canon_decomposed.canonical_form
+        );
     }
 
     #[test]

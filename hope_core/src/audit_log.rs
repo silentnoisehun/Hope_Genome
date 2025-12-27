@@ -1,10 +1,10 @@
-use serde::{Serialize, Deserialize};
-use std::path::{Path, PathBuf};
+use crate::crypto::{hash_bytes, KeyPair};
+use crate::proof::{Action, IntegrityProof};
+use serde::{Deserialize, Serialize};
 use std::fs::{File, OpenOptions};
 use std::io::{BufReader, BufWriter};
+use std::path::{Path, PathBuf};
 use thiserror::Error;
-use crate::proof::{Action, IntegrityProof};
-use crate::crypto::{hash_bytes, KeyPair};
 
 #[derive(Debug, Error)]
 pub enum AuditError {
@@ -14,7 +14,9 @@ pub enum AuditError {
     #[error("Serialization error: {0}")]
     SerializationError(#[from] serde_json::Error),
 
-    #[error("Chain integrity broken at index {index}: expected prev_hash {expected:?}, found {found:?}")]
+    #[error(
+        "Chain integrity broken at index {index}: expected prev_hash {expected:?}, found {found:?}"
+    )]
     BrokenChain {
         index: usize,
         expected: [u8; 32],
@@ -91,7 +93,8 @@ impl AuditEntry {
             &self.decision,
             &self.prev_hash,
             &self.current_hash,
-        )).unwrap()
+        ))
+        .unwrap()
     }
 }
 
@@ -141,7 +144,9 @@ impl AuditLog {
         decision: Decision,
     ) -> Result<()> {
         // Get previous hash (or genesis hash)
-        let prev_hash = self.entries.last()
+        let prev_hash = self
+            .entries
+            .last()
             .map(|e| e.current_hash)
             .unwrap_or([0u8; 32]); // Genesis block
 
@@ -205,7 +210,8 @@ impl AuditLog {
 
             // Check signature
             let signing_data = curr.signing_data();
-            self.keypair.verify(&signing_data, &curr.signature)
+            self.keypair
+                .verify(&signing_data, &curr.signature)
                 .map_err(|_| AuditError::InvalidSignature(i))?;
         }
 
@@ -294,14 +300,16 @@ mod tests {
             Action::delete("file1.txt"),
             create_test_proof(),
             Decision::Approved,
-        ).unwrap();
+        )
+        .unwrap();
 
         // Add second entry
         log.append(
             Action::delete("file2.txt"),
             create_test_proof(),
             Decision::Approved,
-        ).unwrap();
+        )
+        .unwrap();
 
         // Verify linkage
         assert_eq!(log.entries()[1].prev_hash, log.entries()[0].current_hash);
@@ -318,7 +326,8 @@ mod tests {
                 Action::delete(format!("file{}.txt", i)),
                 create_test_proof(),
                 Decision::Approved,
-            ).unwrap();
+            )
+            .unwrap();
         }
 
         // Verify chain
@@ -331,9 +340,24 @@ mod tests {
         let mut log = AuditLog::new(keypair).unwrap();
 
         // Add entries
-        log.append(Action::delete("file1.txt"), create_test_proof(), Decision::Approved).unwrap();
-        log.append(Action::delete("file2.txt"), create_test_proof(), Decision::Approved).unwrap();
-        log.append(Action::delete("file3.txt"), create_test_proof(), Decision::Approved).unwrap();
+        log.append(
+            Action::delete("file1.txt"),
+            create_test_proof(),
+            Decision::Approved,
+        )
+        .unwrap();
+        log.append(
+            Action::delete("file2.txt"),
+            create_test_proof(),
+            Decision::Approved,
+        )
+        .unwrap();
+        log.append(
+            Action::delete("file3.txt"),
+            create_test_proof(),
+            Decision::Approved,
+        )
+        .unwrap();
 
         // Tamper with middle entry (simulate attack)
         log.entries[1].current_hash[0] ^= 0xFF;
@@ -351,7 +375,8 @@ mod tests {
             Action::delete("test.txt"),
             create_test_proof(),
             Decision::Approved,
-        ).unwrap();
+        )
+        .unwrap();
 
         // First entry should have zero prev_hash (genesis)
         assert_eq!(log.entries()[0].prev_hash, [0u8; 32]);

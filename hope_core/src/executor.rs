@@ -1,11 +1,11 @@
-use std::path::Path;
-use std::fs::{OpenOptions, remove_file};
-use std::io::Write;
-use thiserror::Error;
-use crate::proof::{Action, ActionType, IntegrityProof};
-use crate::auditor::ProofAuditor;
 use crate::audit_log::{AuditLog, Decision};
+use crate::auditor::ProofAuditor;
 use crate::crypto::hash_bytes;
+use crate::proof::{Action, ActionType, IntegrityProof};
+use std::fs::{remove_file, OpenOptions};
+use std::io::Write;
+use std::path::Path;
+use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum ExecutorError {
@@ -16,10 +16,7 @@ pub enum ExecutorError {
     AuditLogError(#[from] crate::audit_log::AuditError),
 
     #[error("Action mismatch: expected hash {expected:?}, found {found:?}")]
-    ActionMismatch {
-        expected: [u8; 32],
-        found: [u8; 32],
-    },
+    ActionMismatch { expected: [u8; 32], found: [u8; 32] },
 
     #[error("Action type mismatch")]
     TypeMismatch,
@@ -58,10 +55,7 @@ pub struct SecureExecutor {
 impl SecureExecutor {
     /// Create a new secure executor
     pub fn new(auditor: ProofAuditor, audit_log: AuditLog) -> Self {
-        SecureExecutor {
-            auditor,
-            audit_log,
-        }
+        SecureExecutor { auditor, audit_log }
     }
 
     /// Execute an action with cryptographic proof
@@ -134,11 +128,8 @@ impl SecureExecutor {
             },
         };
 
-        self.audit_log.append(
-            action.clone(),
-            proof.clone(),
-            decision,
-        )?;
+        self.audit_log
+            .append(action.clone(), proof.clone(), decision)?;
 
         Ok(exec_result)
     }
@@ -146,7 +137,9 @@ impl SecureExecutor {
     /// TOCTOU-safe file write
     fn execute_write(&self, action: &Action) -> Result<ExecutionResult> {
         let path = Path::new(&action.target);
-        let content = action.payload.as_ref()
+        let content = action
+            .payload
+            .as_ref()
             .ok_or_else(|| ExecutorError::PermissionDenied("No content provided".into()))?;
 
         // Atomic write operation
@@ -239,7 +232,8 @@ mod tests {
         let mut genome = SealedGenome::with_keypair(
             vec!["Rule".to_string()],
             shared_keypair.clone(), // Clone for genome
-        ).unwrap();
+        )
+        .unwrap();
         genome.seal().unwrap();
 
         // Create auditor with THE SAME keypair as genome
@@ -254,10 +248,7 @@ mod tests {
         (executor, genome)
     }
 
-    fn create_signed_proof(
-        genome: &SealedGenome,
-        action: &Action,
-    ) -> IntegrityProof {
+    fn create_signed_proof(genome: &SealedGenome, action: &Action) -> IntegrityProof {
         genome.verify_action(action).unwrap()
     }
 
@@ -267,10 +258,7 @@ mod tests {
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("test.txt");
 
-        let action = Action::write_file(
-            file_path.to_str().unwrap(),
-            b"test content".to_vec(),
-        );
+        let action = Action::write_file(file_path.to_str().unwrap(), b"test content".to_vec());
 
         let proof = create_signed_proof(&genome, &action);
 
@@ -309,10 +297,7 @@ mod tests {
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("test.txt");
 
-        let action = Action::write_file(
-            file_path.to_str().unwrap(),
-            b"content".to_vec(),
-        );
+        let action = Action::write_file(file_path.to_str().unwrap(), b"content".to_vec());
 
         let proof = create_signed_proof(&genome, &action);
 
@@ -331,10 +316,7 @@ mod tests {
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("test.txt");
 
-        let action = Action::write_file(
-            file_path.to_str().unwrap(),
-            b"content".to_vec(),
-        );
+        let action = Action::write_file(file_path.to_str().unwrap(), b"content".to_vec());
 
         let proof = create_signed_proof(&genome, &action);
 
@@ -342,6 +324,9 @@ mod tests {
 
         // Verify audit log
         assert_eq!(executor.audit_log().len(), 1);
-        assert_eq!(executor.audit_log().entries()[0].decision, Decision::Approved);
+        assert_eq!(
+            executor.audit_log().entries()[0].decision,
+            Decision::Approved
+        );
     }
 }

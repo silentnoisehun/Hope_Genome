@@ -1,6 +1,6 @@
-use rsa::{RsaPrivateKey, RsaPublicKey, Pkcs1v15Sign};
-use sha2::{Sha256, Digest};
 use rand::rngs::OsRng;
+use rsa::{Pkcs1v15Sign, RsaPrivateKey, RsaPublicKey};
+use sha2::{Digest, Sha256};
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -55,7 +55,9 @@ impl KeyPair {
         let padding = Pkcs1v15Sign::new_unprefixed();
 
         // Sign the hash
-        let signature = self.private_key.sign(padding, &hashed)
+        let signature = self
+            .private_key
+            .sign(padding, &hashed)
             .map_err(|e| CryptoError::SigningFailed(e.to_string()))?;
 
         Ok(signature)
@@ -72,7 +74,8 @@ impl KeyPair {
         let padding = Pkcs1v15Sign::new_unprefixed();
 
         // Verify the signature
-        self.public_key.verify(padding, &hashed, signature)
+        self.public_key
+            .verify(padding, &hashed, signature)
             .map_err(|_| CryptoError::InvalidSignature)?;
 
         Ok(())

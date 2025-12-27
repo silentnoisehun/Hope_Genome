@@ -1,5 +1,5 @@
-use serde::{Serialize, Deserialize};
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 
 /// Type of action being performed
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -109,11 +109,7 @@ pub struct IntegrityProof {
 
 impl IntegrityProof {
     /// Create a new proof (before signing)
-    pub fn new(
-        action: &Action,
-        capsule_hash: String,
-        ttl: u64,
-    ) -> Self {
+    pub fn new(action: &Action, capsule_hash: String, ttl: u64) -> Self {
         let nonce = crate::crypto::generate_nonce();
         let timestamp = chrono::Utc::now().timestamp() as u64;
 
@@ -149,8 +145,7 @@ impl IntegrityProof {
 
     /// Get human-readable timestamp
     pub fn timestamp_string(&self) -> String {
-        let dt = DateTime::from_timestamp(self.timestamp as i64, 0)
-            .unwrap_or_else(|| Utc::now());
+        let dt = DateTime::from_timestamp(self.timestamp as i64, 0).unwrap_or_else(Utc::now);
         dt.to_rfc3339()
     }
 }

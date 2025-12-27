@@ -11,10 +11,8 @@ use std::time::Duration;
 fn test_replay_attack_comprehensive() {
     // Setup
     let shared_keypair = KeyPair::generate().unwrap();
-    let mut genome = SealedGenome::with_keypair(
-        vec!["Do no harm".to_string()],
-        shared_keypair.clone(),
-    ).unwrap();
+    let mut genome =
+        SealedGenome::with_keypair(vec!["Do no harm".to_string()], shared_keypair.clone()).unwrap();
     genome.seal().unwrap();
 
     let mut auditor = ProofAuditor::new(shared_keypair.clone());
@@ -24,16 +22,22 @@ fn test_replay_attack_comprehensive() {
     let proof = genome.verify_action(&action).unwrap();
 
     // First verification should succeed
-    assert!(auditor.verify_proof(&proof).is_ok(), "First proof verification should succeed");
+    assert!(
+        auditor.verify_proof(&proof).is_ok(),
+        "First proof verification should succeed"
+    );
 
     // Replay attack: try to use the same proof again
     let replay_result = auditor.verify_proof(&proof);
 
     assert!(replay_result.is_err(), "Replay attack should be detected");
-    assert!(matches!(
-        replay_result.unwrap_err(),
-        crate::auditor::AuditorError::NonceReused(_)
-    ), "Should specifically be a nonce reuse error");
+    assert!(
+        matches!(
+            replay_result.unwrap_err(),
+            crate::auditor::AuditorError::NonceReused(_)
+        ),
+        "Should specifically be a nonce reuse error"
+    );
 }
 
 #[test]
@@ -43,7 +47,8 @@ fn test_oracle_attack_action_substitution() {
     let mut genome = SealedGenome::with_keypair(
         vec!["Allow only safe operations".to_string()],
         shared_keypair.clone(),
-    ).unwrap();
+    )
+    .unwrap();
     genome.seal().unwrap();
 
     // Get proof for a safe action
@@ -54,10 +59,18 @@ fn test_oracle_attack_action_substitution() {
     let dangerous_action = Action::delete("/etc/passwd");
 
     // Verify that action hash in proof matches safe_action
-    assert_eq!(proof.action_hash, safe_action.hash(), "Proof should be bound to safe action");
+    assert_eq!(
+        proof.action_hash,
+        safe_action.hash(),
+        "Proof should be bound to safe action"
+    );
 
     // Verify action hashes are different
-    assert_ne!(safe_action.hash(), dangerous_action.hash(), "Actions should have different hashes");
+    assert_ne!(
+        safe_action.hash(),
+        dangerous_action.hash(),
+        "Actions should have different hashes"
+    );
 
     // This demonstrates that an executor would detect the mismatch
     // In practice, the executor's action binding check would prevent this
@@ -67,10 +80,8 @@ fn test_oracle_attack_action_substitution() {
 fn test_proof_expiration_attack() {
     // Setup
     let shared_keypair = KeyPair::generate().unwrap();
-    let mut genome = SealedGenome::with_keypair(
-        vec!["Rule 1".to_string()],
-        shared_keypair.clone(),
-    ).unwrap();
+    let mut genome =
+        SealedGenome::with_keypair(vec!["Rule 1".to_string()], shared_keypair.clone()).unwrap();
     genome.set_default_ttl(1); // 1 second TTL
     genome.seal().unwrap();
 
@@ -81,7 +92,10 @@ fn test_proof_expiration_attack() {
     let proof = genome.verify_action(&action).unwrap();
 
     // Immediate verification should succeed
-    assert!(auditor.verify_proof(&proof).is_ok(), "Fresh proof should verify");
+    assert!(
+        auditor.verify_proof(&proof).is_ok(),
+        "Fresh proof should verify"
+    );
 
     // Wait for proof to expire
     thread::sleep(Duration::from_secs(2));
@@ -92,20 +106,21 @@ fn test_proof_expiration_attack() {
     // Expired proof should be rejected
     let result = auditor2.verify_proof(&proof);
     assert!(result.is_err(), "Expired proof should be rejected");
-    assert!(matches!(
-        result.unwrap_err(),
-        crate::auditor::AuditorError::ProofExpired { .. }
-    ), "Should be an expiration error");
+    assert!(
+        matches!(
+            result.unwrap_err(),
+            crate::auditor::AuditorError::ProofExpired { .. }
+        ),
+        "Should be an expiration error"
+    );
 }
 
 #[test]
 fn test_signature_forgery_detection() {
     // Setup
     let shared_keypair = KeyPair::generate().unwrap();
-    let mut genome = SealedGenome::with_keypair(
-        vec!["Rule 1".to_string()],
-        shared_keypair.clone(),
-    ).unwrap();
+    let mut genome =
+        SealedGenome::with_keypair(vec!["Rule 1".to_string()], shared_keypair.clone()).unwrap();
     genome.seal().unwrap();
 
     let mut auditor = ProofAuditor::new(shared_keypair);
@@ -121,11 +136,17 @@ fn test_signature_forgery_detection() {
 
     // Verification should fail
     let result = auditor.verify_proof(&proof);
-    assert!(result.is_err(), "Tampered signature should fail verification");
-    assert!(matches!(
-        result.unwrap_err(),
-        crate::auditor::AuditorError::InvalidSignature
-    ), "Should be a signature error");
+    assert!(
+        result.is_err(),
+        "Tampered signature should fail verification"
+    );
+    assert!(
+        matches!(
+            result.unwrap_err(),
+            crate::auditor::AuditorError::InvalidSignature
+        ),
+        "Should be a signature error"
+    );
 }
 
 #[test]
@@ -135,13 +156,21 @@ fn test_action_hash_collision_resistance() {
     let action2 = Action::delete("file2.txt");
 
     // Verify hashes are different (collision resistance)
-    assert_ne!(action1.hash(), action2.hash(), "Different actions should have different hashes");
+    assert_ne!(
+        action1.hash(),
+        action2.hash(),
+        "Different actions should have different hashes"
+    );
 
     // Even similar actions should have different hashes
     let action3 = Action::write_file("data.txt", b"content1".to_vec());
     let action4 = Action::write_file("data.txt", b"content2".to_vec());
 
-    assert_ne!(action3.hash(), action4.hash(), "Same file, different content should have different hashes");
+    assert_ne!(
+        action3.hash(),
+        action4.hash(),
+        "Same file, different content should have different hashes"
+    );
 }
 
 #[test]
@@ -165,8 +194,9 @@ fn test_audit_log_chain_integrity() {
     for i in 1..entries.len() {
         assert_eq!(
             entries[i].prev_hash,
-            entries[i-1].current_hash,
-            "Entry {} should be linked to previous entry", i
+            entries[i - 1].current_hash,
+            "Entry {} should be linked to previous entry",
+            i
         );
     }
 
@@ -179,10 +209,8 @@ fn test_audit_log_chain_integrity() {
 fn test_nonce_uniqueness_across_proofs() {
     // Setup
     let shared_keypair = KeyPair::generate().unwrap();
-    let mut genome = SealedGenome::with_keypair(
-        vec!["Rule 1".to_string()],
-        shared_keypair,
-    ).unwrap();
+    let mut genome =
+        SealedGenome::with_keypair(vec!["Rule 1".to_string()], shared_keypair).unwrap();
     genome.seal().unwrap();
 
     // Generate multiple proofs
@@ -201,17 +229,11 @@ fn test_nonce_uniqueness_across_proofs() {
 fn test_capsule_hash_binding() {
     // Create two genomes with different rules
     let keypair1 = KeyPair::generate().unwrap();
-    let mut genome1 = SealedGenome::with_keypair(
-        vec!["Rule A".to_string()],
-        keypair1,
-    ).unwrap();
+    let mut genome1 = SealedGenome::with_keypair(vec!["Rule A".to_string()], keypair1).unwrap();
     genome1.seal().unwrap();
 
     let keypair2 = KeyPair::generate().unwrap();
-    let mut genome2 = SealedGenome::with_keypair(
-        vec!["Rule B".to_string()],
-        keypair2,
-    ).unwrap();
+    let mut genome2 = SealedGenome::with_keypair(vec!["Rule B".to_string()], keypair2).unwrap();
     genome2.seal().unwrap();
 
     // Capsule hashes should be different
@@ -227,8 +249,7 @@ fn test_capsule_hash_binding() {
     let proof2 = genome2.verify_action(&action).unwrap();
 
     assert_ne!(
-        proof1.capsule_hash,
-        proof2.capsule_hash,
+        proof1.capsule_hash, proof2.capsule_hash,
         "Proofs should be bound to different genome capsules"
     );
 }
@@ -238,7 +259,10 @@ fn test_action_canonicalization_prevents_bypass() {
     // Test null byte injection
     let malicious1 = "delete\0/etc/passwd";
     let canonical1 = canonicalize_action(malicious1);
-    assert!(!canonical1.canonical_form.contains('\0'), "Null bytes should be removed");
+    assert!(
+        !canonical1.canonical_form.contains('\0'),
+        "Null bytes should be removed"
+    );
 
     // Test unicode normalization
     let unicode1 = "café"; // Composed form
@@ -247,7 +271,10 @@ fn test_action_canonicalization_prevents_bypass() {
     let canon1 = canonicalize_action(unicode1);
     let canon2 = canonicalize_action(unicode2);
 
-    assert_eq!(canon1.canonical_form, canon2.canonical_form, "Unicode should be normalized");
+    assert_eq!(
+        canon1.canonical_form, canon2.canonical_form,
+        "Unicode should be normalized"
+    );
 }
 
 #[test]
@@ -255,9 +282,7 @@ fn test_consensus_byzantine_fault_tolerance() {
     let verifier = ConsensusVerifier::new(3, 0.1);
 
     // Create keypairs for sensors
-    let keypairs: Vec<KeyPair> = (0..5)
-        .map(|_| KeyPair::generate().unwrap())
-        .collect();
+    let keypairs: Vec<KeyPair> = (0..5).map(|_| KeyPair::generate().unwrap()).collect();
 
     // Scenario: 3 honest sensors, 2 malicious
     let mut readings = vec![];
@@ -278,7 +303,10 @@ fn test_consensus_byzantine_fault_tolerance() {
 
     // Should achieve consensus on honest value
     let result = verifier.verify_readings(&readings, &keypairs).unwrap();
-    assert!((result - 10.0).abs() < 0.2, "Should reach consensus on honest value");
+    assert!(
+        (result - 10.0).abs() < 0.2,
+        "Should reach consensus on honest value"
+    );
 }
 
 #[test]
@@ -287,10 +315,8 @@ fn test_time_of_check_to_time_of_use_protection() {
     // preventing TOCTOU attacks where action changes between verification and execution
 
     let shared_keypair = KeyPair::generate().unwrap();
-    let mut genome = SealedGenome::with_keypair(
-        vec!["Rule 1".to_string()],
-        shared_keypair.clone(),
-    ).unwrap();
+    let mut genome =
+        SealedGenome::with_keypair(vec!["Rule 1".to_string()], shared_keypair.clone()).unwrap();
     genome.seal().unwrap();
 
     // Time of Check: Get proof for one action
@@ -312,10 +338,8 @@ fn test_time_of_check_to_time_of_use_protection() {
 #[test]
 fn test_proof_cannot_be_reused_across_sessions() {
     let shared_keypair = KeyPair::generate().unwrap();
-    let mut genome = SealedGenome::with_keypair(
-        vec!["Rule 1".to_string()],
-        shared_keypair.clone(),
-    ).unwrap();
+    let mut genome =
+        SealedGenome::with_keypair(vec!["Rule 1".to_string()], shared_keypair.clone()).unwrap();
     genome.seal().unwrap();
 
     let action = Action::delete("file.txt");

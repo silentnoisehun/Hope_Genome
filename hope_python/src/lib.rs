@@ -1,10 +1,9 @@
-use pyo3::prelude::*;
-use pyo3::exceptions::PyRuntimeError;
 use hope_core::{
-    SealedGenome, IntegrityProof, Action, ActionType, VerificationStatus,
-    ProofAuditor, AuditLog, Decision,
-    KeyPair, ConsensusVerifier,
+    Action, ActionType, AuditLog, ConsensusVerifier, Decision, IntegrityProof, KeyPair,
+    ProofAuditor, SealedGenome, VerificationStatus,
 };
+use pyo3::exceptions::PyRuntimeError;
+use pyo3::prelude::*;
 
 /// Python wrapper for SealedGenome
 #[pyclass(name = "HopeGenome")]
@@ -22,7 +21,8 @@ impl PyHopeGenome {
     }
 
     fn seal(&mut self) -> PyResult<()> {
-        self.inner.seal()
+        self.inner
+            .seal()
             .map_err(|e| PyRuntimeError::new_err(format!("Failed to seal genome: {}", e)))
     }
 
@@ -44,7 +44,9 @@ impl PyHopeGenome {
 
     fn verify_action(&self, action: &PyAction) -> PyResult<PyIntegrityProof> {
         let rust_action = action.to_rust_action();
-        let proof = self.inner.verify_action(&rust_action)
+        let proof = self
+            .inner
+            .verify_action(&rust_action)
             .map_err(|e| PyRuntimeError::new_err(format!("Verification failed: {}", e)))?;
         Ok(PyIntegrityProof::from_rust(proof))
     }
@@ -207,12 +209,15 @@ impl PyIntegrityProof {
 
     fn timestamp_string(&self) -> String {
         let dt = chrono::DateTime::from_timestamp(self.timestamp as i64, 0)
-            .unwrap_or_else(|| chrono::Utc::now());
+            .unwrap_or_else(chrono::Utc::now);
         dt.to_rfc3339()
     }
 
     fn __repr__(&self) -> String {
-        format!("IntegrityProof(status={}, timestamp={})", self.status, self.timestamp)
+        format!(
+            "IntegrityProof(status={}, timestamp={})",
+            self.status, self.timestamp
+        )
     }
 }
 
@@ -234,7 +239,8 @@ impl PyAuditor {
 
     fn verify_proof(&mut self, proof: &PyIntegrityProof) -> PyResult<()> {
         let rust_proof = proof.to_rust();
-        self.inner.verify_proof(&rust_proof)
+        self.inner
+            .verify_proof(&rust_proof)
             .map_err(|e| PyRuntimeError::new_err(format!("Proof verification failed: {}", e)))
     }
 
@@ -264,21 +270,30 @@ impl PyAuditLog {
         Ok(PyAuditLog { inner: log })
     }
 
-    fn append(&mut self, action: &PyAction, proof: &PyIntegrityProof, approved: bool) -> PyResult<()> {
+    fn append(
+        &mut self,
+        action: &PyAction,
+        proof: &PyIntegrityProof,
+        approved: bool,
+    ) -> PyResult<()> {
         let rust_action = action.to_rust_action();
         let rust_proof = proof.to_rust();
         let decision = if approved {
             Decision::Approved
         } else {
-            Decision::Denied { reason: "Denied by user".to_string() }
+            Decision::Denied {
+                reason: "Denied by user".to_string(),
+            }
         };
 
-        self.inner.append(rust_action, rust_proof, decision)
+        self.inner
+            .append(rust_action, rust_proof, decision)
             .map_err(|e| PyRuntimeError::new_err(format!("Failed to append to audit log: {}", e)))
     }
 
     fn verify_chain(&self) -> PyResult<()> {
-        self.inner.verify_chain()
+        self.inner
+            .verify_chain()
             .map_err(|e| PyRuntimeError::new_err(format!("Chain verification failed: {}", e)))
     }
 

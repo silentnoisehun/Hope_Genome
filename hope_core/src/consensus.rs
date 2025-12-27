@@ -1,23 +1,17 @@
-use thiserror::Error;
-use serde::{Serialize, Deserialize};
 use crate::crypto::KeyPair;
+use serde::{Deserialize, Serialize};
+use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum ConsensusError {
     #[error("No consensus achieved: required {required} sources, got {achieved}")]
-    NoConsensus {
-        required: usize,
-        achieved: usize,
-    },
+    NoConsensus { required: usize, achieved: usize },
 
     #[error("Invalid signature from source: {0}")]
     InvalidSignature(String),
 
     #[error("Insufficient readings: required at least {required}, got {actual}")]
-    InsufficientReadings {
-        required: usize,
-        actual: usize,
-    },
+    InsufficientReadings { required: usize, actual: usize },
 
     #[error("Crypto error: {0}")]
     CryptoError(#[from] crate::crypto::CryptoError),
@@ -75,7 +69,8 @@ impl SensorReading {
     /// Verify signature
     pub fn verify(&self, keypair: &KeyPair) -> Result<()> {
         let data = self.signing_data();
-        keypair.verify(&data, &self.signature)
+        keypair
+            .verify(&data, &self.signature)
             .map_err(|_| ConsensusError::InvalidSignature(self.source_id.clone()))?;
         Ok(())
     }
@@ -113,11 +108,7 @@ impl ConsensusVerifier {
     /// 2. Calculate median value
     /// 3. Count how many sensors agree (within tolerance)
     /// 4. Require minimum number of agreeing sensors
-    pub fn verify_readings(
-        &self,
-        readings: &[SensorReading],
-        keypairs: &[KeyPair],
-    ) -> Result<f64> {
+    pub fn verify_readings(&self, readings: &[SensorReading], keypairs: &[KeyPair]) -> Result<f64> {
         // Check we have enough readings
         if readings.len() < self.required_sources {
             return Err(ConsensusError::InsufficientReadings {
@@ -135,7 +126,8 @@ impl ConsensusVerifier {
         let median = self.calculate_median(readings);
 
         // Count consensus (how many within tolerance of median)
-        let consensus_count = readings.iter()
+        let consensus_count = readings
+            .iter()
             .filter(|r| (r.value - median).abs() < self.tolerance)
             .count();
 
@@ -156,7 +148,7 @@ impl ConsensusVerifier {
         values.sort_by(|a, b| a.partial_cmp(b).unwrap());
 
         let len = values.len();
-        if len % 2 == 0 {
+        if len.is_multiple_of(2) {
             (values[len / 2 - 1] + values[len / 2]) / 2.0
         } else {
             values[len / 2]
@@ -168,11 +160,7 @@ impl ConsensusVerifier {
 mod tests {
     use super::*;
 
-    fn create_signed_reading(
-        value: f64,
-        source_id: &str,
-        keypair: &KeyPair,
-    ) -> SensorReading {
+    fn create_signed_reading(value: f64, source_id: &str, keypair: &KeyPair) -> SensorReading {
         let mut reading = SensorReading::new(value, source_id.to_string());
         reading.sign(keypair).unwrap();
         reading
@@ -201,9 +189,7 @@ mod tests {
     fn test_consensus_with_agreement() {
         let verifier = ConsensusVerifier::new(3, 0.1);
 
-        let keypairs: Vec<KeyPair> = (0..4)
-            .map(|_| KeyPair::generate().unwrap())
-            .collect();
+        let keypairs: Vec<KeyPair> = (0..4).map(|_| KeyPair::generate().unwrap()).collect();
 
         let readings = vec![
             create_signed_reading(10.0, "A", &keypairs[0]),
@@ -220,9 +206,7 @@ mod tests {
     fn test_consensus_fails_with_disagreement() {
         let verifier = ConsensusVerifier::new(3, 0.1);
 
-        let keypairs: Vec<KeyPair> = (0..3)
-            .map(|_| KeyPair::generate().unwrap())
-            .collect();
+        let keypairs: Vec<KeyPair> = (0..3).map(|_| KeyPair::generate().unwrap()).collect();
 
         let readings = vec![
             create_signed_reading(10.0, "A", &keypairs[0]),
@@ -238,9 +222,7 @@ mod tests {
     fn test_insufficient_readings() {
         let verifier = ConsensusVerifier::new(5, 0.1);
 
-        let keypairs: Vec<KeyPair> = (0..2)
-            .map(|_| KeyPair::generate().unwrap())
-            .collect();
+        let keypairs: Vec<KeyPair> = (0..2).map(|_| KeyPair::generate().unwrap()).collect();
 
         let readings = vec![
             create_signed_reading(10.0, "A", &keypairs[0]),
@@ -248,16 +230,17 @@ mod tests {
         ];
 
         let result = verifier.verify_readings(&readings, &keypairs);
-        assert!(matches!(result, Err(ConsensusError::InsufficientReadings { .. })));
+        assert!(matches!(
+            result,
+            Err(ConsensusError::InsufficientReadings { .. })
+        ));
     }
 
     #[test]
     fn test_invalid_signature_detected() {
         let verifier = ConsensusVerifier::new(2, 0.1);
 
-        let keypairs: Vec<KeyPair> = (0..2)
-            .map(|_| KeyPair::generate().unwrap())
-            .collect();
+        let keypairs: Vec<KeyPair> = (0..2).map(|_| KeyPair::generate().unwrap()).collect();
 
         let mut readings = vec![
             create_signed_reading(10.0, "A", &keypairs[0]),
@@ -268,16 +251,17 @@ mod tests {
         readings[0].signature[0] ^= 0xFF;
 
         let result = verifier.verify_readings(&readings, &keypairs);
-        assert!(matches!(result, Err(ConsensusError::InvalidSignature { .. })));
+        assert!(matches!(
+            result,
+            Err(ConsensusError::InvalidSignature { .. })
+        ));
     }
 
     #[test]
     fn test_median_calculation_odd() {
         let verifier = ConsensusVerifier::new(3, 0.1);
 
-        let keypairs: Vec<KeyPair> = (0..5)
-            .map(|_| KeyPair::generate().unwrap())
-            .collect();
+        let keypairs: Vec<KeyPair> = (0..5).map(|_| KeyPair::generate().unwrap()).collect();
 
         let readings = vec![
             create_signed_reading(1.0, "A", &keypairs[0]),
@@ -295,9 +279,7 @@ mod tests {
     fn test_median_calculation_even() {
         let verifier = ConsensusVerifier::new(2, 0.1);
 
-        let keypairs: Vec<KeyPair> = (0..4)
-            .map(|_| KeyPair::generate().unwrap())
-            .collect();
+        let keypairs: Vec<KeyPair> = (0..4).map(|_| KeyPair::generate().unwrap()).collect();
 
         let readings = vec![
             create_signed_reading(1.0, "A", &keypairs[0]),

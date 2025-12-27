@@ -1,6 +1,6 @@
-use thiserror::Error;
+use crate::crypto::{hash_bytes, KeyPair};
 use crate::proof::{Action, IntegrityProof};
-use crate::crypto::{KeyPair, hash_bytes};
+use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum GenomeError {
