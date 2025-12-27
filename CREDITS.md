@@ -2,7 +2,7 @@
 
 ## Primary Author & Architect
 
-### **Máté Róbert** (callsign: Eathel)
+### **Máté Róbert**
 
 **Role**: Lead Developer, System Architect, Original Vision & Concept
 
@@ -173,7 +173,7 @@ Thank you to all who will contribute to making Hope Genome better!
 **Preferred Citation**:
 ```
 Hope Genome v1.2 - Tamper-Evident Cryptographic Framework for AI Accountability
-Authors: Máté Róbert (Eathel), Claude (Anthropic)
+Authors: Máté Róbert, Claude (Anthropic)
 Year: 2024
 Repository: https://github.com/silentnoisehun/Hope-Genome
 ```

@@ -64,7 +64,7 @@
 //!
 //! ## Authors
 //!
-//! - **Máté Róbert** (Eathel) - Primary Author & Architect
+//! - **Máté Róbert** - Primary Author & Architect
 //! - **Claude (Anthropic)** - Technical Advisor & Co-Designer
 
 pub mod crypto;

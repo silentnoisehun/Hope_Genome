@@ -252,7 +252,7 @@ maturin develop
 ## 📜 Credits & Attribution
 
 ### Primary Author & Architect
-- **Máté Róbert** (callsign: Eathel)
+- **Máté Róbert**
   - Role: Lead Developer, System Architect, Original Vision
   - Affiliation: Audi Hungaria (Factory Worker & Evening AI Researcher)
   - Location: Mosonmagyaróvár, Hungary
