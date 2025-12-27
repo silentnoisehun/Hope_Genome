@@ -44,3 +44,6 @@ Thumbs.db
 audit_logs/
 *.key
 *.pub
+
+# Claude Code
+.claude/settings.local.json
