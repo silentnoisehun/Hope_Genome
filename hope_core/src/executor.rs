@@ -45,6 +45,7 @@ pub enum ExecutionResult {
 
 pub struct SecureExecutor {
     auditor: ProofAuditor,
+    #[allow(dead_code)]
     audit_log: AuditLog,
     storage_root: PathBuf, // <--- A BÖRTÖN (Jail Root)
 }
