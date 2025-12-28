@@ -19,7 +19,7 @@ chrono = { version = "0.4.38", features = ["serde"] }
 thiserror = "2.0.3"
 hex = "0.4.3"
 unicode-normalization = "0.1.24"
-uuid = { version = "1.0", features = ["v4"] }  # <--- EZT ADTAM HOZZÁ!
+uuid = { version = "1.0", features = ["v4"] }
 
 [dev-dependencies]
 tempfile = "3.8"
@@ -27,4 +27,3 @@ tempfile = "3.8"
 [lib]
 name = "hope_core"
 path = "src/lib.rs"
-
