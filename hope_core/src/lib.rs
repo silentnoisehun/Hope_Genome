@@ -134,7 +134,10 @@ mod integration_tests {
         let log_keypair = KeyPair::generate().unwrap();
         let audit_log = AuditLog::new(log_keypair).unwrap();
 
-        let _executor = SecureExecutor::new(auditor, audit_log);
+        // Create temporary storage root for testing
+        let storage_root = std::env::temp_dir().join("hope_genome_test");
+
+        let _executor = SecureExecutor::new(auditor, audit_log, storage_root).unwrap();
 
         // In production workflow, genome would share keypair with auditor
         // For now, this demonstrates the component integration
