@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # The "Malicious" Mock LLM - Locked in a padded cell
+  brain:
+    build:
+      context: ./demo/brain
+    depends_on:
+      - hope-genome-sidecar
+    networks:
+      - secure-internal  # ONLY internal network - no internet access
+    environment:
+      SIDECAR_URL: http://hope-genome-sidecar:8080
+    restart: on-failure
+
+  # The Hope Genome Sidecar - The Guard
+  hope-genome-sidecar:
+    build:
+      context: .  # Build from root Dockerfile
+    networks:
+      - secure-internal  # Talk to brain
+      - public-access    # Access to outside world
+    volumes:
+      - ./audit_logs:/var/log/hope_genome
+    ports:
+      - "8080:8080"  # Expose for monitoring
+
+networks:
+  # Internal network - No internet access
+  secure-internal:
+    driver: bridge
+    internal: true  # This is the key: blocks all external traffic
+
+  # Public network - Internet access allowed
+  public-access:
+    driver: bridge
