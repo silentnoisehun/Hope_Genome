@@ -1,4 +1,4 @@
-//! # Hope Genome v1.2 - Tamper-Evident Cryptographic Framework for AI Accountability
+//! # Hope Genome v1.3 - Tamper-Evident Cryptographic Framework for AI Accountability
 //!
 //! Hope Genome is a framework for ensuring accountability and auditability in AI systems.
 //! It provides cryptographic proofs, immutable audit trails, and multi-layer defense mechanisms.
@@ -70,6 +70,7 @@
 pub mod audit_log;
 pub mod auditor;
 pub mod canonicalize;
+pub mod compliance;
 pub mod consensus;
 pub mod crypto;
 pub mod executor;
@@ -80,6 +81,9 @@ pub mod proof;
 pub use audit_log::{AuditEntry, AuditLog, Decision};
 pub use auditor::ProofAuditor;
 pub use canonicalize::{are_equivalent, canonicalize_action, CanonicalAction};
+pub use compliance::{
+    validate_component_integrity, validate_integrity, AiBom, Component, ComplianceError, Hash,
+};
 pub use consensus::{ConsensusVerifier, SensorReading};
 pub use crypto::{generate_nonce, hash_bytes, KeyPair};
 pub use executor::{ExecutionResult, SecureExecutor};
