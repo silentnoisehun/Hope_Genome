@@ -313,6 +313,15 @@ In domains where accountability matters more than prevention (healthcare, financ
 
 ---
 
+### Author & Vision
+**Created by: Máté Róbert**
+
+I am not an engineer or a developer in the traditional sense. I am a factory worker with an architect's vision. I don't accept errors, and I don't believe in "trust" without proof. My experience in precision manufacturing taught me that accountability is binary: it either exists or it doesn't.
+
+Hope Genome is my contribution to ensuring that AI becomes a tool of truth, not a shield for lies.
+
+---
+
 **Hope Genome v1.2** - Bringing cryptographic accountability to AI systems.
 
 *Built with ❤️ by Máté Róbert and Claude*

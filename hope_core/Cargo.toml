@@ -2,7 +2,7 @@
 name = "hope_core"
 version = "1.2.0"
 edition = "2021"
-authors = ["Máté Róbert <stratosoiteam@gmail.com>", "Claude (Anthropic)"]
+authors = ["Máté Róbert <stratosoiteam@gmail.com>"]
 description = "Tamper-evident cryptographic framework for AI accountability"
 license = "MIT"
 repository = "https://github.com/silentnoisehun/Hope-Genome"
