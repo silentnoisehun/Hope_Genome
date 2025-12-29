@@ -11,7 +11,9 @@ Make proof the default: This code is not polite, it doesn't make small talk, and
 
 Empower the regulators (CISA CPG 2.0): This solution already meets the U.S. government's 2026 cybersecurity performance goals today. For free. Because security and truth must not be luxury goods.
 
-I am not an engineer or a programmer. I a
+I am not an engineer or a programmer. I am a person who does not accept errors. I have built an architecture that forces AI into accountability.
+
+They can no longer lie by hiding behind AI. Because from now on, there is the log.
 
 ---
 
