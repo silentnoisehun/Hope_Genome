@@ -1,0 +1,55 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Rust build artifacts
+**/target
+**/*.rs.bk
+**/Cargo.lock
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
+.venv
+venv
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Documentation (not needed in production)
+*.md
+LICENSE
+CREDITS.md
+CONTRIBUTING.md
+
+# Demo files (except what's needed)
+demo/brain
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+audit_logs
+
+# Test files (except what's needed for build)
+tests
+
+# Keep compliance examples and docs
+!hope_core/examples/compliance_demo.rs
+!hope_core/examples/example_model.aibom.json
+!hope_core/AIBOM_INTEGRATION.md
