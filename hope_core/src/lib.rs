@@ -82,7 +82,7 @@ pub use audit_log::{AuditEntry, AuditLog, Decision};
 pub use auditor::ProofAuditor;
 pub use canonicalize::{are_equivalent, canonicalize_action, CanonicalAction};
 pub use compliance::{
-    validate_component_integrity, validate_integrity, AiBom, Component, ComplianceError, Hash,
+    validate_component_integrity, validate_integrity, AiBom, ComplianceError, Component, Hash,
 };
 pub use consensus::{ConsensusVerifier, SensorReading};
 pub use crypto::{generate_nonce, hash_bytes, KeyPair};
