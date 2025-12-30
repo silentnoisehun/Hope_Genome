@@ -59,6 +59,6 @@ all-backends = ["rocksdb-nonce-store", "redis-nonce-store", "hsm-support", "tee-
 full = ["all-backends", "python-bindings"]
 
 [lib]
-name = "hope_core"
+name = "_hope_core"
 path = "src/lib.rs"
 crate-type = ["cdylib", "rlib"]
