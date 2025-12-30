@@ -1,7 +1,10 @@
-# Hope Genome v1.4.0 - Hardened Security Edition - Production Docker Image
-# OWASP AI-SBOM Compliant Build
-# Date: 2025-12-30
-FROM rust:1.75-slim-bookworm as builder
+# Hope Genome - Production Docker Image
+# Multi-stage build for minimal runtime footprint
+
+# Stage 1: Rust builder
+FROM rust:1.75-slim AS builder
+
+WORKDIR /build
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y \
@@ -9,51 +12,43 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Create app directory
-WORKDIR /app
-
-# Copy Cargo files first for dependency caching
-COPY hope_core/Cargo.toml hope_core/Cargo.lock* ./hope_core/
-
-# Copy source code
-COPY hope_core/src ./hope_core/src
-COPY hope_core/examples ./hope_core/examples
+# Copy source files
+COPY hope_core/ ./hope_core/
+COPY Cargo.toml Cargo.lock ./
 
 # Build release binary
-WORKDIR /app/hope_core
-RUN cargo build --release --examples
+WORKDIR /build/hope_core
+RUN cargo build --release --features python-bindings
 
-# Run all tests to verify OWASP AIBOM integration
-RUN cargo test --release -- --test-threads=1
+# Stage 2: Python runtime
+FROM python:3.12-slim
 
-# Production stage - distroless for minimal attack surface
-FROM gcr.io/distroless/cc-debian12:nonroot
-
-# Copy example AIBOM file
-COPY --from=builder --chown=nonroot:nonroot /app/hope_core/examples/example_model.aibom.json /app/
-
-# Copy built examples
-COPY --from=builder --chown=nonroot:nonroot /app/hope_core/target/release/examples/compliance_demo /app/
-
-# Distroless runs as nonroot user by default (UID 65532)
 WORKDIR /app
 
-# Default command: Run compliance demo
-CMD ["/app/compliance_demo"]
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    libssl3 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Labels for OWASP AI-SBOM compliance
-LABEL org.opencontainers.image.title="Hope Genome v1.4.0 - Hardened Security Edition"
-LABEL org.opencontainers.image.description="Tamper-evident cryptographic framework with Ed25519, persistent nonces, and OWASP AI-SBOM compliance"
-LABEL org.opencontainers.image.version="1.4.0"
-LABEL org.opencontainers.image.created="2025-12-30"
-LABEL org.opencontainers.image.vendor="Máté Róbert"
+# Copy built artifacts from builder
+COPY --from=builder /build/hope_core/target/release/libhope_core.so /app/
+COPY --from=builder /build/hope_core/target/release/hope_core /app/
+
+# Install Python package
+RUN pip install --no-cache-dir hope-genome
+
+# Security labels
+LABEL org.opencontainers.image.title="Hope Genome"
+LABEL org.opencontainers.image.description="Tamper-Evident Cryptographic Framework for AI Accountability"
+LABEL org.opencontainers.image.version="1.5.0"
+LABEL org.opencontainers.image.authors="stratosoiteam@gmail.com"
+LABEL org.opencontainers.image.url="https://github.com/silentnoisehun/Hope_Genome"
+LABEL org.opencontainers.image.documentation="https://silentnoisehun.github.io/Hope_Genome/"
 LABEL org.opencontainers.image.licenses="MIT"
-LABEL org.opencontainers.image.source="https://github.com/silentnoisehun/Hope_Genome"
-LABEL org.opencontainers.image.base.name="gcr.io/distroless/cc-debian12:nonroot"
-LABEL compliance.owasp.aibom="CycloneDX 1.5+"
-LABEL compliance.cyclonedx.version="1.5"
-LABEL security.edition="Hardened"
-LABEL security.crypto="Ed25519"
-LABEL security.marvin_attack="Eliminated"
-LABEL tests.passed="79/79"
-LABEL tests.breakdown="67 core, 12 security"
+
+# Run as non-root user
+RUN useradd -m -u 1000 hopegen
+USER hopegen
+
+# Default command: Python REPL with hope-genome imported
+CMD ["python3", "-c", "import hope_genome as hg; print('Hope Genome v1.5.0 Ready'); print('Example: genome = hg.SealedGenome(rules=[\"Do no harm\"])')"]
