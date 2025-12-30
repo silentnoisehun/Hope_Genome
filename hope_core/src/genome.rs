@@ -19,10 +19,12 @@
 //! **Version**: 1.4.0 (Hardened Security Edition)
 //! **Author**: Máté Róbert <stratosoiteam@gmail.com>
 
-#[allow(deprecated)] // KeyPair import for backward compatibility functions
-use crate::crypto::{hash_bytes, KeyPair, KeyStore};
+use crate::crypto::{
+    create_key_store, hash_bytes, KeyStore, KeyStoreConfig, HsmConfig, KeyPair
+};
 use crate::proof::{Action, IntegrityProof};
 use thiserror::Error;
+use std::env;
 
 #[derive(Debug, Error)]
 pub enum GenomeError {
@@ -34,6 +36,9 @@ pub enum GenomeError {
 
     #[error("Action violates genome rules: {0}")]
     RuleViolation(String),
+    
+    #[error("HSM configuration error: environment variable {0} not set")]
+    HsmConfigError(String),
 
     #[error("Crypto error: {0}")]
     CryptoError(#[from] crate::crypto::CryptoError),
@@ -88,19 +93,52 @@ pub struct SealedGenome {
 }
 
 impl SealedGenome {
-    /// Create a new genome with rules (generates new Ed25519 keypair)
+    /// Create a new genome with rules.
+    ///
+    /// **HARDENED SECURITY**: This function automatically detects if an HSM is configured
+    /// via environment variables. If `PKCS11_MODULE_PATH` is set, it will create an
+    /// `HsmKeyStore`, ensuring the private key never enters system RAM. Otherwise, it
+    /// falls back to a software-based key store for development and testing.
+    ///
+    /// # HSM Configuration (Environment Variables)
+    /// - `PKCS11_MODULE_PATH`: Path to the PKCS#11 library (`.so` or `.dll`).
+    /// - `PKCS11_TOKEN_LABEL`: Label of the HSM token.
+    /// - `PKCS11_KEY_LABEL`: Label of the key within the HSM.
+    /// - `PKCS11_PIN`: The user PIN for the HSM. **WARNING**: Use secrets management in production.
     ///
     /// # Example
     /// ```rust
     /// use hope_core::genome::SealedGenome;
     ///
+    /// // This will use SoftwareKeyStore unless HSM env vars are set.
     /// let rules = vec!["Do no harm".to_string()];
     /// let genome = SealedGenome::new(rules).unwrap();
     /// ```
-    #[allow(deprecated)] // Uses deprecated with_keypair for backward compatibility
     pub fn new(rules: Vec<String>) -> Result<Self> {
-        let keypair = KeyPair::generate()?;
-        Self::with_keypair(rules, keypair)
+        let mut key_store_config: Option<KeyStoreConfig> = None;
+
+        #[cfg(feature = "hsm-support")]
+        {
+            if let Ok(pkcs11_path) = env::var("PKCS11_MODULE_PATH") {
+                // If HSM path is set, construct HsmConfig from environment variables.
+                let hsm_config = HsmConfig {
+                    pkcs11_lib_path: pkcs11_path,
+                    token_label: env::var("PKCS11_TOKEN_LABEL")
+                        .map_err(|_| GenomeError::HsmConfigError("PKCS11_TOKEN_LABEL".to_string()))?,
+                    key_label: env::var("PKCS11_KEY_LABEL")
+                        .map_err(|_| GenomeError::HsmConfigError("PKCS11_KEY_LABEL".to_string()))?,
+                    pin: env::var("PKCS11_PIN")
+                        .map_err(|_| GenomeError::HsmConfigError("PKCS11_PIN".to_string()))?,
+                };
+                key_store_config = Some(KeyStoreConfig::Hsm(hsm_config));
+            }
+        }
+
+        // If no hardware config was found, default to software.
+        let final_config = key_store_config.unwrap_or(KeyStoreConfig::Software);
+
+        let key_store = create_key_store(final_config)?;
+        Self::with_key_store(rules, key_store)
     }
 
     /// Create a new genome with an existing KeyPair (deprecated)

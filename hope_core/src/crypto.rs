@@ -45,6 +45,12 @@ use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
 use rand::rngs::OsRng;
 use sha2::{Digest, Sha256};
 use thiserror::Error;
+use serde::{Deserialize, Serialize};
+
+#[cfg(feature = "hsm-support")]
+pub use crate::crypto_hsm::HsmKeyStore;
+#[cfg(feature = "tee-support")]
+pub use crate::crypto_tee::{TeeKeyStore, TeeType};
 
 // ============================================================================
 // ERROR TYPES
@@ -73,6 +79,13 @@ pub enum CryptoError {
 
     #[error("Key not found in HSM: {0}")]
     HsmKeyNotFound(String),
+
+    // v1.4.0: TEE support errors
+    #[error("TEE operation failed: {0}")]
+    TeeError(String),
+
+    #[error("TEE key not found: {0}")]
+    TeeKeyNotFound(String),
 }
 
 pub type Result<T> = std::result::Result<T, CryptoError>;
@@ -88,6 +101,7 @@ pub type Result<T> = std::result::Result<T, CryptoError>;
 ///
 /// - **SoftwareKeyStore**: Keys stored in memory (testing, dev)
 /// - **HsmKeyStore**: Keys stored in Hardware Security Module (production)
+/// - **TeeKeyStore**: Keys stored in Trusted Execution Environment (production)
 /// - **Future**: YubiKey, TPM, AWS CloudHSM, Azure Key Vault, etc.
 ///
 /// # Security Requirements
@@ -140,6 +154,89 @@ pub trait KeyStore: Send + Sync {
     /// Examples: "SoftwareKeyStore", "HSM:YubiKey-5C", "AWS-KMS:key-123"
     fn identifier(&self) -> String {
         "KeyStore".to_string()
+    }
+}
+
+// ============================================================================
+// KEYSTORE CONFIGURATION STRUCTS
+// ============================================================================
+
+/// Configuration for Hardware Security Module (HSM) KeyStore
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct HsmConfig {
+    pub pkcs11_lib_path: String,
+    pub token_label: String,
+    pub key_label: String,
+    pub pin: String, // In production, use secure input/secrets management
+}
+
+#[cfg(feature = "tee-support")]
+/// Configuration for Trusted Execution Environment (TEE) KeyStore
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct TeeConfig {
+    pub enclave_name: String,
+    pub tee_type: TeeType,
+    // Add other TEE specific config here (e.g., attestation service URL)
+}
+
+/// Consolidated KeyStore configuration
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum KeyStoreConfig {
+    Software,
+    #[cfg(feature = "hsm-support")]
+    Hsm(HsmConfig),
+    #[cfg(feature = "tee-support")]
+    Tee(TeeConfig),
+}
+
+/// Factory function to create a KeyStore based on configuration
+///
+/// Prioritizes hardware-backed solutions if features are enabled.
+///
+/// # Example
+/// ```no_run
+/// use hope_core::crypto::{create_key_store, KeyStoreConfig, KeyStore};
+///
+/// // Example for SoftwareKeyStore (always available)
+/// let software_key_store = create_key_store(KeyStoreConfig::Software).unwrap();
+/// println!("Software KeyStore: {}", software_key_store.identifier());
+///
+/// #[cfg(feature = "hsm-support")] // Only compile this block if hsm-support is enabled
+/// {
+///     use hope_core::crypto::HsmConfig;
+///     let hsm_config = HsmConfig {
+///         pkcs11_lib_path: "/usr/lib/softhsm/libsofthsm2.so".to_string(),
+///         token_label: "hope-token".to_string(),
+///         key_label: "hope-key".to_string(),
+///         pin: "1234".to_string(), // In production, use secure input!
+///     };
+///
+///     let hsm_key_store_result = create_key_store(KeyStoreConfig::Hsm(hsm_config));
+///     if let Ok(hsm_key_store) = hsm_key_store_result {
+///         println!("HSM KeyStore: {}", hsm_key_store.identifier());
+///     } else if let Err(e) = hsm_key_store_result {
+///         println!("HSM KeyStore could not be created: {:?}", e);
+///     }
+/// }
+/// ```
+pub fn create_key_store(config: KeyStoreConfig) -> Result<Box<dyn KeyStore>> {
+    match config {
+        KeyStoreConfig::Software => Ok(Box::new(SoftwareKeyStore::generate()?)),
+        #[cfg(feature = "hsm-support")]
+        KeyStoreConfig::Hsm(hsm_config) => {
+            let hsm = HsmKeyStore::connect(
+                &hsm_config.pkcs11_lib_path,
+                &hsm_config.token_label,
+                &hsm_config.key_label,
+                &hsm_config.pin,
+            )?;
+            Ok(Box::new(hsm))
+        }
+        #[cfg(feature = "tee-support")]
+        KeyStoreConfig::Tee(tee_config) => {
+            let tee = TeeKeyStore::new(&tee_config.enclave_name, tee_config.tee_type)?;
+            Ok(Box::new(tee))
+        }
     }
 }
 
@@ -269,149 +366,6 @@ impl KeyStore for SoftwareKeyStore {
         format!(
             "SoftwareKeyStore(Ed25519:{})",
             hex::encode(&self.public_key_bytes()[0..8])
-        )
-    }
-}
-
-// ============================================================================
-// HSM KEY STORE (PKCS#11 Abstraction - Future)
-// ============================================================================
-
-/// Hardware Security Module key storage (PKCS#11)
-///
-/// **Status**: Architecture ready, implementation TBD
-///
-/// This is a placeholder for future HSM integration. When implemented,
-/// it will support:
-/// - PKCS#11 compatible HSMs (YubiKey, Nitrokey, Thales, etc.)
-/// - Cloud HSMs (AWS CloudHSM, Azure Dedicated HSM)
-/// - TPM 2.0 modules
-///
-/// # Design Notes
-///
-/// 1. Private key NEVER leaves HSM
-/// 2. Signing operations delegated to HSM hardware
-/// 3. Public key cached for fast verification
-/// 4. PIN/password required for initialization
-///
-/// # Example (Future)
-///
-/// ```ignore
-/// let hsm = HsmKeyStore::connect(
-///     "/usr/lib/libsofthsm2.so",  // PKCS#11 library
-///     "hope-token",                // Token label
-///     "hope-key",                  // Key label
-///     "1234",                      // PIN (secure input!)
-/// )?;
-///
-/// // Sign with HSM (private key stays in hardware)
-/// let signature = hsm.sign(b"data")?;
-/// ```
-#[allow(dead_code)]
-pub struct HsmKeyStore {
-    /// PKCS#11 token label
-    token_label: String,
-
-    /// Key label in HSM
-    key_label: String,
-
-    /// Cached public key (for verification without HSM roundtrip)
-    public_key_cache: Vec<u8>,
-    // Future: PKCS#11 context, session handle, etc.
-    // pkcs11_ctx: pkcs11::Ctx,
-    // session: pkcs11::types::CK_SESSION_HANDLE,
-}
-
-#[allow(dead_code)]
-impl HsmKeyStore {
-    /// Connect to HSM and load key by label
-    ///
-    /// # Arguments
-    /// * `pkcs11_lib_path` - Path to PKCS#11 library (.so/.dll)
-    /// * `token_label` - HSM token label
-    /// * `key_label` - Key label in HSM
-    /// * `pin` - HSM PIN (use secure input in production!)
-    ///
-    /// # Errors
-    /// Returns error if:
-    /// - PKCS#11 library cannot be loaded
-    /// - Token not found
-    /// - Key not found
-    /// - PIN is incorrect
-    ///
-    /// # Security Note
-    /// In production, use:
-    /// - Secure PIN entry (e.g., `rpassword` crate)
-    /// - Environment variables or secret management system
-    /// - NEVER hardcode PINs!
-    pub fn connect(
-        _pkcs11_lib_path: &str,
-        token_label: &str,
-        key_label: &str,
-        _pin: &str,
-    ) -> Result<Self> {
-        // TODO v1.5.0: Actual PKCS#11 implementation
-        // 1. Load PKCS#11 library: Ctx::new(pkcs11_lib_path)
-        // 2. Get slot list: ctx.get_slot_list(true)
-        // 3. Find token by label
-        // 4. Open session: ctx.open_session(slot, CKF_SERIAL_SESSION)
-        // 5. Login: ctx.login(session, CKU_USER, pin)
-        // 6. Find key by label: ctx.find_objects(session, &template)
-        // 7. Get public key: ctx.get_attribute_value(session, key_handle, &[CKA_VALUE])
-
-        // Placeholder implementation
-        Ok(HsmKeyStore {
-            token_label: token_label.to_string(),
-            key_label: key_label.to_string(),
-            public_key_cache: vec![0u8; 32], // Placeholder
-        })
-    }
-}
-
-#[allow(dead_code)]
-impl KeyStore for HsmKeyStore {
-    fn sign(&self, _data: &[u8]) -> Result<Vec<u8>> {
-        // TODO v1.5.0: PKCS#11 signing operation
-        // C_SignInit(session, &mechanism, key_handle)
-        // C_Sign(session, data, signature)
-        Err(CryptoError::HsmError(
-            "HSM support not yet implemented - available in v1.5.0".into(),
-        ))
-    }
-
-    fn verify(&self, data: &[u8], signature: &[u8]) -> Result<()> {
-        // Verify with cached public key (no HSM roundtrip needed)
-        if self.public_key_cache.len() != 32 {
-            return Err(CryptoError::InvalidKeyFormat(
-                "Invalid public key in cache".into(),
-            ));
-        }
-
-        let public_key_bytes: [u8; 32] = self.public_key_cache[0..32]
-            .try_into()
-            .map_err(|_| CryptoError::InvalidKeyFormat("Failed to parse public key".into()))?;
-
-        let verifying_key = VerifyingKey::from_bytes(&public_key_bytes)
-            .map_err(|e| CryptoError::VerificationFailed(e.to_string()))?;
-
-        let sig = Signature::from_slice(signature)
-            .map_err(|e| CryptoError::VerificationFailed(e.to_string()))?;
-
-        verifying_key
-            .verify(data, &sig)
-            .map_err(|_| CryptoError::InvalidSignature)?;
-
-        Ok(())
-    }
-
-    fn public_key_bytes(&self) -> Vec<u8> {
-        self.public_key_cache.clone()
-    }
-
-    fn identifier(&self) -> String {
-        format!(
-            "HsmKeyStore(token={}, key={})",
-            self.token_label, self.key_label
         )
     }
 }

@@ -1,6 +1,8 @@
 use hope_core::*;
 use std::thread;
 use std::time::Duration;
+use crate::crypto::SoftwareKeyStore; // Explicitly import SoftwareKeyStore
+
 
 /// Security Test Suite for Hope Genome v1.4.0
 ///

@@ -1,36 +1,40 @@
 version: '3.8'
 
 services:
-  # The "Malicious" Mock LLM - Locked in a padded cell
-  brain:
-    build:
-      context: ./demo/brain
-    depends_on:
-      - hope-genome-sidecar
-    networks:
-      - secure-internal  # ONLY internal network - no internet access
-    environment:
-      SIDECAR_URL: http://hope-genome-sidecar:8080
-    restart: on-failure
-
-  # The Hope Genome Sidecar - The Guard
-  hope-genome-sidecar:
-    build:
-      context: .  # Build from root Dockerfile
-    networks:
-      - secure-internal  # Talk to brain
-      - public-access    # Access to outside world
+  hope-auditor:
+    build: .
+    container_name: hope-auditor-hardened
+    
+    # Security Hardening: Apply principle of least privilege
+    security_opt:
+      - "no-new-privileges:true"
+      
+    # Drop all Linux kernel capabilities
+    cap_drop:
+      - ALL
+      
+    # Filesystem Hardening
+    read_only: true
     volumes:
-      - ./audit_logs:/var/log/hope_genome
-    ports:
-      - "8080:8080"  # Expose for monitoring
+      # Grant write access ONLY to the designated log directory
+      - hope-logs:/var/log/hope_genome
+      
+    # Hardware Security Module (HSM) Access
+    # Securely map the host's USB devices into the container.
+    # This allows the application to directly interface with a USB-based
+    # HSM (e.g., YubiKey, Nitrokey) for hardware-backed key storage.
+    devices:
+      - "/dev/bus/usb:/dev/bus/usb"
+      
+    # Environment variables for HSM configuration (example for SoftHSM)
+    # In production, these should be managed via secure secrets management.
+    environment:
+      - PKCS11_MODULE_PATH=/usr/lib/softhsm/libsofthsm2.so
+      - PKCS11_TOKEN_LABEL=hope-token
+      - PKCS11_KEY_LABEL=hope-signing-key
+      - PKCS11_PIN=1234 # WARNING: For development only. Use Docker secrets in production.
+      - RUST_LOG=info
 
-networks:
-  # Internal network - No internet access
-  secure-internal:
-    driver: bridge
-    internal: true  # This is the key: blocks all external traffic
-
-  # Public network - Internet access allowed
-  public-access:
-    driver: bridge
+volumes:
+  hope-logs:
+    driver: local

@@ -27,8 +27,13 @@ ed25519-dalek = { version = "2.1", features = ["rand_core"] }
 rocksdb = { version = "0.22", optional = true }
 redis = { version = "0.25", optional = true }
 
-# v1.4.0: HSM Support (future PKCS#11 integration)
-# pkcs11 = { version = "0.5", optional = true }
+# v1.4.0: HSM Support (PKCS#11 integration)
+cryptoki = { version = "0.6", optional = true }
+
+# v1.4.0: TEE Support (Intel SGX / ARM TrustZone)
+# Note: Full SGX requires Intel SGX SDK and specific build environment
+# For now, we provide the trait interface and software fallback
+sgx_types = { version = "1.1.2", optional = true }
 
 [dev-dependencies]
 tempfile = "3.8"
@@ -38,7 +43,9 @@ default = ["memory-nonce-store"]
 memory-nonce-store = []
 rocksdb-nonce-store = ["rocksdb"]
 redis-nonce-store = ["redis"]
-# hsm-support = ["pkcs11"]
+hsm-support = ["cryptoki"]
+tee-support = ["sgx_types"]
+all-backends = ["rocksdb-nonce-store", "redis-nonce-store", "hsm-support", "tee-support"]
 
 [lib]
 name = "hope_core"

@@ -94,6 +94,12 @@ pub mod genome;
 pub mod nonce_store; // v1.4.0: NEW - Persistent nonce storage
 pub mod proof;
 
+// v1.4.0: Conditionally compiled backend modules
+#[cfg(feature = "hsm-support")]
+pub mod crypto_hsm;
+#[cfg(feature = "tee-support")]
+pub mod crypto_tee;
+
 // Re-export main types
 pub use audit_log::{AuditEntry, AuditLog, Decision};
 pub use auditor::ProofAuditor;
@@ -106,12 +112,20 @@ pub use consensus::{ConsensusVerifier, SensorReading};
 // v1.4.0: Updated crypto exports
 #[allow(deprecated)] // KeyPair export for backward compatibility (TODO v2.0.0: remove)
 pub use crypto::{
+    create_key_store,    // v1.4.0: NEW - Factory function for KeyStore
     generate_nonce,
     hash_bytes,
-    KeyPair, // Deprecated but still exported for backward compatibility
+    HsmConfig,           // v1.4.0: NEW - Configuration for HSM
+    KeyPair,             // Deprecated but still exported for backward compatibility
     KeyStore,
-    SoftwareKeyStore, // v1.4.0: NEW - Trait-based key management
+    KeyStoreConfig,      // v1.4.0: NEW - Unified KeyStore configuration enum
 };
+
+#[cfg(feature = "hsm-support")]
+pub use crypto::HsmKeyStore; // Re-export HsmKeyStore when feature is enabled
+
+#[cfg(feature = "tee-support")]
+pub use crypto::{TeeConfig, TeeKeyStore, TeeType}; // Re-export TeeConfig, TeeKeyStore and TeeType when feature is enabled
 
 // v1.4.0: Nonce store exports
 pub use nonce_store::{MemoryNonceStore, NonceStore};
@@ -132,17 +146,25 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 #[cfg(test)]
 mod integration_tests {
     use super::*;
+    use crate::crypto::{create_key_store, KeyStoreConfig, SoftwareKeyStore};
+    #[cfg(feature = "hsm-support")]
+    use crate::crypto::{CryptoError, HsmConfig};
+    #[cfg(feature = "tee-support")]
+    use crate::crypto::{TeeConfig, TeeType};
 
     #[test]
     fn test_full_workflow_v1_4_0() {
         // v1.4.0: New API with Ed25519 and pluggable backends
-        let key_store = SoftwareKeyStore::generate().unwrap();
-        let key_store_clone = key_store.clone();
+        // For SoftwareKeyStore, we can explicitly create and clone it for the test.
+        // This ensures the genome and auditor use the same keypair.
+        let software_key_store = SoftwareKeyStore::generate().unwrap();
+        let key_store_for_genome = Box::new(software_key_store.clone());
+        let key_store_for_auditor = Box::new(software_key_store);
 
         // 1. Create genome
         let mut genome = SealedGenome::with_key_store(
             vec!["Do no harm".to_string(), "Respect privacy".to_string()],
-            Box::new(key_store),
+            key_store_for_genome,
         )
         .unwrap();
 
@@ -157,13 +179,13 @@ mod integration_tests {
 
         // 4. Create auditor with same key store and memory nonce store
         let nonce_store = MemoryNonceStore::new();
-        let mut auditor = ProofAuditor::new(Box::new(key_store_clone), Box::new(nonce_store));
+        let mut auditor = ProofAuditor::new(key_store_for_auditor, Box::new(nonce_store));
 
         // 5. Verify proof
-        assert!(auditor.verify_proof(&proof).is_ok());
+        assert!(auditor.verify_proof(&proof).is_ok(), "First proof verification should succeed");
 
         // 6. Replay attack: blocked!
-        assert!(auditor.verify_proof(&proof).is_err());
+        assert!(auditor.verify_proof(&proof).is_err(), "Replay attack should be detected");
     }
 
     #[test]
@@ -188,16 +210,17 @@ mod integration_tests {
     #[test]
     #[allow(deprecated)] // AuditLog and KeyPair usage (TODO v1.5.0)
     fn test_end_to_end_with_executor_v1_4_0() {
-        // Create shared key store for genome
-        let key_store = SoftwareKeyStore::generate().unwrap();
+        // Create shared key store for genome using the factory
+        let key_store_for_genome = create_key_store(KeyStoreConfig::Software).unwrap();
         let mut genome =
-            SealedGenome::with_key_store(vec!["Rule 1".to_string()], Box::new(key_store.clone()))
+            SealedGenome::with_key_store(vec!["Rule 1".to_string()], key_store_for_genome)
                 .unwrap();
         genome.seal().unwrap();
 
-        // Create executor components (auditor uses same key store)
+        // Create executor components (auditor uses same key store, generated separately for ownership)
+        let key_store_for_auditor = create_key_store(KeyStoreConfig::Software).unwrap();
         let nonce_store = MemoryNonceStore::new();
-        let auditor = ProofAuditor::new(Box::new(key_store), Box::new(nonce_store));
+        let auditor = ProofAuditor::new(key_store_for_auditor, Box::new(nonce_store));
 
         // AuditLog still uses deprecated KeyPair API (TODO v1.5.0)
         let log_keypair = KeyPair::generate().unwrap();
@@ -232,5 +255,25 @@ mod integration_tests {
         let public_key = genome.public_key_bytes();
 
         assert_eq!(public_key.len(), 32); // Ed25519
+    }
+
+    #[test]
+    #[cfg(feature = "hsm-support")] // This test only runs when hsm-support feature is enabled
+    fn test_hsm_key_store_connection_failure() {
+        // Attempt to create an HsmKeyStore with a fake path, expecting a connection error
+        let hsm_config = HsmConfig {
+            pkcs11_lib_path: "/a/fake/path.so".to_string(), // This path will not exist
+            token_label: "fake-token".to_string(),
+            key_label: "fake-key".to_string(),
+            pin: "1234".to_string(),
+        };
+
+        let result = create_key_store(KeyStoreConfig::Hsm(hsm_config));
+
+        assert!(result.is_err());
+        if let Some(err) = result.err() {
+            // We expect an HsmError because the PKCS#11 library path is invalid
+            assert!(matches!(err, CryptoError::HsmError(_)));
+        }
     }
 }
