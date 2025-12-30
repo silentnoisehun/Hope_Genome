@@ -1,5 +1,5 @@
-use crate::crypto::SoftwareKeyStore;
-use hope_core::*;
+use _hope_core::crypto::SoftwareKeyStore;
+use _hope_core::*;
 use std::thread;
 use std::time::Duration; // Explicitly import SoftwareKeyStore
 

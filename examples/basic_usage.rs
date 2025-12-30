@@ -7,7 +7,7 @@
 /// 4. Verify cryptographic proof
 /// 5. Check audit log
 
-use hope_core::*;
+use _hope_core::*;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("=== Hope Genome v1.2 - Basic Usage Example ===\n");

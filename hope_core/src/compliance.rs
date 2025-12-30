@@ -21,7 +21,7 @@
 //! ## Example
 //!
 //! ```rust
-//! use hope_core::compliance::*;
+//! use _hope_core::compliance::*;
 //!
 //! // Parse AIBOM JSON
 //! let aibom_json = r#"{
@@ -301,7 +301,7 @@ fn constant_time_eq(a: &str, b: &str) -> bool {
 /// # Example
 ///
 /// ```rust
-/// use hope_core::compliance::*;
+/// use _hope_core::compliance::*;
 ///
 /// let result = validate_component_integrity(
 ///     "model.aibom.json",

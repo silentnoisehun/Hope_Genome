@@ -59,8 +59,8 @@
 /// ## Example Usage
 ///
 /// ```no_run
-/// # use hope_core::crypto_tee::{TeeKeyStore, TeeType};
-/// # use hope_core::crypto::{Result, KeyStore};
+/// # use _hope_core::crypto_tee::{TeeKeyStore, TeeType};
+/// # use _hope_core::crypto::{Result, KeyStore};
 /// # async fn test() -> Result<()> {
 /// // Initialize TEE
 /// let mut tee = TeeKeyStore::new("hope-enclave", TeeType::IntelSgx)?;
@@ -181,8 +181,8 @@ impl AttestationReport {
     /// # Example
     ///
     /// ```no_run
-    /// # use hope_core::crypto_tee::{TeeKeyStore, AttestationReport, TeeType};
-    /// # use hope_core::crypto::Result;
+    /// # use _hope_core::crypto_tee::{TeeKeyStore, AttestationReport, TeeType};
+    /// # use _hope_core::crypto::Result;
     /// # fn test() -> Result<()> {
     /// # let mut tee = TeeKeyStore::new("test", TeeType::IntelSgx)?;
     /// # let report = tee.get_attestation_report()?;
@@ -277,8 +277,8 @@ impl AttestationReport {
 /// # Example
 ///
 /// ```no_run
-/// # use hope_core::crypto::{Result, TeeType, KeyStore};
-/// # use hope_core::crypto_tee::TeeKeyStore;
+/// # use _hope_core::crypto::{Result, TeeType, KeyStore};
+/// # use _hope_core::crypto_tee::TeeKeyStore;
 /// # fn test() -> Result<()> {
 /// // Initialize TEE
 /// let mut tee = TeeKeyStore::new("hope-enclave", TeeType::IntelSgx)?;
@@ -323,8 +323,8 @@ impl TeeKeyStore {
     /// # Example
     ///
     /// ```no_run
-    /// # use hope_core::crypto::{Result, TeeType};
-    /// use hope_core::crypto_tee::TeeKeyStore;
+    /// # use _hope_core::crypto::{Result, TeeType};
+    /// use _hope_core::crypto_tee::TeeKeyStore;
     /// # fn test() -> Result<()> {
     /// let tee = TeeKeyStore::new("hope-dev-enclave", TeeType::IntelSgx)?;
     /// # Ok(())
@@ -368,8 +368,8 @@ impl TeeKeyStore {
     /// # Example
     ///
     /// ```no_run
-    /// # use hope_core::crypto::{Result, TeeType};
-    /// # use hope_core::crypto_tee::TeeKeyStore;
+    /// # use _hope_core::crypto::{Result, TeeType};
+    /// # use _hope_core::crypto_tee::TeeKeyStore;
     /// # fn test() -> Result<()> {
     /// let mut nonce = [0u8; 32];
     /// // In a real app, use a secure random number generator
@@ -571,7 +571,7 @@ fn verify_quote_with_ias(quote: &[u8], ias_api_key: &str) -> std::result::Result
 /// # Example
 ///
 /// ```no_run
-/// use hope_core::crypto_tee::{is_tee_supported, TeeType};
+/// use _hope_core::crypto_tee::{is_tee_supported, TeeType};
 ///
 /// if is_tee_supported(TeeType::IntelSgx) {
 ///     println!("Intel SGX is available!");

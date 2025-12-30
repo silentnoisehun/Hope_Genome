@@ -5,8 +5,8 @@
 //!
 //! Run with: cargo run --example compliance_demo
 
-use hope_core::compliance::*;
-use hope_core::crypto::hash_bytes;
+use _hope_core::compliance::*;
+use _hope_core::crypto::hash_bytes;
 
 fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     println!("=== Hope Genome v1.3.0 - AIBOM Compliance Demo ===\n");

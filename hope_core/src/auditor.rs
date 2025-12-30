@@ -17,9 +17,9 @@
 //! ## Example (New API)
 //!
 //! ```rust
-//! use hope_core::auditor::ProofAuditor;
-//! use hope_core::crypto::SoftwareKeyStore;
-//! use hope_core::nonce_store::MemoryNonceStore;
+//! use _hope_core::auditor::ProofAuditor;
+//! use _hope_core::crypto::SoftwareKeyStore;
+//! use _hope_core::nonce_store::MemoryNonceStore;
 //!
 //! // Create with pluggable backends
 //! let key_store = SoftwareKeyStore::generate().unwrap();
@@ -106,10 +106,10 @@ pub type Result<T> = std::result::Result<T, AuditorError>;
 /// ## Example (Production Setup)
 ///
 /// ```no_run
-/// use hope_core::auditor::ProofAuditor;
-/// use hope_core::crypto::SoftwareKeyStore;
+/// use _hope_core::auditor::ProofAuditor;
+/// use _hope_core::crypto::SoftwareKeyStore;
 /// # #[cfg(feature = "rocksdb-nonce-store")]
-/// use hope_core::nonce_store::RocksDbNonceStore;
+/// use _hope_core::nonce_store::RocksDbNonceStore;
 ///
 /// # #[cfg(feature = "rocksdb-nonce-store")]
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -146,9 +146,9 @@ impl ProofAuditor {
     ///
     /// # Example
     /// ```rust
-    /// use hope_core::auditor::ProofAuditor;
-    /// use hope_core::crypto::SoftwareKeyStore;
-    /// use hope_core::nonce_store::MemoryNonceStore;
+    /// use _hope_core::auditor::ProofAuditor;
+    /// use _hope_core::crypto::SoftwareKeyStore;
+    /// use _hope_core::nonce_store::MemoryNonceStore;
     ///
     /// let key_store = SoftwareKeyStore::generate().unwrap();
     /// let nonce_store = MemoryNonceStore::new();
@@ -190,10 +190,10 @@ impl ProofAuditor {
     ///
     /// # Example
     /// ```rust
-    /// use hope_core::auditor::ProofAuditor;
-    /// use hope_core::crypto::{KeyStore, SoftwareKeyStore}; // KeyStore trait needed for .sign()
-    /// use hope_core::nonce_store::MemoryNonceStore;
-    /// use hope_core::proof::{Action, IntegrityProof};
+    /// use _hope_core::auditor::ProofAuditor;
+    /// use _hope_core::crypto::{KeyStore, SoftwareKeyStore}; // KeyStore trait needed for .sign()
+    /// use _hope_core::nonce_store::MemoryNonceStore;
+    /// use _hope_core::proof::{Action, IntegrityProof};
     ///
     /// let key_store = SoftwareKeyStore::generate().unwrap();
     /// let nonce_store = MemoryNonceStore::new();
@@ -246,10 +246,10 @@ impl ProofAuditor {
     ///
     /// # Example
     /// ```rust
-    /// use hope_core::auditor::ProofAuditor;
-    /// use hope_core::crypto::{KeyStore, SoftwareKeyStore}; // KeyStore trait needed for .sign()
-    /// use hope_core::nonce_store::MemoryNonceStore;
-    /// use hope_core::proof::{Action, IntegrityProof};
+    /// use _hope_core::auditor::ProofAuditor;
+    /// use _hope_core::crypto::{KeyStore, SoftwareKeyStore}; // KeyStore trait needed for .sign()
+    /// use _hope_core::nonce_store::MemoryNonceStore;
+    /// use _hope_core::proof::{Action, IntegrityProof};
     ///
     /// let key_store = SoftwareKeyStore::generate().unwrap();
     /// let nonce_store = MemoryNonceStore::new();

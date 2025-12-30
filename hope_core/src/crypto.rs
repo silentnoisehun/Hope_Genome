@@ -27,7 +27,7 @@
 //! ## Example (v1.4.1 API)
 //!
 //! ```rust
-//! use hope_core::crypto::{SoftwareKeyStore, KeyStore};
+//! use _hope_core::crypto::{SoftwareKeyStore, KeyStore};
 //!
 //! // Generate Ed25519 keypair
 //! let key_store = SoftwareKeyStore::generate().unwrap();
@@ -134,7 +134,7 @@ pub type Result<T> = std::result::Result<T, CryptoError>;
 /// # Example
 ///
 /// ```rust
-/// use hope_core::crypto::{KeyStore, SoftwareKeyStore};
+/// use _hope_core::crypto::{KeyStore, SoftwareKeyStore};
 ///
 /// fn sign_decision(store: &dyn KeyStore, decision: &[u8]) -> Vec<u8> {
 ///     store.sign(decision).expect("Signing failed")
@@ -214,7 +214,7 @@ pub enum KeyStoreConfig {
 ///
 /// # Example
 /// ```no_run
-/// use hope_core::crypto::{create_key_store, KeyStoreConfig, KeyStore};
+/// use _hope_core::crypto::{create_key_store, KeyStoreConfig, KeyStore};
 ///
 /// // Example for SoftwareKeyStore (always available)
 /// let software_key_store = create_key_store(KeyStoreConfig::Software).unwrap();
@@ -222,7 +222,7 @@ pub enum KeyStoreConfig {
 ///
 /// #[cfg(feature = "hsm-support")] // Only compile this block if hsm-support is enabled
 /// {
-///     use hope_core::crypto::HsmConfig;
+///     use _hope_core::crypto::HsmConfig;
 ///     let hsm_config = HsmConfig {
 ///         pkcs11_lib_path: "/usr/lib/softhsm/libsofthsm2.so".to_string(),
 ///         token_label: "hope-token".to_string(),
@@ -292,7 +292,7 @@ pub fn create_key_store(config: KeyStoreConfig) -> Result<Box<dyn KeyStore>> {
 /// # Example
 ///
 /// ```rust
-/// use hope_core::crypto::{SoftwareKeyStore, KeyStore};
+/// use _hope_core::crypto::{SoftwareKeyStore, KeyStore};
 ///
 /// // Generate new keypair
 /// let store = SoftwareKeyStore::generate().unwrap();
@@ -350,7 +350,7 @@ impl SoftwareKeyStore {
     ///
     /// # Example
     /// ```rust
-    /// use hope_core::crypto::SoftwareKeyStore;
+    /// use _hope_core::crypto::SoftwareKeyStore;
     ///
     /// let seed = [42u8; 32]; // In production, use secure random seed!
     /// let store = SoftwareKeyStore::from_seed(seed).unwrap();
@@ -571,11 +571,11 @@ impl KeyStore for SoftwareKeyStore {
 ///
 /// ```rust
 /// // Old (v1.3.0)
-/// use hope_core::crypto::KeyPair;
+/// use _hope_core::crypto::KeyPair;
 /// let keypair = KeyPair::generate().unwrap();
 ///
 /// // New (v1.4.1)
-/// use hope_core::crypto::SoftwareKeyStore;
+/// use _hope_core::crypto::SoftwareKeyStore;
 /// let key_store = SoftwareKeyStore::generate().unwrap();
 /// ```
 #[deprecated(

@@ -27,9 +27,9 @@
 //! ## Example (v1.4.0 New API)
 //!
 //! ```rust
-//! use hope_core::*;
-//! use hope_core::crypto::SoftwareKeyStore;
-//! use hope_core::nonce_store::MemoryNonceStore;
+//! use _hope_core::*;
+//! use _hope_core::crypto::SoftwareKeyStore;
+//! use _hope_core::nonce_store::MemoryNonceStore;
 //!
 //! // Create genome with Ed25519 keys
 //! let mut genome = SealedGenome::new(vec![

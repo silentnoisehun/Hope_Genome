@@ -46,7 +46,7 @@
 //! ## Example Usage
 //!
 //! ```no_run
-//! # use hope_core::crypto::{Result, HsmKeyStore, KeyStore};
+//! # use _hope_core::crypto::{Result, HsmKeyStore, KeyStore};
 //! # fn test() -> Result<()> {
 //! // Connect to HSM (PIN required!)
 //! let hsm = HsmKeyStore::connect(
@@ -107,7 +107,7 @@ use std::sync::Arc;
 /// # Example
 ///
 /// ```no_run
-/// use hope_core::crypto::{HsmKeyStore, KeyStore};
+/// use _hope_core::crypto::{HsmKeyStore, KeyStore};
 ///
 /// let hsm = HsmKeyStore::connect(
 ///     "/usr/lib/softhsm/libsofthsm2.so",
@@ -174,7 +174,7 @@ impl HsmKeyStore {
     /// # Example
     ///
     /// ```no_run
-    /// use hope_core::crypto_hsm::HsmKeyStore;
+    /// use _hope_core::crypto_hsm::HsmKeyStore;
     ///
     /// let hsm = HsmKeyStore::connect(
     ///     "/usr/lib/softhsm/libsofthsm2.so",
@@ -309,7 +309,7 @@ impl HsmKeyStore {
     /// # Example
     ///
     /// ```no_run
-    /// use hope_core::crypto_hsm::HsmKeyStore;
+    /// use _hope_core::crypto_hsm::HsmKeyStore;
     ///
     /// let hsm = HsmKeyStore::generate_in_hsm(
     ///     "/usr/lib/softhsm/libsofthsm2.so",
@@ -523,7 +523,7 @@ impl Drop for HsmKeyStore {
 /// # Example
 ///
 /// ```no_run
-/// use hope_core::crypto_hsm::list_hsm_tokens;
+/// use _hope_core::crypto_hsm::list_hsm_tokens;
 ///
 /// for token in list_hsm_tokens("/usr/lib/softhsm/libsofthsm2.so").unwrap() {
 ///     println!("Token: {} (Slot: {})", token.label, token.slot_id);

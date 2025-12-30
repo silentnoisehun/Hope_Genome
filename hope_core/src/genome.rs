@@ -54,9 +54,9 @@ pub type Result<T> = std::result::Result<T, GenomeError>;
 /// ## Example (v1.4.0 New API)
 ///
 /// ```rust
-/// use hope_core::genome::SealedGenome;
-/// use hope_core::crypto::SoftwareKeyStore;
-/// use hope_core::proof::Action;
+/// use _hope_core::genome::SealedGenome;
+/// use _hope_core::crypto::SoftwareKeyStore;
+/// use _hope_core::proof::Action;
 ///
 /// // Create genome with new KeyStore API
 /// let key_store = SoftwareKeyStore::generate().unwrap();
@@ -106,7 +106,7 @@ impl SealedGenome {
     ///
     /// # Example
     /// ```rust
-    /// use hope_core::genome::SealedGenome;
+    /// use _hope_core::genome::SealedGenome;
     ///
     /// // This will use SoftwareKeyStore unless HSM env vars are set.
     /// let rules = vec!["Do no harm".to_string()];
@@ -148,8 +148,8 @@ impl SealedGenome {
     ///
     /// # Example (Legacy)
     /// ```rust
-    /// use hope_core::genome::SealedGenome;
-    /// use hope_core::crypto::KeyPair;
+    /// use _hope_core::genome::SealedGenome;
+    /// use _hope_core::crypto::KeyPair;
     ///
     /// # #[allow(deprecated)]
     /// let keypair = KeyPair::generate().unwrap();
@@ -178,8 +178,8 @@ impl SealedGenome {
     ///
     /// # Example
     /// ```rust
-    /// use hope_core::genome::SealedGenome;
-    /// use hope_core::crypto::SoftwareKeyStore;
+    /// use _hope_core::genome::SealedGenome;
+    /// use _hope_core::crypto::SoftwareKeyStore;
     ///
     /// let key_store = SoftwareKeyStore::generate().unwrap();
     /// let rules = vec!["Protect privacy".to_string()];
@@ -208,7 +208,7 @@ impl SealedGenome {
     ///
     /// # Example
     /// ```rust
-    /// use hope_core::genome::SealedGenome;
+    /// use _hope_core::genome::SealedGenome;
     ///
     /// let mut genome = SealedGenome::new(vec!["Rule 1".to_string()]).unwrap();
     /// genome.seal().unwrap();
@@ -244,7 +244,7 @@ impl SealedGenome {
     ///
     /// # Example
     /// ```rust
-    /// use hope_core::genome::SealedGenome;
+    /// use _hope_core::genome::SealedGenome;
     ///
     /// let mut genome = SealedGenome::new(vec!["Rule 1".to_string()]).unwrap();
     /// genome.set_default_ttl(3600); // 1 hour
@@ -265,8 +265,8 @@ impl SealedGenome {
     ///
     /// # Example
     /// ```rust
-    /// use hope_core::genome::SealedGenome;
-    /// use hope_core::proof::Action;
+    /// use _hope_core::genome::SealedGenome;
+    /// use _hope_core::proof::Action;
     ///
     /// let mut genome = SealedGenome::new(vec!["Do no harm".to_string()]).unwrap();
     /// genome.seal().unwrap();
@@ -315,7 +315,7 @@ impl SealedGenome {
     ///
     /// # Example
     /// ```rust
-    /// use hope_core::genome::SealedGenome;
+    /// use _hope_core::genome::SealedGenome;
     ///
     /// let genome = SealedGenome::new(vec!["Rule 1".to_string()]).unwrap();
     /// let public_key = genome.public_key_bytes();

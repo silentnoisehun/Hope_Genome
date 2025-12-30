@@ -4,7 +4,7 @@
 /// that makes treatment recommendations. Every decision is cryptographically
 /// signed and logged for accountability.
 
-use hope_core::*;
+use _hope_core::*;
 use std::collections::HashMap;
 
 #[derive(Debug, Clone)]

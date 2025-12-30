@@ -18,7 +18,7 @@
 //! ## Example
 //!
 //! ```rust
-//! use hope_core::nonce_store::{NonceStore, MemoryNonceStore};
+//! use _hope_core::nonce_store::{NonceStore, MemoryNonceStore};
 //!
 //! let mut store = MemoryNonceStore::new();
 //! let nonce = [0u8; 32];
@@ -83,7 +83,7 @@ pub trait NonceStore: Send + Sync {
     ///
     /// # Example
     /// ```
-    /// # use hope_core::nonce_store::{NonceStore, MemoryNonceStore};
+    /// # use _hope_core::nonce_store::{NonceStore, MemoryNonceStore};
     /// let mut store = MemoryNonceStore::new();
     /// let nonce = [42u8; 32];
     /// store.check_and_insert(nonce, 3600).unwrap();
@@ -201,7 +201,7 @@ use rocksdb::{Options, WriteBatch, DB};
 ///
 /// # Example
 /// ```no_run
-/// # use hope_core::nonce_store::{NonceStore, RocksDbNonceStore};
+/// # use _hope_core::nonce_store::{NonceStore, RocksDbNonceStore};
 /// let mut store = RocksDbNonceStore::new("./hope_nonces.db").unwrap();
 /// let nonce = [1u8; 32];
 /// store.check_and_insert(nonce, 3600).unwrap();
@@ -340,7 +340,7 @@ use redis::{Client, Commands, Connection};
 ///
 /// # Example
 /// ```no_run
-/// # use hope_core::nonce_store::{NonceStore, RedisNonceStore};
+/// # use _hope_core::nonce_store::{NonceStore, RedisNonceStore};
 /// let mut store = RedisNonceStore::new("redis://127.0.0.1/", "hope:nonce:").unwrap();
 /// let nonce = [2u8; 32];
 /// store.check_and_insert(nonce, 3600).unwrap();
