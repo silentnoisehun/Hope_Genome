@@ -19,19 +19,22 @@ jobs:
             target: aarch64
           - os: windows-latest
             target: x64
-          - os: macos-13
-            target: x86_64
           - os: macos-14
             target: aarch64
 
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'  # Use stable version (PyO3 0.24.2 supports up to 3.13)
+
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          args: --release --out dist --manifest-path hope_core/Cargo.toml --features python-bindings
+          args: --release --out dist --manifest-path hope_core/Cargo.toml --features python-bindings --find-interpreter
           sccache: 'true'
           manylinux: auto
 
