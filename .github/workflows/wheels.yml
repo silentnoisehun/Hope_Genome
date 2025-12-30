@@ -34,7 +34,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          args: --release --out dist --manifest-path hope_core/Cargo.toml --features python-bindings --find-interpreter
+          args: --release --out dist --find-interpreter
           sccache: 'true'
           manylinux: auto
 
@@ -54,8 +54,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           command: sdist
-          args: --out dist --manifest-path hope_core/Cargo.toml
-          working-directory: .
+          args: --out dist
 
       - name: Upload sdist
         uses: actions/upload-artifact@v4
