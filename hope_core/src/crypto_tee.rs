@@ -1,4 +1,3 @@
-#![cfg(feature = "tee-support")]
 //! # Hope Genome v1.4.0 - Trusted Execution Environment (TEE) Integration
 //!
 //! **CRITICAL SECURITY LAYER**: Code + data execution in isolated, attested enclave

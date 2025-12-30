@@ -71,8 +71,6 @@
 //! **Version**: 1.4.0 (Hardened Security Edition - HSM Support)
 //! **Author**: Máté Róbert <stratosoiteam@gmail.com>
 
-#![cfg(feature = "hsm-support")]
-
 use crate::crypto::{CryptoError, KeyStore, Result};
 use cryptoki::context::{CInitializeArgs, Pkcs11};
 use cryptoki::mechanism::Mechanism;
@@ -122,7 +120,7 @@ use std::sync::Arc;
 /// ```
 pub struct HsmKeyStore {
     /// PKCS#11 context (shared across sessions)
-    pkcs11: Arc<Pkcs11>,
+    _pkcs11: Arc<Pkcs11>,
 
     /// Active session with HSM
     session: Session,

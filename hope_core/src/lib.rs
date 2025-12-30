@@ -149,8 +149,6 @@ mod integration_tests {
     use crate::crypto::{create_key_store, KeyStoreConfig, SoftwareKeyStore};
     #[cfg(feature = "hsm-support")]
     use crate::crypto::{CryptoError, HsmConfig};
-    #[cfg(feature = "tee-support")]
-    use crate::crypto::{TeeConfig, TeeType};
 
     #[test]
     fn test_full_workflow_v1_4_0() {
