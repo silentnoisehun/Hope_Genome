@@ -444,7 +444,8 @@ impl NonceStore for RedisNonceStore {
                 .map_err(|e| NonceStoreError::StorageError(e.to_string()))?;
 
             if !keys.is_empty() {
-                con.del(&keys)
+                let _: usize = con
+                    .del(&keys)
                     .map_err(|e| NonceStoreError::StorageError(e.to_string()))?;
             }
 
