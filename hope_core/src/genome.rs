@@ -19,12 +19,10 @@
 //! **Version**: 1.4.0 (Hardened Security Edition)
 //! **Author**: Máté Róbert <stratosoiteam@gmail.com>
 
-use crate::crypto::{
-    create_key_store, hash_bytes, KeyStore, KeyStoreConfig, HsmConfig, KeyPair
-};
+#[allow(deprecated)]
+use crate::crypto::{create_key_store, hash_bytes, KeyPair, KeyStore, KeyStoreConfig};
 use crate::proof::{Action, IntegrityProof};
 use thiserror::Error;
-use std::env;
 
 #[derive(Debug, Error)]
 pub enum GenomeError {
@@ -36,7 +34,7 @@ pub enum GenomeError {
 
     #[error("Action violates genome rules: {0}")]
     RuleViolation(String),
-    
+
     #[error("HSM configuration error: environment variable {0} not set")]
     HsmConfigError(String),
 
@@ -115,29 +113,32 @@ impl SealedGenome {
     /// let genome = SealedGenome::new(rules).unwrap();
     /// ```
     pub fn new(rules: Vec<String>) -> Result<Self> {
-        let mut key_store_config: Option<KeyStoreConfig> = None;
+        #[cfg(not(feature = "hsm-support"))]
+        let config = KeyStoreConfig::Software;
 
         #[cfg(feature = "hsm-support")]
-        {
+        let config = {
+            // Use std::env explicitly to avoid ambiguity
+            use std::env;
             if let Ok(pkcs11_path) = env::var("PKCS11_MODULE_PATH") {
                 // If HSM path is set, construct HsmConfig from environment variables.
-                let hsm_config = HsmConfig {
+                let hsm_config = crate::crypto::HsmConfig {
                     pkcs11_lib_path: pkcs11_path,
-                    token_label: env::var("PKCS11_TOKEN_LABEL")
-                        .map_err(|_| GenomeError::HsmConfigError("PKCS11_TOKEN_LABEL".to_string()))?,
+                    token_label: env::var("PKCS11_TOKEN_LABEL").map_err(|_| {
+                        GenomeError::HsmConfigError("PKCS11_TOKEN_LABEL".to_string())
+                    })?,
                     key_label: env::var("PKCS11_KEY_LABEL")
                         .map_err(|_| GenomeError::HsmConfigError("PKCS11_KEY_LABEL".to_string()))?,
                     pin: env::var("PKCS11_PIN")
                         .map_err(|_| GenomeError::HsmConfigError("PKCS11_PIN".to_string()))?,
                 };
-                key_store_config = Some(KeyStoreConfig::Hsm(hsm_config));
+                KeyStoreConfig::Hsm(hsm_config)
+            } else {
+                KeyStoreConfig::Software
             }
-        }
+        };
 
-        // If no hardware config was found, default to software.
-        let final_config = key_store_config.unwrap_or(KeyStoreConfig::Software);
-
-        let key_store = create_key_store(final_config)?;
+        let key_store = create_key_store(config)?;
         Self::with_key_store(rules, key_store)
     }
 

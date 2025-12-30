@@ -224,10 +224,7 @@ impl HsmKeyStore {
 
         // 4. Login with PIN
         session
-            .login(
-                UserType::User,
-                Some(&AuthPin::new(pin.to_string())),
-            )
+            .login(UserType::User, Some(&AuthPin::new(pin.to_string())))
             .map_err(|e| CryptoError::HsmError(format!("HSM PIN authentication failed: {}", e)))?;
 
         // 5. Find private key by label
@@ -276,9 +273,7 @@ impl HsmKeyStore {
                     None
                 }
             })
-            .ok_or_else(|| {
-                CryptoError::HsmError("Public key value not found".into())
-            })?;
+            .ok_or_else(|| CryptoError::HsmError("Public key value not found".into()))?;
 
         if public_key_bytes.len() != 32 {
             return Err(CryptoError::InvalidKeyFormat(format!(
@@ -361,10 +356,7 @@ impl HsmKeyStore {
             .map_err(|e| CryptoError::HsmError(format!("Failed to open HSM session: {}", e)))?;
 
         session
-            .login(
-                UserType::User,
-                Some(&AuthPin::new(pin.to_string())),
-            )
+            .login(UserType::User, Some(&AuthPin::new(pin.to_string())))
             .map_err(|e| CryptoError::HsmError(format!("HSM PIN authentication failed: {}", e)))?;
 
         // Generate Ed25519 keypair IN HSM
@@ -377,7 +369,7 @@ impl HsmKeyStore {
         let private_key_template = vec![
             Attribute::Label(key_label.as_bytes().to_vec()),
             Attribute::Token(true),
-            Attribute::Sensitive(true),   // Cannot be extracted!
+            Attribute::Sensitive(true),    // Cannot be extracted!
             Attribute::Extractable(false), // Cannot be exported!
             Attribute::Sign(true),
         ];
@@ -404,9 +396,7 @@ impl HsmKeyStore {
                     None
                 }
             })
-            .ok_or_else(|| {
-                CryptoError::HsmError("Public key value not found".into())
-            })?;
+            .ok_or_else(|| CryptoError::HsmError("Public key value not found".into()))?;
 
         let public_key_cache: [u8; 32] = public_key_bytes[0..32]
             .try_into()

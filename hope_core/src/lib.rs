@@ -112,13 +112,13 @@ pub use consensus::{ConsensusVerifier, SensorReading};
 // v1.4.0: Updated crypto exports
 #[allow(deprecated)] // KeyPair export for backward compatibility (TODO v2.0.0: remove)
 pub use crypto::{
-    create_key_store,    // v1.4.0: NEW - Factory function for KeyStore
+    create_key_store, // v1.4.0: NEW - Factory function for KeyStore
     generate_nonce,
     hash_bytes,
-    HsmConfig,           // v1.4.0: NEW - Configuration for HSM
-    KeyPair,             // Deprecated but still exported for backward compatibility
+    HsmConfig, // v1.4.0: NEW - Configuration for HSM
+    KeyPair,   // Deprecated but still exported for backward compatibility
     KeyStore,
-    KeyStoreConfig,      // v1.4.0: NEW - Unified KeyStore configuration enum
+    KeyStoreConfig, // v1.4.0: NEW - Unified KeyStore configuration enum
 };
 
 #[cfg(feature = "hsm-support")]
@@ -182,10 +182,16 @@ mod integration_tests {
         let mut auditor = ProofAuditor::new(key_store_for_auditor, Box::new(nonce_store));
 
         // 5. Verify proof
-        assert!(auditor.verify_proof(&proof).is_ok(), "First proof verification should succeed");
+        assert!(
+            auditor.verify_proof(&proof).is_ok(),
+            "First proof verification should succeed"
+        );
 
         // 6. Replay attack: blocked!
-        assert!(auditor.verify_proof(&proof).is_err(), "Replay attack should be detected");
+        assert!(
+            auditor.verify_proof(&proof).is_err(),
+            "Replay attack should be detected"
+        );
     }
 
     #[test]
@@ -213,8 +219,7 @@ mod integration_tests {
         // Create shared key store for genome using the factory
         let key_store_for_genome = create_key_store(KeyStoreConfig::Software).unwrap();
         let mut genome =
-            SealedGenome::with_key_store(vec!["Rule 1".to_string()], key_store_for_genome)
-                .unwrap();
+            SealedGenome::with_key_store(vec!["Rule 1".to_string()], key_store_for_genome).unwrap();
         genome.seal().unwrap();
 
         // Create executor components (auditor uses same key store, generated separately for ownership)

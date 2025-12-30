@@ -43,9 +43,9 @@
 
 use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
 use rand::rngs::OsRng;
+use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use thiserror::Error;
-use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "hsm-support")]
 pub use crate::crypto_hsm::HsmKeyStore;

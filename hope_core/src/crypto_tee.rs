@@ -82,7 +82,6 @@
 // **Date**: 2025-12-30
 // **Version**: 1.4.0 (Hardened Security Edition - TEE Support)
 // **Author**: Máté Róbert <stratosoiteam@gmail.com>
-
 use crate::crypto::{CryptoError, KeyStore, Result};
 use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
 use serde::{Deserialize, Serialize};
@@ -232,8 +231,9 @@ impl AttestationReport {
         // In a real implementation, this would be an HTTP request to IAS.
         // The `vendor_signature` would be the SGX quote to be verified.
         // For this example, we assume a function that handles this interaction.
-        verify_quote_with_ias(&self.vendor_signature, ias_api_key)
-            .map_err(|e| CryptoError::VerificationFailed(format!("IAS verification failed: {}", e)))?;
+        verify_quote_with_ias(&self.vendor_signature, ias_api_key).map_err(|e| {
+            CryptoError::VerificationFailed(format!("IAS verification failed: {}", e))
+        })?;
 
         Ok(())
     }

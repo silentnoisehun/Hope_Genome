@@ -1,5 +1,6 @@
+#[allow(deprecated)]
 use hope_core::{
-    Action, ActionType, AuditLog, ConsensusVerifier, Decision, IntegrityProof, KeyPair,
+    Action, ActionType, AuditLog, Decision, IntegrityProof, KeyPair,
     ProofAuditor, SealedGenome, VerificationStatus,
 };
 use pyo3::exceptions::PyRuntimeError;
@@ -59,7 +60,6 @@ struct PyAction {
     action_type: String,
     target: String,
     payload: Option<Vec<u8>>,
-    metadata: Option<String>,
 }
 
 #[pymethods]
@@ -70,7 +70,6 @@ impl PyAction {
             action_type: "Delete".to_string(),
             target,
             payload: None,
-            metadata: None,
         }
     }
 
@@ -80,7 +79,6 @@ impl PyAction {
             action_type: "Write".to_string(),
             target: path,
             payload: Some(content),
-            metadata: None,
         }
     }
 
@@ -90,7 +88,6 @@ impl PyAction {
             action_type: "Read".to_string(),
             target,
             payload: None,
-            metadata: None,
         }
     }
 
@@ -100,7 +97,6 @@ impl PyAction {
             action_type: "Execute".to_string(),
             target: command,
             payload: None,
-            metadata: None,
         }
     }
 
@@ -231,9 +227,10 @@ struct PyAuditor {
 impl PyAuditor {
     #[new]
     fn new() -> PyResult<Self> {
-        let keypair = KeyPair::generate()
-            .map_err(|e| PyRuntimeError::new_err(format!("Failed to generate keypair: {}", e)))?;
-        let auditor = ProofAuditor::new(keypair);
+        let key_store = hope_core::crypto::SoftwareKeyStore::generate()
+            .map_err(|e| PyRuntimeError::new_err(format!("Failed to generate key store: {}", e)))?;
+        let nonce_store = hope_core::nonce_store::MemoryNonceStore::new();
+        let auditor = ProofAuditor::new(Box::new(key_store), Box::new(nonce_store));
         Ok(PyAuditor { inner: auditor })
     }
 
@@ -249,7 +246,7 @@ impl PyAuditor {
     }
 
     fn clear_nonces(&mut self) {
-        self.inner.clear_nonces();
+        let _ = self.inner.clear_nonces();
     }
 }
 
@@ -262,6 +259,7 @@ struct PyAuditLog {
 #[pymethods]
 impl PyAuditLog {
     #[new]
+    #[allow(deprecated)]
     fn new() -> PyResult<Self> {
         let keypair = KeyPair::generate()
             .map_err(|e| PyRuntimeError::new_err(format!("Failed to generate keypair: {}", e)))?;
@@ -312,17 +310,13 @@ impl PyAuditLog {
 
 /// Python wrapper for ConsensusVerifier
 #[pyclass(name = "ConsensusVerifier")]
-struct PyConsensusVerifier {
-    inner: ConsensusVerifier,
-}
+struct PyConsensusVerifier;
 
 #[pymethods]
 impl PyConsensusVerifier {
     #[new]
-    fn new(required_sources: usize, tolerance: f64) -> Self {
-        PyConsensusVerifier {
-            inner: ConsensusVerifier::new(required_sources, tolerance),
-        }
+    fn new(_required_sources: usize, _tolerance: f64) -> Self {
+        PyConsensusVerifier
     }
 }
 
