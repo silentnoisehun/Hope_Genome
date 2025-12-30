@@ -12,7 +12,17 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-13, macos-14]
+        include:
+          - os: ubuntu-latest
+            target: x86_64
+          - os: ubuntu-latest
+            target: aarch64
+          - os: windows-latest
+            target: x64
+          - os: macos-13
+            target: x86_64
+          - os: macos-14
+            target: aarch64
 
     steps:
       - uses: actions/checkout@v4
@@ -24,7 +34,6 @@ jobs:
           args: --release --out dist --manifest-path hope_core/Cargo.toml --features python-bindings
           sccache: 'true'
           manylinux: auto
-          working-directory: .
 
       - name: Upload wheels
         uses: actions/upload-artifact@v4
