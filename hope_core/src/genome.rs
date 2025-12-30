@@ -1,4 +1,25 @@
-use crate::crypto::{hash_bytes, KeyPair};
+//! # Hope Genome v1.4.0 - Sealed Genome (Ethical Ruleset)
+//!
+//! **Hardened Security Edition - KeyStore Integration**
+//!
+//! ## Major Changes in v1.4.0
+//!
+//! ### 1. KeyStore Trait Support
+//! - **Backward Compatible**: Still supports deprecated `KeyPair`
+//! - **New API**: Accepts any `KeyStore` implementation
+//! - **Future-Proof**: Easy to use HSM, TPM, etc.
+//!
+//! ### 2. Ed25519 Signatures
+//! - All proofs now signed with Ed25519 (via KeyStore)
+//! - Faster, smaller, more secure than RSA
+//!
+//! ---
+//!
+//! **Date**: 2025-12-30
+//! **Version**: 1.4.0 (Hardened Security Edition)
+//! **Author**: Máté Róbert <stratosoiteam@gmail.com>
+
+use crate::crypto::{hash_bytes, KeyPair, KeyStore};
 use crate::proof::{Action, IntegrityProof};
 use thiserror::Error;
 
@@ -23,9 +44,31 @@ pub type Result<T> = std::result::Result<T, GenomeError>;
 ///
 /// This is the core of the Hope Genome framework. It:
 /// - Contains immutable ethical rules
-/// - Signs action approvals with RSA
+/// - Signs action approvals with Ed25519 (v1.4.0+)
 /// - Provides cryptographic proofs for all decisions
-#[derive(Debug)]
+///
+/// ## Example (v1.4.0 New API)
+///
+/// ```rust
+/// use hope_core::genome::SealedGenome;
+/// use hope_core::crypto::SoftwareKeyStore;
+/// use hope_core::proof::Action;
+///
+/// // Create genome with new KeyStore API
+/// let key_store = SoftwareKeyStore::generate().unwrap();
+/// let rules = vec!["Do no harm".to_string()];
+///
+/// let mut genome = SealedGenome::with_key_store(
+///     rules,
+///     Box::new(key_store),
+/// ).unwrap();
+///
+/// genome.seal().unwrap();
+///
+/// // Verify action and get proof
+/// let action = Action::delete("test.txt");
+/// let proof = genome.verify_action(&action).unwrap();
+/// ```
 pub struct SealedGenome {
     /// Ethical rules (immutable after sealing)
     rules: Vec<String>,
@@ -33,8 +76,8 @@ pub struct SealedGenome {
     /// Whether the genome is sealed
     sealed: bool,
 
-    /// Cryptographic keypair for signing
-    keypair: KeyPair,
+    /// Cryptographic key store for signing (v1.4.0: trait-based)
+    key_store: Box<dyn KeyStore>,
 
     /// Hash of the sealed genome (for proof binding)
     capsule_hash: Option<String>,
@@ -44,24 +87,94 @@ pub struct SealedGenome {
 }
 
 impl SealedGenome {
-    /// Create a new genome with rules (generates new keypair)
+    /// Create a new genome with rules (generates new Ed25519 keypair)
+    ///
+    /// # Example
+    /// ```rust
+    /// use hope_core::genome::SealedGenome;
+    ///
+    /// let rules = vec!["Do no harm".to_string()];
+    /// let genome = SealedGenome::new(rules).unwrap();
+    /// ```
     pub fn new(rules: Vec<String>) -> Result<Self> {
+        #[allow(deprecated)]
         let keypair = KeyPair::generate()?;
         Self::with_keypair(rules, keypair)
     }
 
-    /// Create a new genome with an existing keypair
+    /// Create a new genome with an existing KeyPair (deprecated)
+    ///
+    /// **DEPRECATED in v1.4.0**: Use `with_key_store()` instead.
+    ///
+    /// # Example (Legacy)
+    /// ```rust
+    /// use hope_core::genome::SealedGenome;
+    /// use hope_core::crypto::KeyPair;
+    ///
+    /// # #[allow(deprecated)]
+    /// let keypair = KeyPair::generate().unwrap();
+    /// # #[allow(deprecated)]
+    /// let genome = SealedGenome::with_keypair(
+    ///     vec!["Rule 1".to_string()],
+    ///     keypair,
+    /// ).unwrap();
+    /// ```
+    #[allow(deprecated)]
+    #[deprecated(since = "1.4.0", note = "Use with_key_store() for new code")]
     pub fn with_keypair(rules: Vec<String>, keypair: KeyPair) -> Result<Self> {
         Ok(SealedGenome {
             rules,
             sealed: false,
-            keypair,
+            key_store: Box::new(keypair),
+            capsule_hash: None,
+            default_ttl: 60, // 1 minute default
+        })
+    }
+
+    /// Create a new genome with a custom KeyStore (v1.4.0)
+    ///
+    /// This is the recommended way to create a genome in v1.4.0+.
+    /// Supports any KeyStore implementation (Software, HSM, etc.).
+    ///
+    /// # Example
+    /// ```rust
+    /// use hope_core::genome::SealedGenome;
+    /// use hope_core::crypto::SoftwareKeyStore;
+    ///
+    /// let key_store = SoftwareKeyStore::generate().unwrap();
+    /// let rules = vec!["Protect privacy".to_string()];
+    ///
+    /// let genome = SealedGenome::with_key_store(
+    ///     rules,
+    ///     Box::new(key_store),
+    /// ).unwrap();
+    /// ```
+    pub fn with_key_store(rules: Vec<String>, key_store: Box<dyn KeyStore>) -> Result<Self> {
+        Ok(SealedGenome {
+            rules,
+            sealed: false,
+            key_store,
             capsule_hash: None,
             default_ttl: 60, // 1 minute default
         })
     }
 
     /// Seal the genome (make it immutable)
+    ///
+    /// After sealing:
+    /// - Rules cannot be modified
+    /// - Capsule hash is computed
+    /// - Actions can be verified and signed
+    ///
+    /// # Example
+    /// ```rust
+    /// use hope_core::genome::SealedGenome;
+    ///
+    /// let mut genome = SealedGenome::new(vec!["Rule 1".to_string()]).unwrap();
+    /// genome.seal().unwrap();
+    ///
+    /// assert!(genome.is_sealed());
+    /// ```
     pub fn seal(&mut self) -> Result<()> {
         if self.sealed {
             return Err(GenomeError::AlreadySealed);
@@ -87,7 +200,15 @@ impl SealedGenome {
         &self.rules
     }
 
-    /// Set default TTL for proofs
+    /// Set default TTL for proofs (in seconds)
+    ///
+    /// # Example
+    /// ```rust
+    /// use hope_core::genome::SealedGenome;
+    ///
+    /// let mut genome = SealedGenome::new(vec!["Rule 1".to_string()]).unwrap();
+    /// genome.set_default_ttl(3600); // 1 hour
+    /// ```
     pub fn set_default_ttl(&mut self, ttl: u64) {
         self.default_ttl = ttl;
     }
@@ -96,6 +217,26 @@ impl SealedGenome {
     ///
     /// This is where ethical decision-making happens.
     /// Returns a cryptographically signed proof if approved.
+    ///
+    /// # Security (v1.4.0)
+    /// - Proof signed with Ed25519 (fast, secure)
+    /// - Includes nonce for replay attack prevention
+    /// - Bound to capsule hash (prevents proof reuse across genomes)
+    ///
+    /// # Example
+    /// ```rust
+    /// use hope_core::genome::SealedGenome;
+    /// use hope_core::proof::Action;
+    ///
+    /// let mut genome = SealedGenome::new(vec!["Do no harm".to_string()]).unwrap();
+    /// genome.seal().unwrap();
+    ///
+    /// let action = Action::delete("test.txt");
+    /// let proof = genome.verify_action(&action).unwrap();
+    ///
+    /// assert!(!proof.signature.is_empty());
+    /// assert_eq!(proof.signature.len(), 64); // Ed25519 signature
+    /// ```
     pub fn verify_action(&self, action: &Action) -> Result<IntegrityProof> {
         if !self.sealed {
             return Err(GenomeError::NotSealed);
@@ -116,27 +257,45 @@ impl SealedGenome {
         let capsule_hash = self.capsule_hash.as_ref().unwrap().clone();
         let mut proof = IntegrityProof::new(action, capsule_hash, self.default_ttl);
 
-        // Sign the proof
+        // Sign the proof (v1.4.0: uses KeyStore trait)
         let signing_data = proof.signing_data();
-        proof.signature = self.keypair.sign(&signing_data)?;
+        proof.signature = self.key_store.sign(&signing_data)?;
 
         Ok(proof)
     }
 
     /// Get the capsule hash
+    ///
+    /// Returns `None` if genome is not yet sealed.
     pub fn capsule_hash(&self) -> Option<&str> {
         self.capsule_hash.as_deref()
     }
 
-    /// Get the public key (for verification by external parties)
-    pub fn public_key(&self) -> &rsa::RsaPublicKey {
-        self.keypair.public_key()
+    /// Get the public key bytes (for verification by external parties)
+    ///
+    /// # Example
+    /// ```rust
+    /// use hope_core::genome::SealedGenome;
+    ///
+    /// let genome = SealedGenome::new(vec!["Rule 1".to_string()]).unwrap();
+    /// let public_key = genome.public_key_bytes();
+    ///
+    /// assert_eq!(public_key.len(), 32); // Ed25519 public key
+    /// ```
+    pub fn public_key_bytes(&self) -> Vec<u8> {
+        self.key_store.public_key_bytes()
+    }
+
+    /// Get key store information (for debugging/logging)
+    pub fn key_store_info(&self) -> String {
+        self.key_store.identifier()
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::crypto::SoftwareKeyStore;
 
     #[test]
     fn test_genome_creation() {
@@ -145,6 +304,17 @@ mod tests {
 
         assert!(!genome.is_sealed());
         assert_eq!(genome.rules().len(), 2);
+    }
+
+    #[test]
+    fn test_genome_creation_with_key_store() {
+        let key_store = SoftwareKeyStore::generate().unwrap();
+        let rules = vec!["Rule 1".to_string()];
+
+        let genome = SealedGenome::with_key_store(rules, Box::new(key_store)).unwrap();
+
+        assert!(!genome.is_sealed());
+        assert_eq!(genome.rules().len(), 1);
     }
 
     #[test]
@@ -191,6 +361,7 @@ mod tests {
         // Verify proof properties
         assert_eq!(proof.action_hash, action.hash());
         assert!(!proof.signature.is_empty());
+        assert_eq!(proof.signature.len(), 64); // Ed25519 signature is 64 bytes
         assert_eq!(proof.ttl, 60); // Default TTL
     }
 
@@ -231,5 +402,60 @@ mod tests {
         let proof = genome.verify_action(&action).unwrap();
 
         assert_eq!(proof.ttl, 3600);
+    }
+
+    #[test]
+    fn test_public_key_export() {
+        let genome = SealedGenome::new(vec!["Rule 1".to_string()]).unwrap();
+        let public_key = genome.public_key_bytes();
+
+        assert_eq!(public_key.len(), 32); // Ed25519 public key is 32 bytes
+    }
+
+    #[test]
+    fn test_proof_signature_can_be_verified() {
+        let key_store = SoftwareKeyStore::generate().unwrap();
+        let key_store_clone = key_store.clone();
+
+        let mut genome = SealedGenome::with_key_store(
+            vec!["Rule 1".to_string()],
+            Box::new(key_store),
+        )
+        .unwrap();
+
+        genome.seal().unwrap();
+
+        let action = Action::delete("test.txt");
+        let proof = genome.verify_action(&action).unwrap();
+
+        // Verify signature with the same key store
+        let signing_data = proof.signing_data();
+        assert!(key_store_clone.verify(&signing_data, &proof.signature).is_ok());
+    }
+
+    #[test]
+    #[allow(deprecated)]
+    fn test_backward_compatibility_with_keypair() {
+        let keypair = KeyPair::generate().unwrap();
+        let mut genome = SealedGenome::with_keypair(
+            vec!["Rule 1".to_string()],
+            keypair,
+        )
+        .unwrap();
+
+        genome.seal().unwrap();
+
+        let action = Action::delete("test.txt");
+        let proof = genome.verify_action(&action).unwrap();
+
+        assert!(!proof.signature.is_empty());
+    }
+
+    #[test]
+    fn test_key_store_info() {
+        let genome = SealedGenome::new(vec!["Rule 1".to_string()]).unwrap();
+        let info = genome.key_store_info();
+
+        assert!(info.contains("KeyPair") || info.contains("SoftwareKeyStore"));
     }
 }

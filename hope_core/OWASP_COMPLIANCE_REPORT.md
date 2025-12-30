@@ -409,7 +409,7 @@ We gratefully acknowledge the **OWASP AI-SBOM Project** for:
 
 **Hope Genome Team**
 - Email: stratosoiteam@gmail.com
-- GitHub: https://github.com/silentnoisehun/Hope-Genome
+- GitHub: https://github.com/silentnoisehun/Hope_Genome
 
 **OWASP AI-SBOM**
 - Project Page: https://owasp.org/www-project-ai-bom/

@@ -353,7 +353,7 @@ cargo test --doc
 
 - 💬 **OWASP AI-SBOM Slack**: Join via OWASP Slack workspace
 - 💬 **CycloneDX Community**: [GitHub Discussions](https://github.com/CycloneDX)
-- 💬 **Hope Genome Issues**: [GitHub Issues](https://github.com/silentnoisehun/Hope-Genome/issues)
+- 💬 **Hope Genome Issues**: [GitHub Issues](https://github.com/silentnoisehun/Hope_Genome/issues)
 
 ---
 
@@ -400,7 +400,7 @@ When referencing this implementation in academic or professional work:
   title = {Hope Genome v1.3.0: OWASP AIBOM Integration},
   author = {Róbert, Máté},
   year = {2025},
-  url = {https://github.com/silentnoisehun/Hope-Genome},
+  url = {https://github.com/silentnoisehun/Hope_Genome},
   note = {Production-grade AI supply chain security with CycloneDX compliance}
 }
 
@@ -442,7 +442,7 @@ cargo run --example compliance_demo  # Full integration demo
 ### Hope Genome Team
 - **Author**: Máté Róbert
 - **Email**: stratosoiteam@gmail.com
-- **GitHub**: https://github.com/silentnoisehun/Hope-Genome
+- **GitHub**: https://github.com/silentnoisehun/Hope_Genome
 
 ### OWASP Collaboration
 For questions about OWASP AI-SBOM compliance or collaboration opportunities:

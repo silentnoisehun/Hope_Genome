@@ -136,8 +136,8 @@ Breakdown:
 ### Try It Yourself
 
 ```bash
-git clone https://github.com/silentnoisehun/Hope-Genome
-cd Hope-Genome/hope_core
+git clone https://github.com/silentnoisehun/Hope_Genome
+cd Hope_Genome/hope_core
 cargo test                           # Run all tests
 cargo run --example compliance_demo  # See it in action
 ```
@@ -274,7 +274,7 @@ We welcome:
 ### Hope Genome Team
 - **Lead Developer**: Máté Róbert
 - **Email**: stratosoiteam@gmail.com
-- **GitHub**: https://github.com/silentnoisehun/Hope-Genome
+- **GitHub**: https://github.com/silentnoisehun/Hope_Genome
 - **Project**: Hope Genome - Tamper-evident AI accountability
 
 ### For OWASP AI-SBOM Questions

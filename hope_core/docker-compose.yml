@@ -1,0 +1,266 @@
+# ==============================================================================
+# Hope Genome v1.4.0 - Production Docker Compose
+# Hardened Security Configuration
+# ==============================================================================
+# Release Date: 2025-12-30
+# Security Level: Hardened (Production-Ready)
+# ==============================================================================
+
+version: '3.8'
+
+# ==============================================================================
+# Services
+# ==============================================================================
+services:
+  # ----------------------------------------------------------------------------
+  # Hope Genome Core Service
+  # ----------------------------------------------------------------------------
+  hope-genome:
+    image: hope-genome:1.4.0
+    container_name: hope-genome-core
+    hostname: hope-genome
+
+    # Build configuration (if building locally)
+    build:
+      context: .
+      dockerfile: Dockerfile
+      labels:
+        - "version=1.4.0"
+        - "release_date=2025-12-30"
+        - "security_level=hardened"
+
+    # Environment variables
+    environment:
+      - RUST_LOG=info
+      - RUST_BACKTRACE=1
+      - NONCE_STORE=rocksdb
+      - NONCE_DB_PATH=/data/nonces.db
+      - KEY_STORE=software  # 'hsm' in v1.5.0
+      - TZ=UTC
+
+    # Volumes (persistent storage)
+    volumes:
+      # Nonce store data (read-write, persistent)
+      - hope-nonce-data:/data:rw
+
+      # Optional: Mount config files (read-only)
+      # - ./config:/app/config:ro
+
+      # Optional: Mount logs (write-only)
+      # - hope-logs:/app/logs:rw
+
+    # Network configuration
+    networks:
+      - hope-network
+
+    # Port exposure (if API is added)
+    # ports:
+    #   - "8080:8080"
+
+    # Resource limits (prevent DoS)
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+    # Restart policy
+    restart: unless-stopped
+
+    # ===========================================================================
+    # SECURITY HARDENING
+    # ===========================================================================
+
+    # Read-only root filesystem (prevents runtime tampering)
+    read_only: true
+
+    # Temporary filesystem for writable dirs (in-memory, ephemeral)
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64M
+      - /var/tmp:rw,noexec,nosuid,size=64M
+
+    # Security options
+    security_opt:
+      # Prevent privilege escalation
+      - no-new-privileges:true
+
+      # AppArmor profile (if available)
+      # - apparmor=docker-default
+
+      # Seccomp profile (restrict syscalls)
+      - seccomp=unconfined  # Or use custom profile: seccomp=/path/to/profile.json
+
+    # Drop ALL capabilities, add only necessary ones
+    cap_drop:
+      - ALL
+
+    # Add back only required capabilities (if API uses privileged ports)
+    cap_add:
+      - NET_BIND_SERVICE  # Only if binding to port < 1024
+
+    # User (non-root)
+    user: "65532:65532"  # nonroot:nonroot (distroless default)
+
+    # Healthcheck (if HTTP API is added)
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 40s
+
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "hope-genome,version,security_level"
+
+    # Labels
+    labels:
+      - "com.hope-genome.version=1.4.0"
+      - "com.hope-genome.release-date=2025-12-30"
+      - "com.hope-genome.security-level=hardened"
+      - "com.hope-genome.nonce-store=rocksdb"
+      - "com.hope-genome.key-store=software"
+
+  # ----------------------------------------------------------------------------
+  # Optional: RocksDB Standalone (if using external DB)
+  # ----------------------------------------------------------------------------
+  # rocksdb:
+  #   image: rocksdb:latest
+  #   container_name: hope-rocksdb
+  #   hostname: rocksdb
+  #
+  #   volumes:
+  #     - rocksdb-data:/data:rw
+  #
+  #   networks:
+  #     - hope-network
+  #
+  #   read_only: true
+  #   security_opt:
+  #     - no-new-privileges:true
+  #   cap_drop:
+  #     - ALL
+
+  # ----------------------------------------------------------------------------
+  # Optional: Redis Nonce Store (distributed deployments)
+  # ----------------------------------------------------------------------------
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: hope-redis
+  #   hostname: redis
+  #
+  #   command: >
+  #     redis-server
+  #     --appendonly yes
+  #     --maxmemory 256mb
+  #     --maxmemory-policy allkeys-lru
+  #
+  #   volumes:
+  #     - redis-data:/data:rw
+  #
+  #   networks:
+  #     - hope-network
+  #
+  #   read_only: true
+  #   security_opt:
+  #     - no-new-privileges:true
+  #   cap_drop:
+  #     - ALL
+  #
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '1.0'
+  #         memory: 512M
+
+# ==============================================================================
+# Networks
+# ==============================================================================
+networks:
+  hope-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+    # Enable encryption (if using Docker Swarm)
+    # driver_opts:
+    #   encrypted: "true"
+
+# ==============================================================================
+# Volumes (Persistent Storage)
+# ==============================================================================
+volumes:
+  # Nonce store data (critical - DO NOT DELETE)
+  hope-nonce-data:
+    driver: local
+    labels:
+      - "com.hope-genome.type=nonce-store"
+      - "com.hope-genome.critical=true"
+
+  # Optional: RocksDB external data
+  # rocksdb-data:
+  #   driver: local
+
+  # Optional: Redis data
+  # redis-data:
+  #   driver: local
+
+  # Optional: Log storage
+  # hope-logs:
+  #   driver: local
+
+# ==============================================================================
+# Security Hardening Summary
+# ==============================================================================
+# ✅ read_only: true - Root filesystem is immutable
+# ✅ tmpfs - Writable dirs are ephemeral (in-memory)
+# ✅ no-new-privileges - Prevents setuid/setgid escalation
+# ✅ cap_drop: ALL - No Linux capabilities by default
+# ✅ cap_add: Minimal - Only NET_BIND_SERVICE if needed
+# ✅ user: nonroot - Container runs as non-root user
+# ✅ Resource limits - CPU/Memory constraints (DoS protection)
+# ✅ Restart policy - Auto-restart on failure
+# ✅ Logging limits - Prevent disk exhaustion
+# ✅ Network isolation - Dedicated bridge network
+# ==============================================================================
+
+# ==============================================================================
+# Usage Examples
+# ==============================================================================
+#
+# Start all services:
+#   docker-compose up -d
+#
+# Start with rebuild:
+#   docker-compose up -d --build
+#
+# View logs:
+#   docker-compose logs -f hope-genome
+#
+# Check nonce store persistence:
+#   docker-compose exec hope-genome ls -la /data
+#
+# Restart service:
+#   docker-compose restart hope-genome
+#
+# Stop all services:
+#   docker-compose down
+#
+# Stop and remove volumes (CAUTION: deletes nonce store!):
+#   docker-compose down -v
+#
+# Security audit:
+#   docker-compose config --quiet && echo "✅ Config valid"
+#
+# Resource usage:
+#   docker stats hope-genome-core
+#
+# ==============================================================================
