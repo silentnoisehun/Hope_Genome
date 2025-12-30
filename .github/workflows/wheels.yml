@@ -74,6 +74,8 @@ jobs:
       url: https://pypi.org/p/hope-genome
     permissions:
       id-token: write
+      contents: read
+      attestations: write
 
     steps:
       - uses: actions/download-artifact@v4
