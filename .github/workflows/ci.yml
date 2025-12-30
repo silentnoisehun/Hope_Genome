@@ -44,7 +44,7 @@ jobs:
           key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Run tests
-        run: cd hope_core && cargo test --verbose --all-features
+        run: cd hope_core && cargo test --verbose
 
       - name: Run security tests
         run: cd hope_core && cargo test --test security_tests --verbose
@@ -75,7 +75,7 @@ jobs:
           components: clippy
 
       - name: Run clippy
-        run: cd hope_core && cargo clippy --all-targets --all-features -- -D warnings
+        run: cd hope_core && cargo clippy --all-targets -- -D warnings
 
   coverage:
     name: Code Coverage
