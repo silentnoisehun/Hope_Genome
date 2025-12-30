@@ -1,7 +1,7 @@
 //! NonceStore Python wrapper
 
-use pyo3::prelude::*;
 use crate::nonce_store::MemoryNonceStore;
+use pyo3::prelude::*;
 
 /// In-memory nonce store
 #[pyclass(name = "MemoryNonceStore")]
@@ -25,7 +25,7 @@ impl PyMemoryNonceStore {
 
         if nonce.len() != 32 {
             return Err(PyErr::new::<pyo3::exceptions::PyValueError, _>(
-                "Nonce must be exactly 32 bytes"
+                "Nonce must be exactly 32 bytes",
             ));
         }
         let mut nonce_array = [0u8; 32];

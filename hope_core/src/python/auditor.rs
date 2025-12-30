@@ -3,11 +3,11 @@
 use pyo3::prelude::*;
 use std::sync::{Arc, Mutex};
 
+use super::errors::to_py_result;
+use super::proof::PyProof;
 use crate::auditor::ProofAuditor;
 use crate::crypto::SoftwareKeyStore;
 use crate::nonce_store::MemoryNonceStore;
-use super::proof::PyProof;
-use super::errors::to_py_result;
 
 /// Python wrapper for ProofAuditor
 #[pyclass(name = "ProofAuditor")]

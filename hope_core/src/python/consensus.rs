@@ -1,10 +1,11 @@
 //! ConsensusEngine Python wrapper
 
-use pyo3::prelude::*;
 use crate::consensus::ConsensusVerifier;
+use pyo3::prelude::*;
 
 /// Python wrapper for ConsensusEngine
 #[pyclass(name = "ConsensusEngine")]
+#[allow(dead_code)]
 pub struct PyConsensusEngine {
     inner: ConsensusVerifier,
 }

@@ -4,18 +4,38 @@ use pyo3::create_exception;
 use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 
-use crate::genome::GenomeError;
-use crate::crypto::CryptoError;
+use crate::audit_log::AuditError;
 use crate::auditor::AuditorError;
 use crate::consensus::ConsensusError;
-use crate::audit_log::AuditError;
+use crate::crypto::CryptoError;
+use crate::genome::GenomeError;
 
 // Custom Python exceptions
 create_exception!(_hope_core, PyGenomeError, PyException, "Hope Genome error");
-create_exception!(_hope_core, PyCryptoError, PyException, "Cryptographic operation error");
-create_exception!(_hope_core, PyAuditorError, PyException, "Proof auditor error");
-create_exception!(_hope_core, PyConsensusError, PyException, "Consensus engine error");
-create_exception!(_hope_core, PyAibomError, PyException, "AI-BOM verification error");
+create_exception!(
+    _hope_core,
+    PyCryptoError,
+    PyException,
+    "Cryptographic operation error"
+);
+create_exception!(
+    _hope_core,
+    PyAuditorError,
+    PyException,
+    "Proof auditor error"
+);
+create_exception!(
+    _hope_core,
+    PyConsensusError,
+    PyException,
+    "Consensus engine error"
+);
+create_exception!(
+    _hope_core,
+    PyAibomError,
+    PyException,
+    "AI-BOM verification error"
+);
 
 // Conversion implementations
 impl From<GenomeError> for PyErr {
@@ -58,16 +78,12 @@ impl From<CryptoError> for PyErr {
             CryptoError::InvalidKeyFormat(msg) => {
                 PyCryptoError::new_err(format!("Invalid key format: {}", msg))
             }
-            CryptoError::PublicKeyMismatch => {
-                PyCryptoError::new_err(
-                    "PublicKey-SecretKey mismatch detected (P0: key leakage attack blocked)"
-                )
-            }
-            CryptoError::CriticalSecurityFault => {
-                PyCryptoError::new_err(
-                    "CRITICAL SECURITY FAULT: Verify-after-sign failed (P2: fault attack detected)"
-                )
-            }
+            CryptoError::PublicKeyMismatch => PyCryptoError::new_err(
+                "PublicKey-SecretKey mismatch detected (P0: key leakage attack blocked)",
+            ),
+            CryptoError::CriticalSecurityFault => PyCryptoError::new_err(
+                "CRITICAL SECURITY FAULT: Verify-after-sign failed (P2: fault attack detected)",
+            ),
             CryptoError::HsmError(msg) => {
                 PyCryptoError::new_err(format!("HSM operation failed: {}", msg))
             }
@@ -90,18 +106,14 @@ impl From<AuditorError> for PyErr {
             AuditorError::InvalidSignature => {
                 PyAuditorError::new_err("Proof signature verification failed")
             }
-            AuditorError::ProofExpired { issued, now, ttl } => {
-                PyAuditorError::new_err(format!(
-                    "Proof has expired (issued: {}, now: {}, TTL: {}s)",
-                    issued, now, ttl
-                ))
-            }
-            AuditorError::NonceReused(nonce) => {
-                PyAuditorError::new_err(format!(
-                    "Replay attack detected: nonce already used ({})",
-                    nonce
-                ))
-            }
+            AuditorError::ProofExpired { issued, now, ttl } => PyAuditorError::new_err(format!(
+                "Proof has expired (issued: {}, now: {}, TTL: {}s)",
+                issued, now, ttl
+            )),
+            AuditorError::NonceReused(nonce) => PyAuditorError::new_err(format!(
+                "Replay attack detected: nonce already used ({})",
+                nonce
+            )),
             AuditorError::NonceStoreError(e) => {
                 PyAuditorError::new_err(format!("Nonce store error: {}", e))
             }
@@ -122,18 +134,18 @@ impl From<ConsensusError> for PyErr {
 impl From<AuditError> for PyErr {
     fn from(err: AuditError) -> PyErr {
         match err {
-            AuditError::IoError(e) => {
-                PyException::new_err(format!("IO error in audit log: {}", e))
-            }
+            AuditError::IoError(e) => PyException::new_err(format!("IO error in audit log: {}", e)),
             AuditError::SerializationError(e) => {
                 PyException::new_err(format!("Serialization error in audit log: {}", e))
             }
-            AuditError::BrokenChain { index, expected, found } => {
-                PyException::new_err(format!(
-                    "Audit chain integrity broken at index {}: expected {:?}, found {:?}",
-                    index, expected, found
-                ))
-            }
+            AuditError::BrokenChain {
+                index,
+                expected,
+                found,
+            } => PyException::new_err(format!(
+                "Audit chain integrity broken at index {}: expected {:?}, found {:?}",
+                index, expected, found
+            )),
             AuditError::InvalidSignature(index) => {
                 PyException::new_err(format!("Invalid signature at audit log index {}", index))
             }

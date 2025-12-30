@@ -1,7 +1,7 @@
 //! Proof Python wrapper
 
-use pyo3::prelude::*;
 use crate::proof::{IntegrityProof, VerificationStatus};
+use pyo3::prelude::*;
 
 /// Python wrapper for Proof
 #[pyclass(name = "Proof")]
@@ -27,7 +27,7 @@ impl PyProof {
     /// Get the action hash
     #[getter]
     fn action_hash(&self) -> String {
-        hex::encode(&self.inner.action_hash)
+        hex::encode(self.inner.action_hash)
     }
 
     /// Get the cryptographic signature
@@ -42,7 +42,7 @@ impl PyProof {
 
     /// Get the cryptographic nonce
     fn nonce_hex(&self) -> String {
-        hex::encode(&self.inner.nonce)
+        hex::encode(self.inner.nonce)
     }
 
     /// Get the nonce as bytes
@@ -57,7 +57,7 @@ impl PyProof {
 
     /// Get the timestamp as ISO 8601 string
     fn timestamp_string(&self) -> String {
-        use chrono::{DateTime, Utc, TimeZone};
+        use chrono::{DateTime, TimeZone, Utc};
         let dt: DateTime<Utc> = Utc.timestamp_opt(self.inner.timestamp as i64, 0).unwrap();
         dt.to_rfc3339()
     }
@@ -108,7 +108,8 @@ impl PyProof {
         } else {
             format!(
                 "❌ DENIED: {} | Timestamp: {}",
-                self.denial_reason().unwrap_or_else(|| "Unknown".to_string()),
+                self.denial_reason()
+                    .unwrap_or_else(|| "Unknown".to_string()),
                 self.timestamp_string()
             )
         }
@@ -116,8 +117,7 @@ impl PyProof {
 
     /// Python equality
     fn __eq__(&self, other: &Self) -> bool {
-        self.inner.nonce == other.inner.nonce
-            && self.inner.signature == other.inner.signature
+        self.inner.nonce == other.inner.nonce && self.inner.signature == other.inner.signature
     }
 
     /// Python hash

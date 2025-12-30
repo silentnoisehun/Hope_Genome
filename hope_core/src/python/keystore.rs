@@ -1,11 +1,12 @@
 //! KeyStore Python wrapper
 
-use pyo3::prelude::*;
-use crate::crypto::SoftwareKeyStore;
 use super::errors::to_py_result;
+use crate::crypto::SoftwareKeyStore;
+use pyo3::prelude::*;
 
 /// Software-based KeyStore
 #[pyclass(name = "SoftwareKeyStore")]
+#[allow(dead_code)]
 pub struct PySoftwareKeyStore {
     inner: SoftwareKeyStore,
 }

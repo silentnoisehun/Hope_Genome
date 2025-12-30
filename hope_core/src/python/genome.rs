@@ -4,10 +4,10 @@ use pyo3::prelude::*;
 use pyo3::types::PyDict;
 use std::sync::{Arc, Mutex};
 
-use crate::genome::SealedGenome;
 use super::action::PyAction;
-use super::proof::PyProof;
 use super::errors::to_py_result;
+use super::proof::PyProof;
+use crate::genome::SealedGenome;
 
 /// Python wrapper for SealedGenome
 ///
@@ -150,6 +150,7 @@ impl PySealedGenome {
     }
 
     /// Context manager support: __exit__
+    #[pyo3(signature = (_exc_type=None, _exc_value=None, _traceback=None))]
     fn __exit__(
         &mut self,
         _exc_type: Option<Bound<PyAny>>,
@@ -166,7 +167,7 @@ impl PySealedGenome {
     ///     dict: Diagnostic data including version, sealed status, rule count
     fn diagnostics(&self) -> PyResult<Py<PyDict>> {
         Python::with_gil(|py| {
-            let dict = PyDict::new_bound(py);
+            let dict = PyDict::new(py);
             let genome = self.inner.lock().unwrap();
 
             dict.set_item("version", "1.5.0")?;

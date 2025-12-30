@@ -1,7 +1,7 @@
 //! Action Python wrapper
 
-use pyo3::prelude::*;
 use crate::proof::Action;
+use pyo3::prelude::*;
 
 /// Python wrapper for Action
 #[pyclass(name = "Action")]

@@ -5,26 +5,26 @@
 
 use pyo3::prelude::*;
 
-mod errors;
-mod genome;
 mod action;
-mod proof;
+mod auditlog;
 mod auditor;
 mod consensus;
+mod errors;
+mod genome;
 mod keystore;
 mod noncestore;
-mod auditlog;
+mod proof;
 // mod aibom;  // TODO v1.5.1: Complete AIBOM wrapper
 
-pub use errors::*;
-pub use genome::*;
 pub use action::*;
-pub use proof::*;
+pub use auditlog::*;
 pub use auditor::*;
 pub use consensus::*;
+pub use errors::*;
+pub use genome::*;
 pub use keystore::*;
 pub use noncestore::*;
-pub use auditlog::*;
+pub use proof::*;
 // pub use aibom::*;
 
 /// Hope Genome Python module
@@ -70,11 +70,11 @@ fn _hope_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // m.add_class::<PyAibomComponent>()?;
 
     // Exceptions
-    m.add("GenomeError", m.py().get_type_bound::<PyGenomeError>())?;
-    m.add("CryptoError", m.py().get_type_bound::<PyCryptoError>())?;
-    m.add("AuditorError", m.py().get_type_bound::<PyAuditorError>())?;
-    m.add("ConsensusError", m.py().get_type_bound::<PyConsensusError>())?;
-    m.add("AibomError", m.py().get_type_bound::<PyAibomError>())?;
+    m.add("GenomeError", m.py().get_type::<PyGenomeError>())?;
+    m.add("CryptoError", m.py().get_type::<PyCryptoError>())?;
+    m.add("AuditorError", m.py().get_type::<PyAuditorError>())?;
+    m.add("ConsensusError", m.py().get_type::<PyConsensusError>())?;
+    m.add("AibomError", m.py().get_type::<PyAibomError>())?;
 
     // Module metadata
     m.add("__version__", "1.5.0")?;
