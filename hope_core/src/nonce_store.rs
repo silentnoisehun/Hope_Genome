@@ -122,16 +122,43 @@ pub trait NonceStore: Send + Sync {
 /// - Short-lived processes
 ///
 /// For production, use `RocksDbNonceStore` or `RedisNonceStore`.
+///
+/// # v1.6.0 Security Enhancement (M-3)
+/// - **DoS Protection**: Maximum nonce limit prevents unbounded memory growth
+/// - **Automatic Cleanup**: Forces cleanup when approaching capacity
+/// - **Default Limit**: 100,000 nonces (~6.4MB memory max)
 pub struct MemoryNonceStore {
     /// Map: nonce -> (insertion_timestamp, ttl_seconds)
     nonces: HashMap<[u8; 32], (u64, u64)>,
+
+    /// Maximum number of nonces (DoS protection)
+    max_nonces: usize,
 }
 
+/// Default maximum nonces for memory store (prevents DoS)
+const DEFAULT_MAX_NONCES: usize = 100_000; // ~6.4 MB (100k * 64 bytes)
+
 impl MemoryNonceStore {
-    /// Create a new in-memory nonce store
+    /// Create a new in-memory nonce store with default limit
     pub fn new() -> Self {
+        Self::with_capacity(DEFAULT_MAX_NONCES)
+    }
+
+    /// Create a new in-memory nonce store with custom capacity limit
+    ///
+    /// # Arguments
+    /// * `max_nonces` - Maximum number of nonces to store (DoS protection)
+    ///
+    /// # Example
+    /// ```
+    /// # use _hope_core::nonce_store::MemoryNonceStore;
+    /// // Limit to 10,000 nonces (~640 KB)
+    /// let store = MemoryNonceStore::with_capacity(10_000);
+    /// ```
+    pub fn with_capacity(max_nonces: usize) -> Self {
         MemoryNonceStore {
-            nonces: HashMap::new(),
+            nonces: HashMap::with_capacity(max_nonces.min(1024)), // Pre-allocate reasonably
+            max_nonces,
         }
     }
 }
@@ -147,6 +174,23 @@ impl NonceStore for MemoryNonceStore {
         // Check if already exists
         if self.nonces.contains_key(&nonce) {
             return Err(NonceStoreError::NonceReused(hex::encode(nonce)));
+        }
+
+        // v1.6.0 M-3: DoS protection - enforce capacity limit
+        if self.nonces.len() >= self.max_nonces {
+            // Try cleanup first
+            let cleaned = self.cleanup_expired()?;
+
+            // If still at capacity after cleanup, reject
+            if cleaned == 0 && self.nonces.len() >= self.max_nonces {
+                return Err(NonceStoreError::StorageError(
+                    format!(
+                        "MemoryNonceStore capacity limit reached ({} nonces). \
+                         Consider using RocksDbNonceStore for production.",
+                        self.max_nonces
+                    )
+                ));
+            }
         }
 
         // Insert with current timestamp
@@ -173,9 +217,13 @@ impl NonceStore for MemoryNonceStore {
         let now = chrono::Utc::now().timestamp() as u64;
         let initial_count = self.nonces.len();
 
+        // v1.6.0 H-1: Use saturating_sub() to prevent underflow
         // Remove expired entries
         self.nonces
-            .retain(|_, (timestamp, ttl)| now - *timestamp <= *ttl);
+            .retain(|_, (timestamp, ttl)| {
+                let elapsed = now.saturating_sub(*timestamp);
+                elapsed <= *ttl
+            });
 
         Ok(initial_count - self.nonces.len())
     }

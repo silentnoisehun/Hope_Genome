@@ -67,8 +67,20 @@ impl Action {
     }
 
     /// Get the canonical hash of this action
+    ///
+    /// # Panics
+    /// Only panics in extreme OOM conditions (memory exhaustion).
+    /// In practice, Action serialization is infallible for normal structs.
+    ///
+    /// # v1.6.0 Security Enhancements
+    /// - **H-2**: Changed from `.unwrap()` to `.expect()` with descriptive message
+    /// - **M-1**: Migrated from JSON to bincode for guaranteed deterministic serialization
+    ///   - JSON field order was implementation-defined (fragile across versions)
+    ///   - Bincode guarantees byte-for-byte determinism (same Action = same hash)
+    ///   - Critical for cross-platform and cross-version action binding security
     pub fn hash(&self) -> [u8; 32] {
-        let serialized = serde_json::to_vec(self).unwrap();
+        let serialized = bincode::serialize(self)
+            .expect("Action serialization failed - this indicates extreme memory exhaustion (OOM)");
         crate::crypto::hash_bytes(&serialized)
     }
 }
@@ -138,9 +150,13 @@ impl IntegrityProof {
     }
 
     /// Check if proof has expired
+    ///
+    /// # v1.6.0 Note
+    /// H-1 fix: Uses saturating_sub() to prevent integer underflow.
     pub fn is_expired(&self) -> bool {
         let now = chrono::Utc::now().timestamp() as u64;
-        now - self.timestamp > self.ttl
+        let elapsed = now.saturating_sub(self.timestamp);
+        elapsed > self.ttl
     }
 
     /// Get human-readable timestamp

@@ -218,8 +218,22 @@ impl ProofAuditor {
         self.verify_signature(proof)?;
 
         // Step 2: Check TTL (time-to-live)
+        // v1.6.0: Fixed H-1 - Integer underflow protection using saturating_sub()
         let now = chrono::Utc::now().timestamp() as u64;
-        if now - proof.timestamp > proof.ttl {
+
+        // Reject proofs from the future (clock skew protection)
+        const MAX_CLOCK_SKEW: u64 = 300; // 5 minutes tolerance
+        if proof.timestamp > now + MAX_CLOCK_SKEW {
+            return Err(AuditorError::ProofExpired {
+                issued: proof.timestamp,
+                now,
+                ttl: proof.ttl,
+            });
+        }
+
+        // Safe subtraction prevents underflow attack
+        let elapsed = now.saturating_sub(proof.timestamp);
+        if elapsed > proof.ttl {
             return Err(AuditorError::ProofExpired {
                 issued: proof.timestamp,
                 now,
