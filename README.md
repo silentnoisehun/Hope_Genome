@@ -1,5 +1,5 @@
-Hope Genome v1.4.2: The Era of Enforceable AI Accountability 🛡️
-(Red Team Hardened Edition)
+Hope Genome v1.5.0: The Era of Enforceable AI Accountability 🛡️
+(Python Bindings Edition - Red Team Hardened)
 Why is it free? Why now?
 
 The giants of the AI industry (OpenAI, Anthropic, and others) are selling you a "black box." They say: "Trust us!". But trust is not an engineering category. Trust is the weak point where the lie begins.
@@ -18,7 +18,7 @@ They can no longer lie by hiding behind AI. Because from now on, there is the lo
 
 ---
 
-# Hope Genome v1.4.2 🛡️ - Red Team Hardened Edition
+# Hope Genome v1.5.0 🛡️ - Python Bindings Edition
 
 **Status: 🟢 PRODUCTION READY - All P0/P1/P2/P3 vulnerabilities addressed (Red Team certified)**
 
@@ -27,7 +27,7 @@ They can no longer lie by hiding behind AI. Because from now on, there is the lo
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rust](https://img.shields.io/badge/rust-1.75%2B-orange.svg)](https://www.rust-lang.org)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org)
-[![Tests](https://img.shields.io/badge/tests-84_passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-96_passing-brightgreen.svg)]()
 [![OWASP](https://img.shields.io/badge/OWASP-AI--SBOM_Compliant-blue.svg)](https://owasp.org/www-project-ai-bom/)
 [![CycloneDX](https://img.shields.io/badge/CycloneDX-1.5%2B-green.svg)](https://cyclonedx.org/)
 
@@ -36,6 +36,52 @@ They can no longer lie by hiding behind AI. Because from now on, there is the lo
 ## 🎯 Overview
 
 Hope Genome is a production-ready framework for ensuring **accountability** and **auditability** in AI decision-making systems. Unlike traditional "tamper-proof" approaches, Hope Genome embraces a **tamper-evident** philosophy: attacks may succeed, but they cannot be hidden. This documentation provides an auditor-ready overview of its security guarantees.
+
+### ✨ What's New in v1.5.0
+
+- **🐍 Full Python Bindings**: Native Python package with zero-copy performance via PyO3
+- **🚀 AI/ML Ecosystem Integration**: Ready for FastAPI, LangChain, OpenAI, HuggingFace
+- **📦 Pip Installable**: `pip install hope-genome`
+- **🔧 Type-Safe API**: Complete type stubs (.pyi) for IDE autocomplete and static type checking
+- **🎯 Production Ready**: All Red Team P0/P1/P2/P3 vulnerabilities addressed from v1.4.2
+
+## 🐍 Python Quick Start
+
+```python
+import hope_genome as hg
+
+# Create and seal a genome with ethical rules
+genome = hg.SealedGenome(rules=[
+    "Do no harm",
+    "Respect user privacy",
+    "Provide transparent explanations"
+])
+genome.seal()  # Makes rules immutable
+
+# Verify an AI action
+action = hg.Action.delete_file("user_data.txt")
+proof = genome.verify_action(action)
+
+print(f"Approved: {proof.approved}")
+print(f"Genome Hash: {proof.genome_hash}")
+print(f"Signature: {proof.signature_hex()[:32]}...")
+
+# Audit the proof (replay attack detection)
+auditor = hg.ProofAuditor()
+auditor.verify_proof(proof)  # Throws if tampered or replayed
+```
+
+**Install:**
+```bash
+pip install hope-genome
+```
+
+**Build from source:**
+```bash
+pip install maturin
+maturin build --release --features python-bindings
+pip install target/wheels/*.whl
+```
 
 ## 🛡️ Hardware-Level Security (HSM/TEE)
 

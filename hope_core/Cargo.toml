@@ -1,9 +1,9 @@
 [package]
 name = "hope_core"
-version = "1.4.2"
+version = "1.5.0"
 edition = "2021"
 authors = ["Máté Róbert <stratosoiteam@gmail.com>"]
-description = "Tamper-evident cryptographic framework for AI accountability - Hardened Security Edition"
+description = "Tamper-evident cryptographic framework for AI accountability - Python Bindings Edition"
 license = "MIT"
 repository = "https://github.com/silentnoisehun/Hope_Genome"
 keywords = ["ai-safety", "cryptography", "audit", "blockchain", "ethics"]
@@ -41,6 +41,9 @@ cryptoki = { version = "0.6", optional = true }
 # For now, we provide the trait interface and software fallback
 sgx_types = { version = "1.1.2", optional = true }
 
+# v1.5.0: Python Bindings (PyO3)
+pyo3 = { version = "0.22", features = ["extension-module"], optional = true }
+
 [dev-dependencies]
 tempfile = "3.8"
 
@@ -51,8 +54,11 @@ rocksdb-nonce-store = ["rocksdb"]
 redis-nonce-store = ["redis"]
 hsm-support = ["cryptoki"]
 tee-support = ["sgx_types"]
+python-bindings = ["pyo3"]
 all-backends = ["rocksdb-nonce-store", "redis-nonce-store", "hsm-support", "tee-support"]
+full = ["all-backends", "python-bindings"]
 
 [lib]
 name = "hope_core"
 path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]

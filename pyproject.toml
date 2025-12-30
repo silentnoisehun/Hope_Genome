@@ -1,0 +1,80 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "hope-genome"
+version = "1.5.0"
+description = "Tamper-evident cryptographic framework for AI accountability with Python bindings"
+authors = [
+    {name = "Máté Róbert", email = "stratosoiteam@gmail.com"}
+]
+readme = "README.md"
+license = {text = "MIT"}
+keywords = ["ai-safety", "cryptography", "audit", "blockchain", "ethics", "python-bindings"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Rust",
+    "Topic :: Security :: Cryptography",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+requires-python = ">=3.8"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21",
+    "black>=23.0",
+    "mypy>=1.0",
+    "ruff>=0.1",
+]
+examples = [
+    "fastapi>=0.104",
+    "langchain>=0.1",
+    "openai>=1.0",
+    "jupyter>=1.0",
+    "notebook>=7.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/silentnoisehun/Hope_Genome"
+Repository = "https://github.com/silentnoisehun/Hope_Genome"
+Documentation = "https://github.com/silentnoisehun/Hope_Genome/blob/main/README.md"
+"Bug Tracker" = "https://github.com/silentnoisehun/Hope_Genome/issues"
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+module-name = "hope_genome._hope_core"
+python-source = "python"
+bindings = "pyo3"
+manifest-path = "hope_core/Cargo.toml"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers"
+testpaths = ["tests"]
+pythonpath = ["python"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311', 'py312']
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"

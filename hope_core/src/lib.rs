@@ -100,6 +100,10 @@ pub mod crypto_hsm;
 #[cfg(feature = "tee-support")]
 pub mod crypto_tee;
 
+// v1.5.0: Python bindings module (PyO3)
+#[cfg(feature = "python-bindings")]
+pub mod python;
+
 // Re-export main types
 pub use audit_log::{AuditEntry, AuditLog, Decision};
 pub use auditor::ProofAuditor;
