@@ -77,7 +77,7 @@ fn _hope_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add("AibomError", m.py().get_type::<PyAibomError>())?;
 
     // Module metadata
-    m.add("__version__", "1.5.0")?;
+    m.add("__version__", crate::VERSION)?;
     m.add("__author__", "Máté Róbert <stratosoiteam@gmail.com>")?;
 
     Ok(())

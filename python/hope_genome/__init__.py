@@ -1,5 +1,5 @@
 """
-Hope Genome v1.5.0 - Python Bindings
+Hope Genome v1.6.0 - Python Bindings
 =====================================
 
 Tamper-evident cryptographic framework for AI accountability.
@@ -14,7 +14,7 @@ Example:
     True
 """
 
-__version__ = "1.5.0"
+__version__ = "1.6.0"
 __author__ = "Máté Róbert <stratosoiteam@gmail.com>"
 
 # Import Rust core module

@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "hope-genome"
-version = "1.2.0"
+version = "1.6.0"
 description = "Tamper-Evident Cryptographic Framework for AI Accountability"
 authors = [
     {name = "Máté Róbert", email = "stratosoiteam@gmail.com"},
