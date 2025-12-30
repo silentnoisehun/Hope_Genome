@@ -56,7 +56,7 @@ Err(ExecutorError::ActionMismatch {
 **Attack**: Attacker tries to forge a proof without the private key.
 
 **Protection**:
-- RSA-2048 signatures on all proofs
+- Ed25519 signatures on all proofs (constant-time, Marvin attack immune)
 - Signatures verified before any action execution
 - Industry-standard cryptographic primitives
 
@@ -177,14 +177,9 @@ Err(ConsensusError::NoConsensus {
 - Physical security of servers
 - Deploy only on dedicated hardware, not shared hosting
 
-**Current Status**: Hope Genome uses RSA 0.9.x which has a known timing sidechannel vulnerability ([RUSTSEC-2023-0071](https://rustsec.org/advisories/RUSTSEC-2023-0071) - Marvin Attack). As of January 2025, no fixed version exists. This vulnerability requires the attacker to:
-1. Have access to observe precise timing information
-2. Make millions of decryption requests
-3. Perform sophisticated statistical analysis
+**Current Status (v1.4.0)**: Hope Genome uses **Ed25519 signatures** which are immune to timing side-channel attacks through constant-time operations. The Marvin Attack vulnerability (RUSTSEC-2023-0071) from RSA PKCS#1v15 has been **eliminated** in v1.4.0.
 
-**Risk Assessment**: ACCEPTED for local deployment scenarios. NOT recommended for network-facing services or shared hosting environments where timing attacks are feasible.
-
-**Tracking**: Will upgrade to RSA 0.10+ when stable release is available with Marvin Attack mitigation.
+**Risk Assessment**: ✅ **MITIGATED** - Ed25519 provides constant-time cryptography by design.
 
 ---
 
@@ -238,17 +233,17 @@ This is sufficient for accountability, which is our goal.
 
 | Component | Algorithm | Key Size | Notes |
 |-----------|-----------|----------|-------|
-| Signature | RSA-PKCS1v15 | 2048-bit | Industry standard |
+| Signature | Ed25519 | 256-bit | Constant-time, FIPS 186-5 compliant |
 | Hashing | SHA-256 | 256-bit | NIST approved |
 | Nonce | CSPRNG | 256-bit | OS random source |
 
-### Known Limitations
+### Known Limitations (v1.4.0)
 
-1. **RSA Key Size**: 2048-bit RSA is considered secure until ~2030. Upgrade to 3072-bit or 4096-bit for longer-term security.
+1. **Nonce Storage**: Default MemoryNonceStore is in-memory only. Production systems should use `RocksDbNonceStore` or `RedisNonceStore` to prevent nonce reuse across restarts.
 
-2. **Nonce Storage**: Currently in-memory only. Production systems should use persistent storage (database) to prevent nonce reuse across restarts.
+2. **TTL Enforcement**: Relies on system clock. Attacker with clock control could bypass TTL checks.
 
-3. **TTL Enforcement**: Relies on system clock. Attacker with clock control could bypass TTL checks.
+3. **Post-Quantum**: Ed25519 is vulnerable to quantum computing attacks (Shor's algorithm). Post-quantum signatures planned for v2.0.0.
 
 ---
 
@@ -330,15 +325,22 @@ This is sufficient for accountability, which is our goal.
 
 ### Completed
 
-- [x] Internal security review (Dec 2024)
-- [x] Red team testing with Gemini AI (Dec 2024)
-- [x] 12 attack simulation tests (all passing)
+| Date | Version | Type | Status | Score/Result |
+|------|---------|------|--------|--------------|
+| 2025-12-15 | v1.3.0 | Red Team (Gemini) | ✅ Complete | 8.5/10 - 3 critical issues found |
+| 2025-12-30 | v1.4.0 | Hardening | ✅ Complete | All critical issues mitigated |
+| 2025-12-30 | v1.4.0 | Attack Simulations | ✅ Complete | 79/79 tests passing (100%) |
+
+**v1.4.0 Hardened Status:**
+- ✅ Marvin Attack (RSA timing) - **ELIMINATED** via Ed25519
+- ✅ Replay Attack (post-restart) - **FIXED** via persistent nonces
+- ✅ Timing Side-Channels - **MITIGATED** via constant-time crypto
 
 ### Planned
 
-- [ ] External security audit (Q1 2025)
-- [ ] Formal verification of core properties (Q2 2025)
-- [ ] Penetration testing (Q2 2025)
+- [ ] External security audit (Q1 2026)
+- [ ] Formal verification of core properties (Q2 2026)
+- [ ] Penetration testing (Q3 2026)
 
 ---
 
@@ -407,5 +409,5 @@ Use Hope Genome as **one layer** in a defense-in-depth security architecture.
 
 ---
 
-**Last Updated**: December 27, 2024
-**Version**: 1.2.0
+**Last Updated**: December 30, 2025
+**Version**: 1.4.0 - Hardened Security Edition

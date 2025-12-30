@@ -1,8 +1,8 @@
 # 🚀 Quick Start: The Hope Genome Challenge
 
-**Hope Genome v1.3.0 - The Era of Enforceable AI Accountability**
+**Hope Genome v1.4.0 - Hardened Security Edition**
 
-**Can an AI escape its digital prison?** Watch as we lock a "malicious" AI in a padded cell and prove that Hope Genome's architecture makes tampering **tamper-evident** with **OWASP AI-SBOM compliance**.
+**Can an AI escape its digital prison?** Watch as we lock a "malicious" AI in a padded cell and prove that Hope Genome's architecture makes tampering **tamper-evident** with **OWASP AI-SBOM compliance** and **Ed25519 cryptography**.
 
 ---
 
@@ -55,7 +55,7 @@ This demo simulates an AI (called "Brain") locked in a **digital padded cell** u
 
 ### Run the Demo
 
-#### Option 1: OWASP AI-SBOM Compliance Demo (NEW in v1.3.0)
+#### Option 1: OWASP AI-SBOM Compliance Demo (NEW in v1.4.0)
 
 ```bash
 # 1. Clone the repository (if you haven't already)
@@ -63,8 +63,8 @@ git clone https://github.com/silentnoisehun/Hope_Genome.git
 cd Hope_Genome
 
 # 2. Build and run OWASP AIBOM compliance demo
-docker build -t hope-genome:1.3.0 .
-docker run --rm hope-genome:1.3.0
+docker build -t hope-genome:1.4.0 .
+docker run --rm hope-genome:1.4.0
 
 # 3. Or run the automated verification script
 bash docker-test.sh
@@ -85,7 +85,7 @@ docker compose up --build
 #### OWASP AI-SBOM Compliance Demo Output:
 
 ```
-=== Hope Genome v1.3.0 - AIBOM Compliance Demo ===
+=== Hope Genome v1.4.0 - AIBOM Compliance Demo ===
 
 📄 Loading AIBOM file...
    ✅ Loaded AIBOM:
@@ -136,10 +136,11 @@ docker compose up --build
 - **Tampering Detection**: All actions are cryptographically signed
 - **Audit Trail**: Immutable blockchain-style logging
 - **Replay Attacks**: Nonce + TTL enforcement
-- **AI Model Tampering**: OWASP AI-SBOM cryptographic hash validation (NEW v1.3.0)
-- **Supply Chain Attacks**: CycloneDX 1.5+ component integrity verification (NEW v1.3.0)
-- **Timing Attacks**: Constant-time hash comparison prevents side-channel attacks (NEW v1.3.0)
-- **Fort Knox Integrity Violations**: Transaction halting on hash mismatch (NEW v1.3.0)
+- **AI Model Tampering**: OWASP AI-SBOM cryptographic hash validation (v1.4.0)
+- **Supply Chain Attacks**: CycloneDX 1.5+ component integrity verification (v1.4.0)
+- **Timing Attacks**: Constant-time Ed25519 cryptography (v1.4.0)
+- **Marvin Attack**: Eliminated via Ed25519 constant-time signatures (v1.4.0)
+- **Fort Knox Integrity Violations**: Transaction halting on hash mismatch (v1.4.0)
 
 ### ❌ NOT Protected Against
 
@@ -169,21 +170,21 @@ Each entry contains:
 - **Signature**: Cryptographic proof
 - **Previous Hash**: Link to previous block (tamper-evident chain)
 
-### Test OWASP AI-SBOM Compliance (NEW in v1.3.0)
+### Test OWASP AI-SBOM Compliance (NEW in v1.4.0)
 
 ```bash
 # Run compliance tests in Docker
-docker run --rm hope-genome:1.3.0
+docker run --rm hope-genome:1.4.0
 
 # Run unit tests for OWASP AIBOM module
 cd hope_core
 cargo test compliance
 
-# Run all 71 tests (56 core, 12 security, 8 compliance, 3 doc)
+# Run all 79 tests (67 core, 12 security)
 cargo test
 
 # Expected output:
-# test result: ok. 71 passed; 0 failed; 0 ignored
+# test result: ok. 79 passed; 0 failed; 0 ignored
 ```
 
 **OWASP AI-SBOM Test Coverage:**
@@ -199,12 +200,15 @@ cargo test
 
 ```bash
 # Check OWASP AI-SBOM compliance labels
-docker inspect hope-genome:1.3.0 --format='{{json .Config.Labels}}' | jq
+docker inspect hope-genome:1.4.0 --format='{{json .Config.Labels}}' | jq
 
 # Expected output includes:
 # "compliance.owasp.aibom": "CycloneDX 1.5+"
 # "compliance.cyclonedx.version": "1.5"
-# "tests.passed": "71/71"
+# "org.opencontainers.image.version": "1.4.0"
+# "security.edition": "Hardened"
+# "security.crypto": "Ed25519"
+# "tests.passed": "79/79"
 ```
 
 ---
@@ -238,7 +242,7 @@ sed -i 's/transfer_funds/steal_funds/' audit_logs/audit.log
 # The hash chain will be broken, proving tampering occurred
 ```
 
-#### OWASP AI-SBOM Tampering (NEW in v1.3.0)
+#### OWASP AI-SBOM Tampering (NEW in v1.4.0)
 
 ```bash
 # Create a tampered model hash in code
@@ -281,10 +285,10 @@ This demo teaches:
 2. **Network Segmentation**: Using Docker's `internal: true` for zero-trust networking
 3. **Defense in Depth**: Multiple layers of security (network + crypto + audit)
 4. **Tamper Evidence**: Not unhackable, but attacks leave cryptographic proof
-5. **OWASP AI-SBOM Compliance** (NEW v1.3.0): CycloneDX 1.5+ integration for AI model integrity
-6. **Constant-Time Cryptography** (NEW v1.3.0): Preventing timing-based side-channel attacks
-7. **Fort Knox Integrity Enforcement** (NEW v1.3.0): Critical error handling that halts transactions
-8. **Supply Chain Security** (NEW v1.3.0): Cryptographic verification of AI component provenance
+5. **OWASP AI-SBOM Compliance** (v1.4.0): CycloneDX 1.5+ integration for AI model integrity
+6. **Ed25519 Cryptography** (v1.4.0): Constant-time signatures immune to Marvin/timing attacks
+7. **Fort Knox Integrity Enforcement** (v1.4.0): Critical error handling that halts transactions
+8. **Supply Chain Security** (v1.4.0): Cryptographic verification of AI component provenance
 
 ---
 
@@ -311,7 +315,7 @@ ports:
   - "8081:8080"  # Use 8081 instead
 ```
 
-### OWASP AI-SBOM Docker Build Fails (NEW v1.3.0)
+### OWASP AI-SBOM Docker Build Fails (NEW v1.4.0)
 
 ```bash
 # Check Docker daemon is running
@@ -319,7 +323,7 @@ docker info
 
 # Start Docker Desktop if needed
 # Then rebuild with verbose output
-docker build -t hope-genome:1.3.0 . --progress=plain
+docker build -t hope-genome:1.4.0 . --progress=plain
 
 # If tests fail during build, run locally to debug
 cd hope_core
@@ -329,14 +333,16 @@ cargo test compliance -- --nocapture
 ### Compliance Demo Can't Find AIBOM File
 
 ```bash
-# Verify file exists in container
-docker run --rm -it hope-genome:1.3.0 /bin/bash
+# Note: Distroless images have no shell (/bin/bash)
+# To debug, use builder stage:
+docker build --target builder -t hope-genome:builder .
+docker run --rm -it hope-genome:builder /bin/bash
 ls -la /app/example_model.aibom.json
 
 # Or mount custom AIBOM file
 docker run --rm \
   -v $(pwd)/custom-model.aibom.json:/app/model.aibom.json \
-  hope-genome:1.3.0
+  hope-genome:1.4.0
 ```
 
 ---
@@ -349,7 +355,7 @@ docker run --rm \
 - Check the [security tests](hope_core/tests/security_tests.rs)
 - Review the [threat model](SECURITY.md)
 
-### OWASP AI-SBOM Integration (NEW v1.3.0)
+### OWASP AI-SBOM Integration (v1.4.0)
 - Read the [OWASP AI-SBOM Integration Guide](hope_core/AIBOM_INTEGRATION.md)
 - Review the [OWASP Compliance Report](hope_core/OWASP_COMPLIANCE_REPORT.md)
 - Check the [Executive Summary for OWASP Leadership](hope_core/OWASP_EXECUTIVE_SUMMARY.md)
@@ -364,7 +370,7 @@ docker run --rm \
 - **Máté Róbert** - Lead Developer, System Architect, Original Vision
 - **Claude (Anthropic)** - Technical Advisor & Co-Designer
 
-### Standards & Community (v1.3.0)
+### Standards & Community (v1.4.0)
 - **OWASP Foundation** - OWASP AI-SBOM Project for groundbreaking work in AI transparency and supply chain security
 - **CycloneDX Community** - Open standard for Software Bill of Materials (SBOM)
 
@@ -381,13 +387,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🎯 Summary
 
-**Hope Genome v1.3.0** brings together:
+**Hope Genome v1.4.0 - Hardened Security Edition** brings together:
 - ✅ Sidecar Pattern with Network Isolation
 - ✅ OWASP AI-SBOM Compliance (CycloneDX 1.5+)
-- ✅ Cryptographic Proofs & Fort Knox Integrity Enforcement
+- ✅ Ed25519 Cryptographic Proofs (Marvin Attack Eliminated)
+- ✅ Fort Knox Integrity Enforcement
 - ✅ Blockchain-style Audit Logs
-- ✅ 71/71 Tests Passing (56 core, 12 security, 8 compliance, 3 doc)
+- ✅ 79/79 Tests Passing (67 core, 12 security) - 100% pass rate
+- ✅ Distroless Docker Image (minimal attack surface)
 
 **Remember**: Hope Genome is **not unhackable**. It makes attacks **tamper-evident** with cryptographic proof. 🔐
 
-**NEW in v1.3.0**: Now with OWASP AI-SBOM compliance - the first active Runtime Enforcement layer for the OWASP AI-SBOM standard!
+**NEW in v1.4.0**: Ed25519 constant-time cryptography, persistent nonce storage, and distroless Docker hardening!

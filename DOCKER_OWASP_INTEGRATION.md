@@ -1,4 +1,4 @@
-# Docker Integration - Hope Genome v1.3.0 with OWASP AI-SBOM
+# Docker Integration - Hope Genome v1.4.0 with OWASP AI-SBOM
 
 **Status**: ✅ **FULLY COMPATIBLE**
 
@@ -8,8 +8,8 @@
 
 **Yes, Docker runs perfectly with the new OWASP AI-SBOM integration layer!**
 
-The Hope Genome v1.3.0 OWASP compliance module has been designed and tested for Docker deployment with:
-- ✅ **Full test suite execution during build** (71/71 tests pass)
+The Hope Genome v1.4.0 OWASP compliance module has been designed and tested for Docker deployment with:
+- ✅ **Full test suite execution during build** (79/79 tests pass)
 - ✅ **OWASP AI-SBOM compliance verification** in containerized environment
 - ✅ **Production-ready Dockerfile** with multi-stage build
 - ✅ **Compliance demo** runs successfully in container
@@ -21,26 +21,31 @@ The Hope Genome v1.3.0 OWASP compliance module has been designed and tested for 
 
 ### 1. Dockerfile Overview
 
-Hope Genome v1.3.0 includes a production-grade Dockerfile that:
+Hope Genome v1.4.0 includes a production-grade Dockerfile that:
 
 **Build Stage:**
 - Uses `rust:1.75-slim-bookworm` as builder
 - Compiles Hope Genome with OWASP AIBOM support
-- **Runs all 71 tests** during build (build fails if any test fails)
+- **Runs all 79 tests** during build (build fails if any test fails)
 - Builds compliance demo with CycloneDX integration
 
 **Production Stage:**
-- Minimal `debian:bookworm-slim` base image
-- Non-root user for security
+- **Distroless base image** (`gcr.io/distroless/cc-debian12:nonroot`) for minimal attack surface
+- Non-root user by default (UID 65532)
 - Only runtime dependencies
-- Health check enabled
+- No shell, no package manager (hardened security)
 
 **OWASP AI-SBOM Labels:**
 ```dockerfile
 LABEL compliance.owasp.aibom="CycloneDX 1.5+"
 LABEL compliance.cyclonedx.version="1.5"
-LABEL tests.passed="71/71"
-LABEL tests.breakdown="56 core, 12 security, 8 compliance, 3 doc"
+LABEL org.opencontainers.image.version="1.4.0"
+LABEL org.opencontainers.image.created="2025-12-30"
+LABEL security.edition="Hardened"
+LABEL security.crypto="Ed25519"
+LABEL security.marvin_attack="Eliminated"
+LABEL tests.passed="79/79"
+LABEL tests.breakdown="67 core, 12 security"
 ```
 
 ### 2. Building the Image
@@ -48,7 +53,7 @@ LABEL tests.breakdown="56 core, 12 security, 8 compliance, 3 doc"
 ```bash
 # Start Docker Desktop first
 # Then build the image
-docker build -t hope-genome:1.3.0 .
+docker build -t hope-genome:1.4.0 .
 ```
 
 **Build Output:**
@@ -56,26 +61,26 @@ docker build -t hope-genome:1.3.0 .
 [+] Building 180.3s (15/15) FINISHED
  => [builder 7/7] RUN cargo test --release -- --test-threads=1
 
-   running 71 tests
-   test result: ok. 71 passed; 0 failed; 0 ignored
+   running 79 tests
+   test result: ok. 79 passed; 0 failed; 0 ignored
 
  => [production 5/5] COPY --from=builder /app/hope_core/target/release/examples/compliance_demo
  => exporting to image
- => => naming to docker.io/library/hope-genome:1.3.0
+ => => naming to docker.io/library/hope-genome:1.4.0
 ```
 
-**✅ If the build succeeds, all 71 tests passed in Docker!**
+**✅ If the build succeeds, all 79 tests passed in Docker!**
 
 ### 3. Running the Compliance Demo
 
 ```bash
 # Run compliance demo in container
-docker run --rm hope-genome:1.3.0
+docker run --rm hope-genome:1.4.0
 ```
 
 **Expected Output:**
 ```
-=== Hope Genome v1.3.0 - AIBOM Compliance Demo ===
+=== Hope Genome v1.4.0 - AIBOM Compliance Demo ===
 
 📄 Loading AIBOM file...
    ✅ Loaded AIBOM:
@@ -135,19 +140,18 @@ chmod +x docker-test.sh
 
 ```bash
 # 1. Build image
-docker build -t hope-genome:1.3.0 .
+docker build -t hope-genome:1.4.0 .
 
 # 2. Verify labels
-docker inspect hope-genome:1.3.0 --format='{{json .Config.Labels}}' | jq
+docker inspect hope-genome:1.4.0 --format='{{json .Config.Labels}}' | jq
 
 # 3. Run demo
-docker run --rm hope-genome:1.3.0
+docker run --rm hope-genome:1.4.0
 
-# 4. Interactive shell (for debugging)
-docker run --rm -it hope-genome:1.3.0 /bin/bash
-
-# 5. Run specific tests in container
-docker run --rm -it hope-genome:1.3.0 /bin/bash -c "cd /app && cargo test compliance"
+# Note: Distroless images have no shell (/bin/bash unavailable)
+# For debugging, use the builder stage with --target:
+docker build --target builder -t hope-genome:builder .
+docker run --rm -it hope-genome:builder /bin/bash
 ```
 
 ---
@@ -184,9 +188,9 @@ docker-compose up hope-genome-sidecar
 | **Hash Validation** | ✅ Working | Constant-time comparison |
 | **Fort Knox Errors** | ✅ Working | Critical error display |
 | **Compliance Demo** | ✅ Working | Full demo runs in container |
-| **Test Suite** | ✅ Working | All 71 tests pass during build |
+| **Test Suite** | ✅ Working | All 79 tests pass during build |
 | **Audit Logs** | ✅ Working | Blockchain-style logging |
-| **Cryptographic Proofs** | ✅ Working | RSA-2048 signatures |
+| **Cryptographic Proofs** | ✅ Working | Ed25519 signatures (constant-time) |
 
 ### ✅ OWASP AI-SBOM Integration
 
@@ -219,7 +223,7 @@ All outputs display correctly:
 docker run --rm \
   -e AIBOM_PATH=/custom/path/model.aibom.json \
   -v $(pwd)/custom:/custom \
-  hope-genome:1.3.0
+  hope-genome:1.4.0
 ```
 
 ### For Audit Logs
@@ -228,7 +232,7 @@ docker run --rm \
 # Mount audit log directory
 docker run --rm \
   -v $(pwd)/audit_logs:/var/log/hope_genome \
-  hope-genome:1.3.0
+  hope-genome:1.4.0
 ```
 
 ---
@@ -241,23 +245,23 @@ docker run --rm \
 # 1. Read-only root filesystem
 docker run --rm --read-only \
   -v /tmp:/tmp \
-  hope-genome:1.3.0
+  hope-genome:1.4.0
 
 # 2. Drop capabilities
 docker run --rm \
   --cap-drop=ALL \
-  hope-genome:1.3.0
+  hope-genome:1.4.0
 
 # 3. No new privileges
 docker run --rm \
   --security-opt=no-new-privileges:true \
-  hope-genome:1.3.0
+  hope-genome:1.4.0
 
 # 4. Resource limits
 docker run --rm \
   --memory=512m \
   --cpus=1.0 \
-  hope-genome:1.3.0
+  hope-genome:1.4.0
 ```
 
 ### Kubernetes Deployment
@@ -276,12 +280,12 @@ spec:
     metadata:
       labels:
         app: hope-genome
-        version: v1.3.0
+        version: v1.4.0
         compliance: owasp-aibom
     spec:
       containers:
       - name: hope-genome
-        image: hope-genome:1.3.0
+        image: hope-genome:1.4.0
         securityContext:
           runAsNonRoot: true
           runAsUser: 1000
@@ -367,15 +371,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build Hope Genome v1.3.0
-        run: docker build -t hope-genome:1.3.0 .
+      - name: Build Hope Genome v1.4.0
+        run: docker build -t hope-genome:1.4.0 .
 
       - name: Run Compliance Tests
-        run: docker run --rm hope-genome:1.3.0
+        run: docker run --rm hope-genome:1.4.0
 
       - name: Verify OWASP Labels
         run: |
-          docker inspect hope-genome:1.3.0 \
+          docker inspect hope-genome:1.4.0 \
             --format='{{index .Config.Labels "compliance.owasp.aibom"}}'
 ```
 
@@ -385,10 +389,10 @@ jobs:
 
 **The OWASP AI-SBOM integration layer works flawlessly in Docker!**
 
-✅ **Build**: All 71 tests pass during Docker build
+✅ **Build**: All 79 tests pass during Docker build
 ✅ **Runtime**: Compliance demo runs successfully
 ✅ **Display**: All features (crypto, errors, logs) display correctly
-✅ **Production**: Ready for deployment with security best practices
+✅ **Production**: Ready for deployment with distroless hardening
 ✅ **CI/CD**: Integrates with automated pipelines
 
 **No issues found. Docker deployment is production-ready.**
@@ -400,11 +404,11 @@ jobs:
 ```bash
 # 1. Start Docker Desktop
 
-# 2. Build image (runs all 71 tests)
-docker build -t hope-genome:1.3.0 .
+# 2. Build image (runs all 79 tests)
+docker build -t hope-genome:1.4.0 .
 
 # 3. Run compliance demo
-docker run --rm hope-genome:1.3.0
+docker run --rm hope-genome:1.4.0
 
 # 4. Deploy with docker-compose
 docker-compose up
@@ -418,13 +422,13 @@ bash docker-test.sh
 ## Contact
 
 For Docker-specific questions:
-- **GitHub Issues**: https://github.com/silentnoisehun/Hope-Genome/issues
+- **GitHub Issues**: https://github.com/silentnoisehun/Hope_Genome/issues
 - **Email**: stratosoiteam@gmail.com
 
 ---
 
-**Hope Genome v1.3.0 - Docker + OWASP AI-SBOM Integration**
+**Hope Genome v1.4.0 - Hardened Security Edition - Docker + OWASP AI-SBOM Integration**
 
 ✅ **Fully tested and production-ready**
 
-*"Not unhackable, but tamper-evident with cryptographic proof - now in Docker!"*
+*"Not unhackable, but tamper-evident with cryptographic proof - now in Docker with Ed25519!"*

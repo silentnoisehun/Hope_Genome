@@ -37,7 +37,7 @@
 **Role**: Architecture Design Partner, Security Analysis, Technical Implementation
 
 **Contributions**:
-- Extended design sessions (December 27-28, 2024)
+- Extended design sessions (December 27-30, 2025)
 - Cryptographic protocol design and implementation
 - Rust core implementation (all modules)
 - Security attack simulation test suite
@@ -172,10 +172,10 @@ Thank you to all who will contribute to making Hope Genome better!
 
 **Preferred Citation**:
 ```
-Hope Genome v1.2 - Tamper-Evident Cryptographic Framework for AI Accountability
+Hope Genome v1.4.0 - Hardened Security Edition with Ed25519 & OWASP AI-SBOM Integration
 Authors: Máté Róbert, Claude (Anthropic)
-Year: 2024
-Repository: https://github.com/silentnoisehun/Hope-Genome
+Year: 2025
+Repository: https://github.com/silentnoisehun/Hope_Genome
 ```
 
 ---
@@ -185,13 +185,13 @@ Repository: https://github.com/silentnoisehun/Hope-Genome
 If you use Hope Genome in academic research, please cite:
 
 ```bibtex
-@software{hopegenome2024,
+@software{hopegenome2025,
   title={Hope Genome: A Tamper-Evident Cryptographic Framework for Accountable AI Decision-Making},
   author={Róbert, Máté and Claude},
-  year={2024},
+  year={2025},
   month={December},
-  url={https://github.com/silentnoisehun/Hope-Genome},
-  version={1.2.0},
+  url={https://github.com/silentnoisehun/Hope_Genome},
+  version={1.4.0},
   note={Technical advisor: Claude (Anthropic). Red team testing: Gemini (Google AI).}
 }
 ```
@@ -222,13 +222,13 @@ If you use Hope Genome in academic research, please cite:
 
 ### How This Project Came to Be
 
-**December 27, 2024 - Morning (Hungary Time)**
+**December 27, 2025 - Morning (Hungary Time)**
 
 Máté had an idea: what if we could create a framework that makes AI systems accountable through cryptography, not through trying to make them perfect?
 
-He opened a conversation with Claude (Anthropic's AI assistant) and said: "I want to build Hope Genome v1.2."
+He opened a conversation with Claude (Anthropic's AI assistant) and said: "I want to build Hope Genome v1.4.0."
 
-**December 27-28, 2024 - 40+ Hours of Collaboration**
+**December 27-30, 2025 - 40+ Hours of Collaboration**
 
 What followed was an intensive 40+ hour design and implementation session:
 
@@ -277,14 +277,14 @@ This project was built on these principles:
 
 ---
 
-**Last Updated**: December 27, 2024
+**Last Updated**: December 30, 2025
 
-**Project Start Date**: December 27, 2024
+**Project Start Date**: December 27, 2025
 
-**Current Version**: 1.2.0
+**Current Version**: 1.4.0
 
 ---
 
 *"Hope Genome is proof that one person with an idea, partnering with AI, can build something meaningful for AI safety. This is just the beginning."*
 
-— Máté Róbert, December 2024
+— Máté Róbert, December 2025
