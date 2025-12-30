@@ -79,10 +79,10 @@
 // ---
 //
 // **Date**: 2025-12-30
-// **Version**: 1.4.0 (Hardened Security Edition - TEE Support)
+// **Version**: 1.4.1 (Mathematics & Reality Edition - TEE Support)
 // **Author**: Máté Róbert <stratosoiteam@gmail.com>
 use crate::crypto::{CryptoError, KeyStore, Result};
-use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
+use ed25519_compact::{KeyPair, Seed, Signature};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -305,10 +305,9 @@ pub struct TeeKeyStore {
     ///
     /// **CRITICAL**: In production SGX, this would be stored in enclave
     /// memory using SGX sealing. For now, software implementation.
-    signing_key: SigningKey,
-
-    /// Ed25519 verifying key (public, can be cached)
-    verifying_key: VerifyingKey,
+    ///
+    /// v1.4.1: Updated to ed25519-compact KeyPair
+    keypair: KeyPair,
 
     /// Latest attestation report (cached, refreshed periodically)
     attestation_report: Option<AttestationReport>,
@@ -338,14 +337,13 @@ impl TeeKeyStore {
         // The private key would NEVER be returned to the untrusted app.
 
         // For now, we simulate by generating key in software.
-        let signing_key = SigningKey::generate(&mut rand::rngs::OsRng);
-        let verifying_key = signing_key.verifying_key();
+        // v1.4.1: Updated to ed25519-compact
+        let keypair = KeyPair::from_seed(Seed::generate());
 
         Ok(TeeKeyStore {
             tee_type,
             enclave_name: enclave_name.to_string(),
-            signing_key,
-            verifying_key,
+            keypair,
             attestation_report: None,
         })
     }
@@ -477,7 +475,8 @@ impl TeeKeyStore {
     fn compute_mrsigner(&self) -> [u8; 32] {
         let mut hasher = Sha256::new();
         hasher.update(b"HOPE_GENOME_SIGNER");
-        hasher.update(self.verifying_key.as_bytes());
+        // v1.4.1: Updated to use keypair.pk instead of verifying_key
+        hasher.update(self.keypair.pk.as_ref());
         hasher.finalize().into()
     }
 }
@@ -492,15 +491,18 @@ impl KeyStore for TeeKeyStore {
     fn sign(&self, data: &[u8]) -> Result<Vec<u8>> {
         // In a real SGX app, this would be an ECALL into the enclave:
         // ecall_sign(enclave_id, data, &mut signature_buffer)
-        let signature = self.signing_key.sign(data);
-        Ok(signature.to_bytes().to_vec())
+        // v1.4.1: Updated to ed25519-compact with deterministic signing
+        let signature = self.keypair.sk.sign(data, None);
+        Ok(signature.to_vec())
     }
 
     fn verify(&self, data: &[u8], signature: &[u8]) -> Result<()> {
+        // v1.4.1: Updated to ed25519-compact
         let sig = Signature::from_slice(signature)
-            .map_err(|e| CryptoError::VerificationFailed(e.to_string()))?;
+            .map_err(|e: ed25519_compact::Error| CryptoError::VerificationFailed(e.to_string()))?;
 
-        self.verifying_key
+        self.keypair
+            .pk
             .verify(data, &sig)
             .map_err(|_| CryptoError::InvalidSignature)?;
 
@@ -508,15 +510,16 @@ impl KeyStore for TeeKeyStore {
     }
 
     fn public_key_bytes(&self) -> Vec<u8> {
-        self.verifying_key.to_bytes().to_vec()
+        self.keypair.pk.as_ref().to_vec()
     }
 
     fn identifier(&self) -> String {
+        let pk_bytes = self.keypair.pk.as_ref();
         format!(
             "TeeKeyStore(type={:?}, enclave={}, pubkey={})",
             self.tee_type,
             self.enclave_name,
-            hex::encode(&self.verifying_key.to_bytes()[0..8])
+            hex::encode(&pk_bytes[0..8])
         )
     }
 }

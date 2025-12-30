@@ -68,7 +68,7 @@
 //! ---
 //!
 //! **Date**: 2025-12-30
-//! **Version**: 1.4.0 (Hardened Security Edition - HSM Support)
+//! **Version**: 1.4.1 (Mathematics & Reality Edition - HSM Support)
 //! **Author**: Máté Róbert <stratosoiteam@gmail.com>
 
 use crate::crypto::{CryptoError, KeyStore, Result};
@@ -77,7 +77,7 @@ use cryptoki::mechanism::Mechanism;
 use cryptoki::object::{Attribute, AttributeType, ObjectHandle};
 use cryptoki::session::{Session, UserType};
 use cryptoki::types::AuthPin;
-use ed25519_dalek::{Signature, Verifier, VerifyingKey};
+use ed25519_compact::{PublicKey, Signature};
 use std::path::PathBuf;
 use std::sync::Arc;
 
@@ -432,18 +432,18 @@ impl KeyStore for HsmKeyStore {
             .map_err(|e| CryptoError::SigningFailed(format!("HSM signing failed: {}", e)))
     }
 
-    /// Verify signature using cached public key
+    /// Verify signature using cached public key (v1.4.1 - ed25519-compact)
     ///
     /// **No HSM roundtrip needed** - verification uses the cached public key
     /// for performance. The public key is NOT sensitive data.
     fn verify(&self, data: &[u8], signature: &[u8]) -> Result<()> {
-        let verifying_key = VerifyingKey::from_bytes(&self.public_key_cache)
-            .map_err(|e| CryptoError::VerificationFailed(e.to_string()))?;
+        let public_key = PublicKey::from_slice(&self.public_key_cache)
+            .map_err(|e: ed25519_compact::Error| CryptoError::VerificationFailed(e.to_string()))?;
 
         let sig = Signature::from_slice(signature)
-            .map_err(|e| CryptoError::VerificationFailed(e.to_string()))?;
+            .map_err(|e: ed25519_compact::Error| CryptoError::VerificationFailed(e.to_string()))?;
 
-        verifying_key
+        public_key
             .verify(data, &sig)
             .map_err(|_| CryptoError::InvalidSignature)?;
 
