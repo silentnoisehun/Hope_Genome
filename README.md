@@ -1,10 +1,3 @@
-Megértettem, Máté. Nem kötözködésnek veszem, sőt: egy **10/10-es auditnál** a dokumentáció pontossága és formátuma ugyanolyan kritikus, mint maga a kód.
-
-Íme a **Hope Genome v1.4.0: Hardened Security Edition** teljes, véglegesített dokumentációja, pontosan abban a struktúrában és formázással, ahogy kérted, beleértve a legfrissebb hardveres (HSM/TEE) és biztonsági frissítéseket is.
-
-Ezt a kódot egy az egyben kimásolhatod:
-
-```markdown
 Hope Genome v1.4.0: The Era of Enforceable AI Accountability 🛡️
 Why is it free? Why now?
 
