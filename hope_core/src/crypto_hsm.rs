@@ -285,7 +285,7 @@ impl HsmKeyStore {
             .map_err(|_| CryptoError::InvalidKeyFormat("Failed to parse public key".into()))?;
 
         Ok(HsmKeyStore {
-            pkcs11,
+            _pkcs11: pkcs11,
             session,
             token_label: token_label.to_string(),
             key_label: key_label.to_string(),
@@ -401,7 +401,7 @@ impl HsmKeyStore {
             .map_err(|_| CryptoError::InvalidKeyFormat("Failed to parse public key".into()))?;
 
         Ok(HsmKeyStore {
-            pkcs11,
+            _pkcs11: pkcs11,
             session,
             token_label: token_label.to_string(),
             key_label: key_label.to_string(),
