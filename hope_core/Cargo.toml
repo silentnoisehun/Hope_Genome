@@ -1,6 +1,6 @@
 [package]
 name = "hope_core"
-version = "1.6.0"
+version = "1.6.1"
 edition = "2021"
 authors = ["Máté Róbert <stratosoiteam@gmail.com>"]
 description = "Tamper-evident cryptographic framework for AI accountability - Python Bindings Edition"

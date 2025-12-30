@@ -7,7 +7,7 @@ import pytest
 def test_import():
     """Test that the module can be imported"""
     import hope_genome
-    assert hope_genome.__version__ == "1.6.0"
+    assert hope_genome.__version__ == "1.6.1"
     assert "Máté Róbert" in hope_genome.__author__
 
 
