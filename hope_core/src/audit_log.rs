@@ -1,3 +1,6 @@
+// TODO v1.5.0: Migrate AuditLog to use KeyStore trait instead of deprecated KeyPair
+#![allow(deprecated)]
+
 use crate::crypto::{hash_bytes, KeyPair};
 use crate::proof::{Action, IntegrityProof};
 use serde::{Deserialize, Serialize};

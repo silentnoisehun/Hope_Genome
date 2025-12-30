@@ -1,3 +1,6 @@
+// TODO v1.5.0: Migrate ConsensusVerifier to use KeyStore trait instead of deprecated KeyPair
+#![allow(deprecated)]
+
 use crate::crypto::KeyPair;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;

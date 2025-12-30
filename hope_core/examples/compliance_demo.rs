@@ -29,7 +29,10 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     println!("   ✅ Found component:");
     println!("      Name: {}", component.name);
     println!("      Type: {}", component.component_type);
-    println!("      Version: {}", component.version.as_ref().unwrap_or(&"N/A".to_string()));
+    println!(
+        "      Version: {}",
+        component.version.as_ref().unwrap_or(&"N/A".to_string())
+    );
     println!("      Hashes: {}\n", component.hashes.len());
 
     // 3. Extract SHA-256 hash from SBOM
@@ -79,7 +82,8 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let ml_models = aibom.find_components_by_type("machine-learning-model");
     println!("   ✅ Found {} ML models:", ml_models.len());
     for model in ml_models {
-        println!("      - {} (v{})",
+        println!(
+            "      - {} (v{})",
             model.name,
             model.version.as_ref().unwrap_or(&"N/A".to_string())
         );
@@ -88,12 +92,7 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
 
     // 8. Demonstrate complete workflow with convenience function
     println!("🚀 Complete workflow with convenience function...");
-    match validate_component_integrity(
-        aibom_path,
-        model_name,
-        "SHA-256",
-        &runtime_hash,
-    ) {
+    match validate_component_integrity(aibom_path, model_name, "SHA-256", &runtime_hash) {
         Ok(()) => {
             println!("   ✅ Complete validation workflow successful!\n");
         }

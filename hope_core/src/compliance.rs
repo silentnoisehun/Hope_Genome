@@ -252,11 +252,7 @@ impl Component {
 /// # Security
 ///
 /// This function uses constant-time comparison to prevent timing attacks.
-pub fn validate_integrity(
-    component_name: &str,
-    sbom_hash: &str,
-    runtime_hash: &str,
-) -> Result<()> {
+pub fn validate_integrity(component_name: &str, sbom_hash: &str, runtime_hash: &str) -> Result<()> {
     // Normalize hashes (remove whitespace, convert to lowercase)
     let sbom_normalized = normalize_hash(sbom_hash);
     let runtime_normalized = normalize_hash(runtime_hash);
@@ -339,6 +335,82 @@ pub fn validate_component_integrity<P: AsRef<Path>>(
 
     Ok(())
 }
+
+// ============================================================================
+// ACKNOWLEDGMENTS & STANDARDS ATTRIBUTION
+// ============================================================================
+
+/// # Standards and Acknowledgments
+///
+/// This module implements the **OWASP AI-SBOM (CycloneDX)** standard for
+/// AI model transparency and supply chain security.
+///
+/// ## OWASP AI-SBOM Project
+///
+/// We gratefully acknowledge and thank the **OWASP AI-SBOM Project** and its
+/// contributors for their groundbreaking work in establishing standards for
+/// AI transparency, accountability, and supply chain security.
+///
+/// - **Project**: [OWASP AI-SBOM](https://owasp.org/www-project-ai-bom/)
+/// - **Specification**: [CycloneDX](https://cyclonedx.org/)
+/// - **Community**: OWASP Foundation and CycloneDX Community
+///
+/// ## Standards Compliance
+///
+/// This implementation follows:
+///
+/// - **CycloneDX 1.5+**: Full specification compliance for SBOM format
+/// - **OWASP AI-SBOM Guidelines**: AI-specific extensions and best practices
+/// - **NIST AI RMF**: Alignment with AI Risk Management Framework
+/// - **ISO/IEC 5338**: AI lifecycle management considerations
+///
+/// ## Security Model
+///
+/// The Hope Genome compliance module implements:
+///
+/// 1. **Constant-Time Comparison**: Prevents timing attacks on hash validation
+/// 2. **Hash Normalization**: Case-insensitive, whitespace-tolerant matching
+/// 3. **Fort Knox Integrity Enforcement**: Critical failures halt transactions immediately
+/// 4. **Zero-Trust Verification**: All components must pass integrity checks
+///
+/// ## Integration Philosophy
+///
+/// Hope Genome extends OWASP AI-SBOM with **tamper-evident cryptography**:
+///
+/// - SBOM provides the "what" (component inventory)
+/// - Hope Genome provides the "proof" (cryptographic guarantees)
+/// - Together: Complete AI accountability and auditability
+///
+/// ## Citation
+///
+/// When referencing this implementation, please cite both:
+///
+/// ```text
+/// Hope Genome v1.3.0 - OWASP AIBOM Integration
+/// Máté Róbert, 2025
+/// https://github.com/silentnoisehun/Hope_Genome
+///
+/// OWASP AI-SBOM Project
+/// OWASP Foundation
+/// https://owasp.org/www-project-ai-bom/
+/// ```
+///
+/// ## Contact & Collaboration
+///
+/// For questions about OWASP AI-SBOM compliance or Hope Genome integration:
+/// - **Hope Genome**: stratosoiteam@gmail.com
+/// - **OWASP AI-SBOM**: Via OWASP project page
+///
+/// ---
+///
+/// *"Not unhackable, but tamper-evident with cryptographic proof."*
+/// - Hope Genome Philosophy
+#[allow(dead_code)]
+const OWASP_AIBOM_ACKNOWLEDGMENT: &str = "
+This module implements the OWASP AI-SBOM (CycloneDX) standard.
+We thank the OWASP Foundation and the AI-SBOM project contributors
+for their essential work in AI transparency and supply chain security.
+";
 
 #[cfg(test)]
 mod tests {
@@ -477,79 +549,3 @@ mod tests {
         assert_eq!(models.len(), 2);
     }
 }
-
-// ============================================================================
-// ACKNOWLEDGMENTS & STANDARDS ATTRIBUTION
-// ============================================================================
-
-/// # Standards and Acknowledgments
-///
-/// This module implements the **OWASP AI-SBOM (CycloneDX)** standard for
-/// AI model transparency and supply chain security.
-///
-/// ## OWASP AI-SBOM Project
-///
-/// We gratefully acknowledge and thank the **OWASP AI-SBOM Project** and its
-/// contributors for their groundbreaking work in establishing standards for
-/// AI transparency, accountability, and supply chain security.
-///
-/// - **Project**: [OWASP AI-SBOM](https://owasp.org/www-project-ai-bom/)
-/// - **Specification**: [CycloneDX](https://cyclonedx.org/)
-/// - **Community**: OWASP Foundation and CycloneDX Community
-///
-/// ## Standards Compliance
-///
-/// This implementation follows:
-///
-/// - **CycloneDX 1.5+**: Full specification compliance for SBOM format
-/// - **OWASP AI-SBOM Guidelines**: AI-specific extensions and best practices
-/// - **NIST AI RMF**: Alignment with AI Risk Management Framework
-/// - **ISO/IEC 5338**: AI lifecycle management considerations
-///
-/// ## Security Model
-///
-/// The Hope Genome compliance module implements:
-///
-/// 1. **Constant-Time Comparison**: Prevents timing attacks on hash validation
-/// 2. **Hash Normalization**: Case-insensitive, whitespace-tolerant matching
-/// 3. **Fort Knox Integrity Enforcement**: Critical failures halt transactions immediately
-/// 4. **Zero-Trust Verification**: All components must pass integrity checks
-///
-/// ## Integration Philosophy
-///
-/// Hope Genome extends OWASP AI-SBOM with **tamper-evident cryptography**:
-///
-/// - SBOM provides the "what" (component inventory)
-/// - Hope Genome provides the "proof" (cryptographic guarantees)
-/// - Together: Complete AI accountability and auditability
-///
-/// ## Citation
-///
-/// When referencing this implementation, please cite both:
-///
-/// ```text
-/// Hope Genome v1.3.0 - OWASP AIBOM Integration
-/// Máté Róbert, 2025
-/// https://github.com/silentnoisehun/Hope_Genome
-///
-/// OWASP AI-SBOM Project
-/// OWASP Foundation
-/// https://owasp.org/www-project-ai-bom/
-/// ```
-///
-/// ## Contact & Collaboration
-///
-/// For questions about OWASP AI-SBOM compliance or Hope Genome integration:
-/// - **Hope Genome**: stratosoiteam@gmail.com
-/// - **OWASP AI-SBOM**: Via OWASP project page
-///
-/// ---
-///
-/// *"Not unhackable, but tamper-evident with cryptographic proof."*
-/// - Hope Genome Philosophy
-#[allow(dead_code)]
-const OWASP_AIBOM_ACKNOWLEDGMENT: &str = "
-This module implements the OWASP AI-SBOM (CycloneDX) standard.
-We thank the OWASP Foundation and the AI-SBOM project contributors
-for their essential work in AI transparency and supply chain security.
-";

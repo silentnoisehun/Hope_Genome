@@ -6,7 +6,7 @@ use std::fs::{remove_file, OpenOptions};
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 use thiserror::Error;
-use uuid::Uuid; // Kell az egyedi temp fájlokhoz!
+use uuid::Uuid; // Required for unique temporary files
 
 #[derive(Debug, Error)]
 pub enum ExecutorError {
@@ -45,9 +45,9 @@ pub enum ExecutionResult {
 
 pub struct SecureExecutor {
     auditor: ProofAuditor,
-    #[allow(dead_code)]
+    #[allow(dead_code)] // TODO v1.5.0: Integrate audit log persistence
     audit_log: AuditLog,
-    storage_root: PathBuf, // <--- A BÖRTÖN (Jail Root)
+    storage_root: PathBuf, // Security jail root - all paths confined within this directory
 }
 
 impl SecureExecutor {

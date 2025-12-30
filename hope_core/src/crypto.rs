@@ -41,7 +41,7 @@
 //! **Version**: 1.4.0 (Hardened Security Edition)
 //! **Author**: Máté Róbert <stratosoiteam@gmail.com>
 
-use ed25519_dalek::{Signer, Verifier, SigningKey, VerifyingKey, Signature};
+use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
 use rand::rngs::OsRng;
 use sha2::{Digest, Sha256};
 use thiserror::Error;
@@ -266,7 +266,10 @@ impl KeyStore for SoftwareKeyStore {
     }
 
     fn identifier(&self) -> String {
-        format!("SoftwareKeyStore(Ed25519:{})", hex::encode(&self.public_key_bytes()[0..8]))
+        format!(
+            "SoftwareKeyStore(Ed25519:{})",
+            hex::encode(&self.public_key_bytes()[0..8])
+        )
     }
 }
 
@@ -314,7 +317,6 @@ pub struct HsmKeyStore {
 
     /// Cached public key (for verification without HSM roundtrip)
     public_key_cache: Vec<u8>,
-
     // Future: PKCS#11 context, session handle, etc.
     // pkcs11_ctx: pkcs11::Ctx,
     // session: pkcs11::types::CK_SESSION_HANDLE,

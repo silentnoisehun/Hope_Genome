@@ -37,7 +37,7 @@
 //! **Version**: 1.4.0 (Hardened Security Edition)
 //! **Author**: Máté Róbert <stratosoiteam@gmail.com>
 
-use crate::crypto::{KeyStore, CryptoError};
+use crate::crypto::{CryptoError, KeyStore};
 use crate::nonce_store::{NonceStore, NonceStoreError};
 use crate::proof::IntegrityProof;
 use thiserror::Error;
@@ -191,7 +191,7 @@ impl ProofAuditor {
     /// # Example
     /// ```rust
     /// use hope_core::auditor::ProofAuditor;
-    /// use hope_core::crypto::SoftwareKeyStore;
+    /// use hope_core::crypto::{KeyStore, SoftwareKeyStore}; // KeyStore trait needed for .sign()
     /// use hope_core::nonce_store::MemoryNonceStore;
     /// use hope_core::proof::{Action, IntegrityProof};
     ///
@@ -247,7 +247,7 @@ impl ProofAuditor {
     /// # Example
     /// ```rust
     /// use hope_core::auditor::ProofAuditor;
-    /// use hope_core::crypto::SoftwareKeyStore;
+    /// use hope_core::crypto::{KeyStore, SoftwareKeyStore}; // KeyStore trait needed for .sign()
     /// use hope_core::nonce_store::MemoryNonceStore;
     /// use hope_core::proof::{Action, IntegrityProof};
     ///

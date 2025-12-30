@@ -19,6 +19,7 @@
 //! **Version**: 1.4.0 (Hardened Security Edition)
 //! **Author**: Máté Róbert <stratosoiteam@gmail.com>
 
+#[allow(deprecated)] // KeyPair import for backward compatibility functions
 use crate::crypto::{hash_bytes, KeyPair, KeyStore};
 use crate::proof::{Action, IntegrityProof};
 use thiserror::Error;
@@ -96,8 +97,8 @@ impl SealedGenome {
     /// let rules = vec!["Do no harm".to_string()];
     /// let genome = SealedGenome::new(rules).unwrap();
     /// ```
+    #[allow(deprecated)] // Uses deprecated with_keypair for backward compatibility
     pub fn new(rules: Vec<String>) -> Result<Self> {
-        #[allow(deprecated)]
         let keypair = KeyPair::generate()?;
         Self::with_keypair(rules, keypair)
     }
@@ -417,11 +418,8 @@ mod tests {
         let key_store = SoftwareKeyStore::generate().unwrap();
         let key_store_clone = key_store.clone();
 
-        let mut genome = SealedGenome::with_key_store(
-            vec!["Rule 1".to_string()],
-            Box::new(key_store),
-        )
-        .unwrap();
+        let mut genome =
+            SealedGenome::with_key_store(vec!["Rule 1".to_string()], Box::new(key_store)).unwrap();
 
         genome.seal().unwrap();
 
@@ -430,18 +428,16 @@ mod tests {
 
         // Verify signature with the same key store
         let signing_data = proof.signing_data();
-        assert!(key_store_clone.verify(&signing_data, &proof.signature).is_ok());
+        assert!(key_store_clone
+            .verify(&signing_data, &proof.signature)
+            .is_ok());
     }
 
     #[test]
     #[allow(deprecated)]
     fn test_backward_compatibility_with_keypair() {
         let keypair = KeyPair::generate().unwrap();
-        let mut genome = SealedGenome::with_keypair(
-            vec!["Rule 1".to_string()],
-            keypair,
-        )
-        .unwrap();
+        let mut genome = SealedGenome::with_keypair(vec!["Rule 1".to_string()], keypair).unwrap();
 
         genome.seal().unwrap();
 

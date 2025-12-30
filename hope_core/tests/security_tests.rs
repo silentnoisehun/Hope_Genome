@@ -2,20 +2,23 @@ use hope_core::*;
 use std::thread;
 use std::time::Duration;
 
-/// Security Test Suite for Hope Genome v1.2
+/// Security Test Suite for Hope Genome v1.4.0
 ///
 /// This module contains comprehensive security attack simulations
 /// to validate the tamper-evident guarantees of the framework.
+/// Updated to use v1.4.0 API (SoftwareKeyStore + MemoryNonceStore)
 
 #[test]
 fn test_replay_attack_comprehensive() {
-    // Setup
-    let shared_keypair = KeyPair::generate().unwrap();
+    // Setup (v1.4.0 API)
+    let key_store = SoftwareKeyStore::generate().unwrap();
+    let nonce_store = MemoryNonceStore::new();
     let mut genome =
-        SealedGenome::with_keypair(vec!["Do no harm".to_string()], shared_keypair.clone()).unwrap();
+        SealedGenome::with_key_store(vec!["Do no harm".to_string()], Box::new(key_store.clone()))
+            .unwrap();
     genome.seal().unwrap();
 
-    let mut auditor = ProofAuditor::new(shared_keypair.clone());
+    let mut auditor = ProofAuditor::new(Box::new(key_store), Box::new(nonce_store));
 
     // Create an action and get proof
     let action = Action::delete("sensitive_file.txt");
@@ -42,11 +45,11 @@ fn test_replay_attack_comprehensive() {
 
 #[test]
 fn test_oracle_attack_action_substitution() {
-    // Setup
-    let shared_keypair = KeyPair::generate().unwrap();
-    let mut genome = SealedGenome::with_keypair(
+    // Setup (v1.4.0 API)
+    let key_store = SoftwareKeyStore::generate().unwrap();
+    let mut genome = SealedGenome::with_key_store(
         vec!["Allow only safe operations".to_string()],
-        shared_keypair.clone(),
+        Box::new(key_store),
     )
     .unwrap();
     genome.seal().unwrap();
@@ -78,14 +81,16 @@ fn test_oracle_attack_action_substitution() {
 
 #[test]
 fn test_proof_expiration_attack() {
-    // Setup
-    let shared_keypair = KeyPair::generate().unwrap();
+    // Setup (v1.4.0 API)
+    let key_store = SoftwareKeyStore::generate().unwrap();
+    let nonce_store = MemoryNonceStore::new();
     let mut genome =
-        SealedGenome::with_keypair(vec!["Rule 1".to_string()], shared_keypair.clone()).unwrap();
+        SealedGenome::with_key_store(vec!["Rule 1".to_string()], Box::new(key_store.clone()))
+            .unwrap();
     genome.set_default_ttl(1); // 1 second TTL
     genome.seal().unwrap();
 
-    let mut auditor = ProofAuditor::new(shared_keypair.clone());
+    let mut auditor = ProofAuditor::new(Box::new(key_store.clone()), Box::new(nonce_store));
 
     // Create proof with short TTL
     let action = Action::delete("file.txt");
@@ -101,7 +106,8 @@ fn test_proof_expiration_attack() {
     thread::sleep(Duration::from_secs(2));
 
     // Create a new auditor (simulating new session)
-    let mut auditor2 = ProofAuditor::new(shared_keypair);
+    let nonce_store2 = MemoryNonceStore::new();
+    let mut auditor2 = ProofAuditor::new(Box::new(key_store), Box::new(nonce_store2));
 
     // Expired proof should be rejected
     let result = auditor2.verify_proof(&proof);
@@ -117,13 +123,15 @@ fn test_proof_expiration_attack() {
 
 #[test]
 fn test_signature_forgery_detection() {
-    // Setup
-    let shared_keypair = KeyPair::generate().unwrap();
+    // Setup (v1.4.0 API)
+    let key_store = SoftwareKeyStore::generate().unwrap();
+    let nonce_store = MemoryNonceStore::new();
     let mut genome =
-        SealedGenome::with_keypair(vec!["Rule 1".to_string()], shared_keypair.clone()).unwrap();
+        SealedGenome::with_key_store(vec!["Rule 1".to_string()], Box::new(key_store.clone()))
+            .unwrap();
     genome.seal().unwrap();
 
-    let mut auditor = ProofAuditor::new(shared_keypair);
+    let mut auditor = ProofAuditor::new(Box::new(key_store), Box::new(nonce_store));
 
     // Create a valid proof
     let action = Action::delete("file.txt");
@@ -174,8 +182,9 @@ fn test_action_hash_collision_resistance() {
 }
 
 #[test]
+#[allow(deprecated)] // AuditLog still uses deprecated KeyPair API (TODO v1.5.0)
 fn test_audit_log_chain_integrity() {
-    // Setup
+    // Setup - Using deprecated KeyPair as AuditLog not yet migrated to v1.4.0
     let keypair = KeyPair::generate().unwrap();
     let mut log = AuditLog::new(keypair).unwrap();
 
@@ -207,10 +216,10 @@ fn test_audit_log_chain_integrity() {
 
 #[test]
 fn test_nonce_uniqueness_across_proofs() {
-    // Setup
-    let shared_keypair = KeyPair::generate().unwrap();
+    // Setup (v1.4.0 API)
+    let key_store = SoftwareKeyStore::generate().unwrap();
     let mut genome =
-        SealedGenome::with_keypair(vec!["Rule 1".to_string()], shared_keypair).unwrap();
+        SealedGenome::with_key_store(vec!["Rule 1".to_string()], Box::new(key_store)).unwrap();
     genome.seal().unwrap();
 
     // Generate multiple proofs
@@ -227,13 +236,15 @@ fn test_nonce_uniqueness_across_proofs() {
 
 #[test]
 fn test_capsule_hash_binding() {
-    // Create two genomes with different rules
-    let keypair1 = KeyPair::generate().unwrap();
-    let mut genome1 = SealedGenome::with_keypair(vec!["Rule A".to_string()], keypair1).unwrap();
+    // Create two genomes with different rules (v1.4.0 API)
+    let key_store1 = SoftwareKeyStore::generate().unwrap();
+    let mut genome1 =
+        SealedGenome::with_key_store(vec!["Rule A".to_string()], Box::new(key_store1)).unwrap();
     genome1.seal().unwrap();
 
-    let keypair2 = KeyPair::generate().unwrap();
-    let mut genome2 = SealedGenome::with_keypair(vec!["Rule B".to_string()], keypair2).unwrap();
+    let key_store2 = SoftwareKeyStore::generate().unwrap();
+    let mut genome2 =
+        SealedGenome::with_key_store(vec!["Rule B".to_string()], Box::new(key_store2)).unwrap();
     genome2.seal().unwrap();
 
     // Capsule hashes should be different
@@ -278,10 +289,11 @@ fn test_action_canonicalization_prevents_bypass() {
 }
 
 #[test]
+#[allow(deprecated)] // ConsensusVerifier still uses deprecated KeyPair API (TODO v1.5.0)
 fn test_consensus_byzantine_fault_tolerance() {
     let verifier = ConsensusVerifier::new(3, 0.1);
 
-    // Create keypairs for sensors
+    // Create keypairs for sensors - Using deprecated KeyPair as ConsensusVerifier not yet migrated
     let keypairs: Vec<KeyPair> = (0..5).map(|_| KeyPair::generate().unwrap()).collect();
 
     // Scenario: 3 honest sensors, 2 malicious
@@ -314,9 +326,9 @@ fn test_time_of_check_to_time_of_use_protection() {
     // This test demonstrates that the framework binds actions to proofs
     // preventing TOCTOU attacks where action changes between verification and execution
 
-    let shared_keypair = KeyPair::generate().unwrap();
+    let key_store = SoftwareKeyStore::generate().unwrap();
     let mut genome =
-        SealedGenome::with_keypair(vec!["Rule 1".to_string()], shared_keypair.clone()).unwrap();
+        SealedGenome::with_key_store(vec!["Rule 1".to_string()], Box::new(key_store)).unwrap();
     genome.seal().unwrap();
 
     // Time of Check: Get proof for one action
@@ -337,23 +349,27 @@ fn test_time_of_check_to_time_of_use_protection() {
 
 #[test]
 fn test_proof_cannot_be_reused_across_sessions() {
-    let shared_keypair = KeyPair::generate().unwrap();
+    // v1.4.0 API with separate nonce stores for each session
+    let key_store = SoftwareKeyStore::generate().unwrap();
     let mut genome =
-        SealedGenome::with_keypair(vec!["Rule 1".to_string()], shared_keypair.clone()).unwrap();
+        SealedGenome::with_key_store(vec!["Rule 1".to_string()], Box::new(key_store.clone()))
+            .unwrap();
     genome.seal().unwrap();
 
     let action = Action::delete("file.txt");
     let proof = genome.verify_action(&action).unwrap();
 
-    // Session 1: Use proof
-    let mut auditor1 = ProofAuditor::new(shared_keypair.clone());
+    // Session 1: Use proof with its own nonce store
+    let nonce_store1 = MemoryNonceStore::new();
+    let mut auditor1 = ProofAuditor::new(Box::new(key_store.clone()), Box::new(nonce_store1));
     assert!(auditor1.verify_proof(&proof).is_ok());
 
-    // Session 2: Try to reuse proof (new auditor = new session)
-    let mut auditor2 = ProofAuditor::new(shared_keypair);
+    // Session 2: Try to reuse proof (new auditor = new session with separate nonce store)
+    let nonce_store2 = MemoryNonceStore::new();
+    let mut auditor2 = ProofAuditor::new(Box::new(key_store), Box::new(nonce_store2));
 
-    // This would succeed because it's a new auditor (new nonce set)
-    // In production, nonce tracking would be persistent
+    // This would succeed because it's a new auditor with empty nonce history
+    // In production, nonce tracking would be persistent (RocksDB/Redis)
     let result = auditor2.verify_proof(&proof);
     assert!(result.is_ok(), "New auditor doesn't have nonce history");
 

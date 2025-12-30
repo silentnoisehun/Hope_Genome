@@ -174,9 +174,8 @@ impl NonceStore for MemoryNonceStore {
         let initial_count = self.nonces.len();
 
         // Remove expired entries
-        self.nonces.retain(|_, (timestamp, ttl)| {
-            now - *timestamp <= *ttl
-        });
+        self.nonces
+            .retain(|_, (timestamp, ttl)| now - *timestamp <= *ttl);
 
         Ok(initial_count - self.nonces.len())
     }
@@ -187,7 +186,7 @@ impl NonceStore for MemoryNonceStore {
 // ============================================================================
 
 #[cfg(feature = "rocksdb-nonce-store")]
-use rocksdb::{DB, Options, WriteBatch};
+use rocksdb::{Options, WriteBatch, DB};
 
 #[cfg(feature = "rocksdb-nonce-store")]
 /// Persistent nonce store backed by RocksDB
@@ -226,8 +225,7 @@ impl RocksDbNonceStore {
         opts.create_if_missing(true);
         opts.create_missing_column_families(true);
 
-        let db = DB::open(&opts, path)
-            .map_err(|e| NonceStoreError::StorageError(e.to_string()))?;
+        let db = DB::open(&opts, path).map_err(|e| NonceStoreError::StorageError(e.to_string()))?;
 
         Ok(RocksDbNonceStore { db })
     }
@@ -255,7 +253,9 @@ impl RocksDbNonceStore {
 impl NonceStore for RocksDbNonceStore {
     fn check_and_insert(&mut self, nonce: [u8; 32], ttl_seconds: u64) -> Result<()> {
         // Check if exists
-        if self.db.get(&nonce)
+        if self
+            .db
+            .get(&nonce)
             .map_err(|e| NonceStoreError::StorageError(e.to_string()))?
             .is_some()
         {
@@ -266,7 +266,8 @@ impl NonceStore for RocksDbNonceStore {
         let now = chrono::Utc::now().timestamp() as u64;
         let value = Self::encode_value(now, ttl_seconds);
 
-        self.db.put(&nonce, &value)
+        self.db
+            .put(&nonce, &value)
             .map_err(|e| NonceStoreError::StorageError(e.to_string()))?;
 
         Ok(())
@@ -287,7 +288,8 @@ impl NonceStore for RocksDbNonceStore {
             }
         }
 
-        self.db.write(batch)
+        self.db
+            .write(batch)
             .map_err(|e| NonceStoreError::StorageError(e.to_string()))?;
 
         Ok(())
@@ -314,7 +316,8 @@ impl NonceStore for RocksDbNonceStore {
             }
         }
 
-        self.db.write(batch)
+        self.db
+            .write(batch)
             .map_err(|e| NonceStoreError::StorageError(e.to_string()))?;
 
         Ok(expired_count)
@@ -362,15 +365,17 @@ impl RedisNonceStore {
     /// # Errors
     /// Returns error if Redis connection cannot be established
     pub fn new(redis_url: &str, key_prefix: impl Into<String>) -> Result<Self> {
-        let client = Client::open(redis_url)
-            .map_err(|e| NonceStoreError::StorageError(e.to_string()))?;
+        let client =
+            Client::open(redis_url).map_err(|e| NonceStoreError::StorageError(e.to_string()))?;
 
         // Test connection
-        let mut con = client.get_connection()
+        let mut con = client
+            .get_connection()
             .map_err(|e| NonceStoreError::StorageError(e.to_string()))?;
 
         // Ping to verify
-        let _: String = redis::cmd("PING").query(&mut con)
+        let _: String = redis::cmd("PING")
+            .query(&mut con)
             .map_err(|e| NonceStoreError::StorageError(e.to_string()))?;
 
         Ok(RedisNonceStore {
@@ -386,7 +391,8 @@ impl RedisNonceStore {
 
     /// Get connection (helper)
     fn get_connection(&self) -> Result<Connection> {
-        self.client.get_connection()
+        self.client
+            .get_connection()
             .map_err(|e| NonceStoreError::StorageError(e.to_string()))
     }
 }
@@ -401,8 +407,8 @@ impl NonceStore for RedisNonceStore {
         let was_set: bool = redis::cmd("SET")
             .arg(&key)
             .arg(1)
-            .arg("NX")  // Only set if not exists
-            .arg("EX")  // Expiry in seconds
+            .arg("NX") // Only set if not exists
+            .arg("EX") // Expiry in seconds
             .arg(ttl_seconds)
             .query(&mut con)
             .map_err(|e| NonceStoreError::StorageError(e.to_string()))?;
@@ -443,7 +449,8 @@ impl NonceStore for RedisNonceStore {
                 .map_err(|e| NonceStoreError::StorageError(e.to_string()))?;
 
             if !keys.is_empty() {
-                let deleted: usize = con.del(&keys)
+                let deleted: usize = con
+                    .del(&keys)
                     .map_err(|e| NonceStoreError::StorageError(e.to_string()))?;
                 total_deleted += deleted;
             }

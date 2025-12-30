@@ -99,15 +99,18 @@ pub use audit_log::{AuditEntry, AuditLog, Decision};
 pub use auditor::ProofAuditor;
 pub use canonicalize::{are_equivalent, canonicalize_action, CanonicalAction};
 pub use compliance::{
-    validate_component_integrity, validate_integrity, AiBom, Component, ComplianceError, Hash,
+    validate_component_integrity, validate_integrity, AiBom, ComplianceError, Component, Hash,
 };
 pub use consensus::{ConsensusVerifier, SensorReading};
 
 // v1.4.0: Updated crypto exports
+#[allow(deprecated)] // KeyPair export for backward compatibility (TODO v2.0.0: remove)
 pub use crypto::{
-    generate_nonce, hash_bytes,
+    generate_nonce,
+    hash_bytes,
     KeyPair, // Deprecated but still exported for backward compatibility
-    KeyStore, SoftwareKeyStore, // v1.4.0: NEW - Trait-based key management
+    KeyStore,
+    SoftwareKeyStore, // v1.4.0: NEW - Trait-based key management
 };
 
 // v1.4.0: Nonce store exports
@@ -183,21 +186,20 @@ mod integration_tests {
     }
 
     #[test]
+    #[allow(deprecated)] // AuditLog and KeyPair usage (TODO v1.5.0)
     fn test_end_to_end_with_executor_v1_4_0() {
-        // Create shared key store
+        // Create shared key store for genome
         let key_store = SoftwareKeyStore::generate().unwrap();
-
-        // Create genome
-        let mut genome = SealedGenome::new(vec!["Rule 1".to_string()]).unwrap();
+        let mut genome =
+            SealedGenome::with_key_store(vec!["Rule 1".to_string()], Box::new(key_store.clone()))
+                .unwrap();
         genome.seal().unwrap();
 
-        // Create executor components (still use old API for now)
-        #[allow(deprecated)]
-        let auditor_keypair = KeyPair::generate().unwrap();
+        // Create executor components (auditor uses same key store)
         let nonce_store = MemoryNonceStore::new();
-        let auditor = ProofAuditor::new(Box::new(auditor_keypair), Box::new(nonce_store));
+        let auditor = ProofAuditor::new(Box::new(key_store), Box::new(nonce_store));
 
-        #[allow(deprecated)]
+        // AuditLog still uses deprecated KeyPair API (TODO v1.5.0)
         let log_keypair = KeyPair::generate().unwrap();
         let audit_log = AuditLog::new(log_keypair).unwrap();
 
@@ -220,7 +222,7 @@ mod integration_tests {
         let proof = genome.verify_action(&action).unwrap();
 
         assert_eq!(proof.signature.len(), 64); // Ed25519
-        // Old RSA-2048 would be ~256 bytes
+                                               // Old RSA-2048 would be ~256 bytes
     }
 
     #[test]
