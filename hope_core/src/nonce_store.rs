@@ -255,7 +255,7 @@ impl NonceStore for RocksDbNonceStore {
         // Check if exists
         if self
             .db
-            .get(&nonce)
+            .get(nonce)
             .map_err(|e| NonceStoreError::StorageError(e.to_string()))?
             .is_some()
         {
@@ -267,7 +267,7 @@ impl NonceStore for RocksDbNonceStore {
         let value = Self::encode_value(now, ttl_seconds);
 
         self.db
-            .put(&nonce, &value)
+            .put(nonce, value)
             .map_err(|e| NonceStoreError::StorageError(e.to_string()))?;
 
         Ok(())
@@ -282,10 +282,8 @@ impl NonceStore for RocksDbNonceStore {
         let mut batch = WriteBatch::default();
 
         let iter = self.db.iterator(rocksdb::IteratorMode::Start);
-        for item in iter {
-            if let Ok((key, _)) = item {
-                batch.delete(&key);
-            }
+        for (key, _) in iter.flatten() {
+            batch.delete(&key);
         }
 
         self.db
@@ -305,13 +303,11 @@ impl NonceStore for RocksDbNonceStore {
         let mut expired_count = 0;
 
         let iter = self.db.iterator(rocksdb::IteratorMode::Start);
-        for item in iter {
-            if let Ok((key, value)) = item {
-                if let Some((timestamp, ttl)) = Self::decode_value(&value) {
-                    if now - timestamp > ttl {
-                        batch.delete(&key);
-                        expired_count += 1;
-                    }
+        for (key, value) in iter.flatten() {
+            if let Some((timestamp, ttl)) = Self::decode_value(&value) {
+                if now - timestamp > ttl {
+                    batch.delete(&key);
+                    expired_count += 1;
                 }
             }
         }
@@ -436,7 +432,6 @@ impl NonceStore for RedisNonceStore {
         // SCAN for all keys with prefix (safer than KEYS for production)
         let pattern = format!("{}*", self.key_prefix);
         let mut cursor = 0u64;
-        let mut total_deleted = 0;
 
         loop {
             let (new_cursor, keys): (u64, Vec<String>) = redis::cmd("SCAN")
@@ -449,10 +444,8 @@ impl NonceStore for RedisNonceStore {
                 .map_err(|e| NonceStoreError::StorageError(e.to_string()))?;
 
             if !keys.is_empty() {
-                let deleted: usize = con
-                    .del(&keys)
+                con.del(&keys)
                     .map_err(|e| NonceStoreError::StorageError(e.to_string()))?;
-                total_deleted += deleted;
             }
 
             cursor = new_cursor;

@@ -45,9 +45,9 @@ Hope Genome is a production-ready framework for ensuring **accountability** and 
 ✅ **Multi-Source Consensus** - Byzantine Fault Tolerance for sensor data
 ✅ **OWASP AI-SBOM Enforcement** - First active runtime enforcement layer for CycloneDX 1.5+
 
-## 🌐 OWASP AI-SBOM Integration (NEW in v1.3.0)
+## 🌐 OWASP AI-SBOM Integration (v1.4.0)
 
-Hope Genome v1.3.0 is the **first active Runtime Enforcement layer** for the OWASP AI-SBOM standard.
+Hope Genome v1.4.0 is the **first active Runtime Enforcement layer** for the OWASP AI-SBOM standard.
 
 ### What This Means
 
@@ -320,7 +320,7 @@ cargo test -- --nocapture
 - [**API Reference**](https://docs.rs/hope_core) - Full Rust API documentation
 - [**Examples**](examples/) - Usage examples and demos
 
-### OWASP AI-SBOM Integration (v1.3.0)
+### OWASP AI-SBOM Integration (v1.4.0)
 - [**AIBOM Integration Guide**](hope_core/AIBOM_INTEGRATION.md) - Complete OWASP AI-SBOM integration documentation
 - [**OWASP Compliance Report**](hope_core/OWASP_COMPLIANCE_REPORT.md) - Official compliance attestation
 - [**Executive Summary**](hope_core/OWASP_EXECUTIVE_SUMMARY.md) - Leadership brief for OWASP collaboration
@@ -382,15 +382,15 @@ maturin develop
 
 ### Citation
 
-When referencing Hope Genome v1.3.0 in academic or professional work:
+When referencing Hope Genome v1.4.0 in academic or professional work:
 
 ```bibtex
 @software{hope_genome_2025,
-  title = {Hope Genome v1.3.0: OWASP AIBOM Integration},
+  title = {Hope Genome v1.4.0: Hardened Security Edition with OWASP AIBOM Integration},
   author = {Róbert, Máté},
   year = {2025},
   url = {https://github.com/silentnoisehun/Hope-Genome},
-  note = {Tamper-evident cryptographic framework for AI accountability with OWASP AI-SBOM compliance}
+  note = {Tamper-evident cryptographic framework for AI accountability with Ed25519 signatures and OWASP AI-SBOM compliance}
 }
 ```
 
@@ -430,6 +430,6 @@ Hope Genome is my contribution to ensuring that AI becomes a tool of truth, not 
 
 ---
 
-**Hope Genome v1.3.0** - Bringing cryptographic accountability and OWASP AI-SBOM compliance to AI systems.
+**Hope Genome v1.4.0 - Hardened Security Edition** - Bringing cryptographic accountability and OWASP AI-SBOM compliance to AI systems.
 
 *Built with ❤️ by Máté Róbert and Claude, in collaboration with the OWASP community*
