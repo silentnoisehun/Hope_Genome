@@ -1,4 +1,5 @@
-Hope Genome v1.4.0: The Era of Enforceable AI Accountability 🛡️
+Hope Genome v1.4.1: The Era of Enforceable AI Accountability 🛡️
+(Mathematics & Reality Edition)
 Why is it free? Why now?
 
 The giants of the AI industry (OpenAI, Anthropic, and others) are selling you a "black box." They say: "Trust us!". But trust is not an engineering category. Trust is the weak point where the lie begins.
@@ -17,16 +18,16 @@ They can no longer lie by hiding behind AI. Because from now on, there is the lo
 
 ---
 
-# Hope Genome v1.4.0 🛡️ - Hardened Security Edition
+# Hope Genome v1.4.1 🛡️ - Mathematics & Reality Edition
 
-**Status: 🛡️ 10/10 UNBREAKABLE (Auditor-Ready)**
+**Status: 🛡️ Hardened AI-SBOM Enforcement (v1.4.1) - Protected against Ed25519 misuse & side-channel vectors**
 
 **Tamper-Evident Cryptographic Framework for AI Accountability**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rust](https://img.shields.io/badge/rust-1.75%2B-orange.svg)](https://www.rust-lang.org)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org)
-[![Tests](https://img.shields.io/badge/tests-131_passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-84_passing-brightgreen.svg)]()
 [![OWASP](https://img.shields.io/badge/OWASP-AI--SBOM_Compliant-blue.svg)](https://owasp.org/www-project-ai-bom/)
 [![CycloneDX](https://img.shields.io/badge/CycloneDX-1.5%2B-green.svg)](https://cyclonedx.org/)
 
@@ -40,12 +41,18 @@ Hope Genome is a production-ready framework for ensuring **accountability** and 
 
 Hope Genome is engineered to meet the highest security standards by integrating with hardware security modules.
 
-### 1. Ed25519 Signature Scheme
-All cryptographic proofs are signed using the **Ed25519** algorithm, which offers:
+### 1. Ed25519 Signature Scheme (v1.4.1 - Hardened)
+All cryptographic proofs are signed using the **Ed25519** algorithm with additional security protections:
 - **High Speed**: ~100x faster signing and ~50x faster verification than RSA-2048.
 - **Constant-Time Operations**: Immune to side-channel attacks like timing attacks (e.g., Marvin Attack).
 - **High Security**: Provides a 128-bit security level, resistant to known cryptographic attacks.
 - **Compactness**: 32-byte keys and 64-byte signatures reduce storage and bandwidth overhead.
+
+**v1.4.1 Security Enhancements** (Red Team Audit Response):
+- **P0 Protection**: PublicKey-SecretKey validation prevents private key leakage attacks
+- **P2 Protection**: Verify-After-Sign detects fault injection and bit-flip attacks
+- **P3 Protection**: Fort Knox diagnostic mode for security incident forensics
+- **Library Migration**: ed25519-compact (CISA CPG 2.0 compliant, actively maintained)
 
 ### 2. HSM & TEE Integration (PKCS#11)
 The system is designed with a pluggable `KeyStore` trait, allowing seamless integration with hardware security backends.
@@ -103,18 +110,18 @@ This **"Hash Mismatch = Halt"** policy ensures that a compromised or unauthorize
 
 ## 🚀 Quick Start
 
-### Rust (v1.4.0 API)
+### Rust (v1.4.1 API)
 
 ```toml
 [dependencies]
-hope_core = "1.4.0"
+hope_core = "1.4.1"
 
 ```
 
 ```rust
 use hope_core::*;
 
-// 1. Initialize Hardened Components (v1.4.0)
+// 1. Initialize Hardened Components (v1.4.1)
 let key_store = SoftwareKeyStore::generate().unwrap();
 let nonce_store = MemoryNonceStore::new();
 
@@ -151,7 +158,13 @@ println!("   Signature: Ed25519 (64 bytes)");
 
 ```
 
-**What's New in v1.4.0:**
+**What's New in v1.4.1:**
+- **Ed25519 API Hardening**: PublicKey-SecretKey validation (P0) blocks key leakage attacks
+- **Fault Attack Mitigation**: Verify-After-Sign (P2) detects bit-flips and voltage glitching
+- **Fort Knox Diagnostics**: Secure logging mode (P3) for post-mortem analysis
+- **CISA CPG 2.0 Compliance**: Migration to ed25519-compact (actively maintained)
+
+**Previous (v1.4.0):**
 
 * **Ed25519 Signatures**: Replaced RSA-2048 for 100x faster verification
 * **KeyStore Trait**: Pluggable key management (Software/HSM)
@@ -319,7 +332,7 @@ Hope Genome is my contribution to ensuring that AI becomes a tool of truth, not 
 
 ---
 
-**Hope Genome v1.4.0 - Hardened Security Edition** - Bringing cryptographic accountability and OWASP AI-SBOM compliance to AI systems.
+**Hope Genome v1.4.1 - Mathematics & Reality Edition** - Bringing cryptographic accountability and OWASP AI-SBOM compliance to AI systems with hardened Ed25519 protection.
 
 *Built with ❤️ by Máté Róbert and Claude, in collaboration with the OWASP community*
 

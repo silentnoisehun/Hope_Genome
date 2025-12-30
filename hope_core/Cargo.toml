@@ -1,6 +1,6 @@
 [package]
 name = "hope_core"
-version = "1.4.0"
+version = "1.4.1"
 edition = "2021"
 authors = ["Máté Róbert <stratosoiteam@gmail.com>"]
 description = "Tamper-evident cryptographic framework for AI accountability - Hardened Security Edition"
@@ -20,8 +20,10 @@ hex = "0.4.3"
 unicode-normalization = "0.1.24"
 uuid = { version = "1.0", features = ["v4"] }
 
-# v1.4.0: Ed25519 Migration (replaces RSA, eliminates Marvin attack)
-ed25519-dalek = { version = "2.1", features = ["rand_core"] }
+# v1.4.1: Ed25519 Hardening (CISA CPG 2.0 compliance)
+# Migration from ed25519-dalek to ed25519-compact for enhanced API safety
+ed25519-compact = "2.1"
+signature = "2.2"
 
 # v1.4.0: Persistent Nonce Store (optional backends)
 rocksdb = { version = "0.22", optional = true }

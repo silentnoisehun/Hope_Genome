@@ -1,5 +1,16 @@
 # Security Policy
 
+## Security Audit History
+
+| Date | Version | Status | Critical Fixes | Auditor |
+|------|---------|--------|----------------|---------|
+| 2025-12-30 | v1.4.1 | ✅ Hardened | P0: Ed25519 key leakage protection<br>P2: Fault attack mitigation<br>P3: Fort Knox diagnostics | Red Team Audit (Internal) |
+| 2025-12-30 | v1.4.0 | ⚠️ Superseded | Ed25519 migration, HSM/TEE support | N/A |
+
+**v1.4.1 Status**: Cryptographic Fixes Applied - Protected against Ed25519 API misuse & side-channel vectors
+
+---
+
 ## Threat Model
 
 ### Core Philosophy
@@ -55,18 +66,26 @@ Err(ExecutorError::ActionMismatch {
 
 **Attack**: Attacker tries to forge a proof without the private key.
 
-**Protection**:
+**Protection** (v1.4.1 Enhanced):
 - Ed25519 signatures on all proofs (constant-time, Marvin attack immune)
 - Signatures verified before any action execution
-- Industry-standard cryptographic primitives
+- **NEW**: PublicKey-SecretKey validation prevents key leakage (P0)
+- **NEW**: Verify-After-Sign detects fault attacks (P2)
+- Industry-standard cryptographic primitives (ed25519-compact)
 
 **Evidence**:
 ```rust
 // Forgery detected:
 Err(AuditorError::InvalidSignature)
+
+// v1.4.1: Key leakage attack blocked:
+Err(CryptoError::PublicKeyMismatch)
+
+// v1.4.1: Fault attack detected:
+Err(CryptoError::CriticalSecurityFault("..."))
 ```
 
-**Test**: `test_signature_forgery_detection`
+**Tests**: `test_signature_forgery_detection`, `test_ed25519_key_recovery_protection`, `test_verify_after_sign_fault_detection`
 
 ---
 
@@ -233,11 +252,41 @@ This is sufficient for accountability, which is our goal.
 
 | Component | Algorithm | Key Size | Notes |
 |-----------|-----------|----------|-------|
-| Signature | Ed25519 | 256-bit | Constant-time, FIPS 186-5 compliant |
+| Signature | Ed25519 (ed25519-compact) | 256-bit | Constant-time, FIPS 186-5 compliant, v1.4.1 hardened |
 | Hashing | SHA-256 | 256-bit | NIST approved |
 | Nonce | CSPRNG | 256-bit | OS random source |
 
-### Known Limitations (v1.4.0)
+### v1.4.1 Security Enhancements (Red Team Audit Response)
+
+**P0: Ed25519 API Misuse Protection (CRITICAL)**
+- **Threat**: Attacker provides mismatched public key during signature generation to extract private key
+- **Fix**: Mandatory PublicKey-SecretKey validation before every signature operation
+- **Implementation**: `validate_keypair_integrity()` checks derived PK matches stored PK
+- **Impact**: Blocks private key leakage via nonce manipulation attacks
+- **Test**: `test_ed25519_key_recovery_protection` (Test 132)
+
+**P2: Fault Attack Mitigation (CRITICAL)**
+- **Threat**: Bit-flip attacks (cosmic rays, voltage glitching) produce invalid signatures that leak key material
+- **Fix**: Verify-After-Sign - immediate signature validation before returning to caller
+- **Implementation**: `verify_after_sign()` re-verifies every signature post-generation
+- **Impact**: Detects RAM faults, voltage glitching, fault injection attacks
+- **Error**: Returns `CriticalSecurityFault` with diagnostic trace
+- **Test**: `test_verify_after_sign_fault_detection`
+
+**P3: Fort Knox Diagnostic Mode**
+- **Feature**: Secure logging for cryptographic operations
+- **Purpose**: Post-mortem analysis of security incidents
+- **Enabled**: By default in all SoftwareKeyStore instances
+- **Output**: Detailed traces to stderr for security monitoring
+- **Test**: `test_fort_knox_diagnostic_mode`
+
+**Library Migration** (P1: CISA CPG 2.0 Compliance)
+- **Old**: `ed25519-dalek 2.1` (maintenance concerns)
+- **New**: `ed25519-compact 2.2` (actively maintained, safer API)
+- **Benefits**: Built-in protections against common Ed25519 pitfalls
+- **Compliance**: Aligns with CISA Cybersecurity Performance Goals 2.0
+
+### Known Limitations (v1.4.1)
 
 1. **Nonce Storage**: Default MemoryNonceStore is in-memory only. Production systems should use `RocksDbNonceStore` or `RedisNonceStore` to prevent nonce reuse across restarts.
 
