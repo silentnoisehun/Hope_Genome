@@ -36,7 +36,7 @@ jobs:
           target: ${{ matrix.target }}
           args: --release --out dist --features python-bindings
           sccache: 'true'
-          manylinux: auto
+          manylinux: ${{ matrix.target == 'aarch64' && 'manylinux2014' || 'auto' }}
         env:
           PYO3_USE_ABI3_FORWARD_COMPATIBILITY: '1'  # Support forward compatibility with newer Python
 
