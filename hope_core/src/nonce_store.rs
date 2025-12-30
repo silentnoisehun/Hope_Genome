@@ -183,13 +183,11 @@ impl NonceStore for MemoryNonceStore {
 
             // If still at capacity after cleanup, reject
             if cleaned == 0 && self.nonces.len() >= self.max_nonces {
-                return Err(NonceStoreError::StorageError(
-                    format!(
-                        "MemoryNonceStore capacity limit reached ({} nonces). \
+                return Err(NonceStoreError::StorageError(format!(
+                    "MemoryNonceStore capacity limit reached ({} nonces). \
                          Consider using RocksDbNonceStore for production.",
-                        self.max_nonces
-                    )
-                ));
+                    self.max_nonces
+                )));
             }
         }
 
@@ -219,11 +217,10 @@ impl NonceStore for MemoryNonceStore {
 
         // v1.6.0 H-1: Use saturating_sub() to prevent underflow
         // Remove expired entries
-        self.nonces
-            .retain(|_, (timestamp, ttl)| {
-                let elapsed = now.saturating_sub(*timestamp);
-                elapsed <= *ttl
-            });
+        self.nonces.retain(|_, (timestamp, ttl)| {
+            let elapsed = now.saturating_sub(*timestamp);
+            elapsed <= *ttl
+        });
 
         Ok(initial_count - self.nonces.len())
     }
