@@ -1,6 +1,6 @@
 [package]
 name = "hope_core"
-version = "1.4.1"
+version = "1.4.2"
 edition = "2021"
 authors = ["Máté Róbert <stratosoiteam@gmail.com>"]
 description = "Tamper-evident cryptographic framework for AI accountability - Hardened Security Edition"
@@ -24,6 +24,10 @@ uuid = { version = "1.0", features = ["v4"] }
 # Migration from ed25519-dalek to ed25519-compact for enhanced API safety
 ed25519-compact = "2.1"
 signature = "2.2"
+
+# v1.4.2: Red Team Audit P3 Fixes
+subtle = "2.6"     # Constant-time comparisons (P3.2)
+zeroize = "1.8"    # Memory zeroing on drop (P3.3)
 
 # v1.4.0: Persistent Nonce Store (optional backends)
 rocksdb = { version = "0.22", optional = true }
