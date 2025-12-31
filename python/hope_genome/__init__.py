@@ -1,8 +1,9 @@
 """
-Hope Genome v1.6.1 - Python Bindings
+Hope Genome v1.7.0 - Python Bindings
 =====================================
 
 Tamper-evident cryptographic framework for AI accountability.
+"Vas Szigora" Edition - Iron Discipline Enforcement.
 
 Example:
     >>> import hope_genome as hg
@@ -12,10 +13,16 @@ Example:
     >>> proof = genome.verify_action(action)
     >>> print(proof.approved)
     True
+
+Watchdog Example (v1.7.0):
+    >>> watchdog = hg.Watchdog(rules=["Do no harm"], capsule_hash="...")
+    >>> result = watchdog.verify_action(action)
+    >>> if result.hard_reset_required:
+    ...     print("HARD RESET REQUIRED!")
 """
 
-__version__ = "1.6.1"
-__author__ = "Máté Róbert <stratosoiteam@gmail.com>"
+__version__ = "1.7.0"
+__author__ = "Mate Robert <stratosoiteam@gmail.com>"
 
 # Import Rust core module
 from ._hope_core import (
@@ -39,12 +46,21 @@ from ._hope_core import (
     # AibomVerifier,
     # AibomComponent,
 
+    # v1.7.0: Watchdog (Vas Szigora)
+    Watchdog,
+    ViolationCounter,
+    DenialProof,
+    HardResetSignal,
+    WatchdogResult,
+    max_violations,
+
     # Exceptions
     GenomeError,
     CryptoError,
     AuditorError,
     ConsensusError,
     AibomError,
+    WatchdogError,
 )
 
 # Conditional imports (optional backends)
@@ -98,12 +114,21 @@ __all__ = [
     # "AibomVerifier",
     # "AibomComponent",
 
+    # v1.7.0: Watchdog (Vas Szigora)
+    "Watchdog",
+    "ViolationCounter",
+    "DenialProof",
+    "HardResetSignal",
+    "WatchdogResult",
+    "max_violations",
+
     # Exceptions
     "GenomeError",
     "CryptoError",
     "AuditorError",
     "ConsensusError",
     "AibomError",
+    "WatchdogError",
 
     # Metadata
     "__version__",
