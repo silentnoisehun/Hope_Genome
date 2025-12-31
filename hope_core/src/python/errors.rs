@@ -9,6 +9,7 @@ use crate::auditor::AuditorError;
 use crate::consensus::ConsensusError;
 use crate::crypto::CryptoError;
 use crate::genome::GenomeError;
+use crate::watchdog::WatchdogError;
 
 // Custom Python exceptions
 create_exception!(_hope_core, PyGenomeError, PyException, "Hope Genome error");
@@ -35,6 +36,12 @@ create_exception!(
     PyAibomError,
     PyException,
     "AI-BOM verification error"
+);
+create_exception!(
+    _hope_core,
+    PyWatchdogError,
+    PyException,
+    "Watchdog enforcement error (v1.7.0)"
 );
 
 // Conversion implementations
@@ -151,6 +158,26 @@ impl From<AuditError> for PyErr {
             }
             AuditError::CryptoError(e) => {
                 PyCryptoError::new_err(format!("Cryptographic error in audit log: {}", e))
+            }
+        }
+    }
+}
+
+impl From<WatchdogError> for PyErr {
+    fn from(err: WatchdogError) -> PyErr {
+        match err {
+            WatchdogError::RuleViolation { rule, reason } => {
+                PyWatchdogError::new_err(format!("Rule violation: {} - {}", rule, reason))
+            }
+            WatchdogError::HardResetRequired(count, max) => PyWatchdogError::new_err(format!(
+                "HARD RESET REQUIRED: {} consecutive violations (max: {})",
+                count, max
+            )),
+            WatchdogError::WatchdogLocked => {
+                PyWatchdogError::new_err("Watchdog is locked - hard reset and restart required")
+            }
+            WatchdogError::CryptoError(e) => {
+                PyCryptoError::new_err(format!("Watchdog crypto error: {}", e))
             }
         }
     }

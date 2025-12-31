@@ -1,6 +1,6 @@
-//! # Hope Genome v1.4.0 - Tamper-Evident Cryptographic Framework for AI Accountability
+//! # Hope Genome v1.7.0 - Tamper-Evident Cryptographic Framework for AI Accountability
 //!
-//! **Hardened Security Edition**
+//! **"Vas Szigora" Edition - Iron Discipline Enforcement**
 //!
 //! Hope Genome is a framework for ensuring accountability and auditability in AI systems.
 //! It provides cryptographic proofs, immutable audit trails, and multi-layer defense mechanisms.
@@ -23,6 +23,9 @@
 //! - ✅ **Multi-Source Consensus** - Byzantine Fault Tolerance
 //! - ✅ **Persistent Nonce Store** - Replay protection survives restarts (v1.4.0)
 //! - ✅ **HSM Abstraction** - Ready for PKCS#11 hardware security modules (v1.4.0)
+//! - ✅ **Watchdog Enforcement** - "Vas Szigora" iron discipline (v1.7.0)
+//! - ✅ **Hard Reset** - Forced context clear after 10 violations (v1.7.0)
+//! - ✅ **DenialProof** - Cryptographic proof of rule violations (v1.7.0)
 //!
 //! ## Example (v1.4.0 New API)
 //!
@@ -93,6 +96,7 @@ pub mod executor;
 pub mod genome;
 pub mod nonce_store; // v1.4.0: NEW - Persistent nonce storage
 pub mod proof;
+pub mod watchdog; // v1.7.0: NEW - "Vas Szigora" enforcement engine
 
 // v1.4.0: Conditionally compiled backend modules
 #[cfg(feature = "hsm-support")]
@@ -143,6 +147,11 @@ pub use nonce_store::RedisNonceStore;
 pub use executor::{ExecutionResult, SecureExecutor};
 pub use genome::SealedGenome;
 pub use proof::{Action, ActionType, IntegrityProof, VerificationStatus};
+
+// v1.7.0: Watchdog exports ("Vas Szigora")
+pub use watchdog::{
+    DenialProof, HardResetSignal, ViolationCounter, Watchdog, WatchdogError, MAX_VIOLATIONS,
+};
 
 /// Version of the Hope Genome framework
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

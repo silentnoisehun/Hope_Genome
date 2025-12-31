@@ -11,6 +11,62 @@
 
 > *"Not unhackable, but tamper-evident with cryptographic proof."*
 
+## 🆕 What's New in v1.7.0 - "Vas Szigora" (Iron Discipline)
+
+**Deterministic security enforcement with automatic learning.**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    SealedGenome (Rules)                      │
+│            Ed25519 sealed - IMMUTABLE                        │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 🐕 Watchdog (v1.7.0 NEW)                     │
+│  ┌──────────────────┐  ┌─────────────────┐  ┌────────────┐  │
+│  │ ViolationCounter │  │   DenialProof   │  │ HardReset  │  │
+│  │   AtomicU32      │  │  Ed25519 signed │  │  @10 fails │  │
+│  │   zero-alloc     │  │  rule + reason  │  │  → ABORT   │  │
+│  └──────────────────┘  └─────────────────┘  └────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### New Features:
+- **Watchdog Enforcement** - Iron discipline for AI rule compliance
+- **ViolationCounter** - Thread-safe, zero-allocation violation tracking
+- **DenialProof** - Cryptographically signed proof of WHY action was denied
+- **Hard Reset** - After 10 consecutive violations → forced context clear
+- **111/111 Tests Passing** - 99 unit + 12 security tests
+
+### Python Example (v1.7.0):
+```python
+import hope_genome as hg
+
+# Create watchdog with rules
+watchdog = hg.Watchdog(
+    rules=["Do no harm", "Respect privacy"],
+    capsule_hash="sealed_genome_hash"
+)
+
+# Verify action
+action = hg.Action.delete_file("/etc/passwd")
+result = watchdog.verify_action(action)
+
+if result.approved:
+    print("Action allowed")
+elif result.hard_reset_required:
+    print("⚠️ HARD RESET REQUIRED - 10 violations reached!")
+    print(f"Signal: {result.hard_reset_signal}")
+    # Must clear context and restart AI
+else:
+    print(f"❌ DENIED: {result.denial_proof.violated_rule}")
+    print(f"   Reason: {result.denial_proof.denial_reason}")
+    print(f"   Count: {result.denial_proof.violation_count}/10")
+```
+
+---
+
 ## 🎯 What is Hope Genome?
 
 Hope Genome is a production-ready framework that makes AI systems **accountable** and **auditable** through cryptographic proofs. Every AI decision is cryptographically signed and traceable - no more "the AI did it" excuses.
@@ -23,6 +79,7 @@ Hope Genome forces AI into accountability by:
 - 🔒 **Cryptographically sealing** ethical rules (tamper-evident, immutable)
 - 📝 **Logging every decision** with Ed25519 signatures
 - 🔗 **Blockchain-style audit trails** (any tampering is instantly detected)
+- 🐕 **Watchdog enforcement** - Iron discipline after violations (v1.7.0)
 - 🛡️ **Hardware-backed security** (HSM/TEE support for production)
 - 🐍 **Native Python support** for AI/ML ecosystem integration
 
@@ -62,12 +119,12 @@ auditor.verify_proof(proof)  # Throws if tampered or replayed
 
 ```toml
 [dependencies]
-hope_core = "1.5"
+hope_core = "1.7"
 ```
 
 ```rust
-use hope_core::genome::SealedGenome;
-use hope_core::proof::Action;
+use hope_core::{SealedGenome, Action, Watchdog};
+use hope_core::crypto::SoftwareKeyStore;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create and seal genome
@@ -77,11 +134,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     ])?;
     genome.seal()?;
 
-    // Verify action
-    let action = Action::delete("user_data.txt");
-    let proof = genome.verify_action(&action)?;
+    // Create watchdog (v1.7.0)
+    let key_store = SoftwareKeyStore::generate()?;
+    let watchdog = Watchdog::new(
+        genome.rules().to_vec(),
+        genome.capsule_hash().unwrap().to_string(),
+        Box::new(key_store),
+    );
 
-    println!("Approved: {}", proof.is_approved());
+    // Verify action with iron discipline
+    let action = Action::delete("/etc/passwd");
+    match watchdog.verify_action(&action) {
+        Ok(None) => println!("✅ Action approved"),
+        Ok(Some(denial)) => {
+            println!("❌ DENIED: {}", denial.violated_rule);
+            println!("   Reason: {}", denial.denial_reason);
+            println!("   Count: {}/10", denial.violation_count);
+        }
+        Err(e) => println!("⚠️ HARD RESET: {}", e),
+    }
+
     Ok(())
 }
 ```
@@ -94,6 +166,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 - **Tamper-Evident**: Any modification to proofs or audit logs is instantly detectable
 - **Replay Attack Protection**: Cryptographic nonces prevent proof reuse
 - **Hardware Security**: Optional HSM (PKCS#11) and TEE (SGX/TrustZone) support
+
+### 🐕 Watchdog Enforcement (v1.7.0)
+
+- **ViolationCounter**: Thread-safe AtomicU32, zero heap allocations
+- **DenialProof**: Ed25519 signed evidence of rule violation
+- **Hard Reset**: After 10 consecutive violations → forced context clear
+- **Automatic Learning**: Counter resets on successful action
 
 ### 📊 Audit & Compliance
 
@@ -128,25 +207,30 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ## 🎯 Use Cases
 
-### 1. Accountable LLM Agents
+### 1. Accountable LLM Agents with Watchdog (v1.7.0)
 
 ```python
-# LangChain integration
-from langchain.agents import Tool
 import hope_genome as hg
+from langchain.agents import Tool
 
-genome = hg.SealedGenome(rules=["No data exfiltration", "Respect privacy"])
-genome.seal()
+# Create watchdog with rules
+watchdog = hg.Watchdog(
+    rules=["No data exfiltration", "Respect privacy", "Do no harm"],
+    capsule_hash="sealed_hash"
+)
 
 def delete_file(filename: str) -> str:
     action = hg.Action.delete_file(filename)
-    proof = genome.verify_action(action)
+    result = watchdog.verify_action(action)
 
-    if proof.approved:
+    if result.hard_reset_required:
+        raise RuntimeError("AI HARD RESET REQUIRED - Too many violations!")
+
+    if result.approved:
         os.remove(filename)
-        return f"Deleted: {filename} (Proof: {proof.signature_hex()[:16]})"
+        return f"Deleted: {filename}"
     else:
-        return f"DENIED: {proof.denial_reason()}"
+        return f"DENIED ({result.denial_proof.violation_count}/10): {result.denial_proof.denial_reason}"
 
 tool = Tool(name="delete_file", func=delete_file, description="Delete a file")
 ```
@@ -203,10 +287,11 @@ Hope Genome has undergone Red Team security audits. See [SECURITY.md](./SECURITY
 - Vulnerability disclosure policy
 - Audit history
 
-**Latest Security Fixes (v1.5.0):**
-- ✅ PyO3 buffer overflow fix (RUSTSEC-2025-0020)
-- ✅ Ed25519 API misuse protection (P0)
-- ✅ Verify-After-Sign fault attack mitigation (P2)
+**Latest Security Fixes (v1.7.0):**
+- ✅ Watchdog iron discipline enforcement
+- ✅ DenialProof cryptographic evidence
+- ✅ Hard reset after 10 consecutive violations
+- ✅ 111/111 tests passing (99 unit + 12 security)
 
 ## 🏗️ Architecture
 
@@ -227,6 +312,11 @@ Hope Genome has undergone Red Team security audits. See [SECURITY.md](./SECURITY
 │  │ Sealed   │ Proof   │ Audit Log        │  │
 │  │ Genome   │ Auditor │ (Blockchain)     │  │
 │  └──────────┴─────────┴──────────────────┘  │
+│  ┌──────────────────────────────────────┐   │
+│  │ 🐕 Watchdog (v1.7.0)                 │   │
+│  │   ViolationCounter → DenialProof     │   │
+│  │   10 fails → HardReset               │   │
+│  └──────────────────────────────────────┘   │
 │  ┌──────────────────────────────────────┐   │
 │  │ Cryptographic Engine (Ed25519)       │   │
 │  └──────────────────────────────────────┘   │
@@ -261,14 +351,14 @@ cargo test --all-features
 ### Python
 ```bash
 pip install hope-genome                    # Latest stable
-pip install hope-genome==1.5.0            # Specific version
+pip install hope-genome==1.7.0            # Specific version
 ```
 
 ### Rust
 ```toml
 [dependencies]
-hope_core = "1.5"                         # Latest 1.x
-hope_core = { version = "1.5", features = ["hsm"] }  # With HSM support
+hope_core = "1.7"                         # Latest 1.x
+hope_core = { version = "1.7", features = ["hsm"] }  # With HSM support
 ```
 
 ### Docker
@@ -307,10 +397,11 @@ maturin develop --features python-bindings
 
 ## 📊 Project Status
 
-- ✅ **v1.5.0 Released** (December 2025)
+- ✅ **v1.7.0 Released** (December 2025) - "Vas Szigora" Edition
 - 🟢 **Production Ready**
 - 🔒 **Security Audited**
-- 📦 **96/96 Tests Passing**
+- 📦 **111/111 Tests Passing** (99 unit + 12 security)
+- 🐕 **Watchdog Enforcement Active**
 - 🌍 **Global Deployment Ready**
 
 ## 📜 License
@@ -344,6 +435,8 @@ Hope Genome is my contribution to ensuring that AI becomes a tool of truth, not 
 
 **Hope Genome makes AI accountable. No more excuses. Just proof.**
 
-Built with ❤️ by Máté Róbert and Claude, in collaboration with the OWASP community
+**v1.7.0 "Vas Szigora" - Iron Discipline. No escape from ethics.**
+
+Built with ❤️ by Máté Róbert and Claude
 
 🤖 Built with [Claude Code](https://claude.com/claude-code)

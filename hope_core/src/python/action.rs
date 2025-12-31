@@ -10,6 +10,13 @@ pub struct PyAction {
     pub(crate) inner: Action,
 }
 
+impl PyAction {
+    /// Convert to Rust Action (for internal use)
+    pub fn to_rust_action(&self) -> Action {
+        self.inner.clone()
+    }
+}
+
 #[pymethods]
 impl PyAction {
     /// Create a file deletion action

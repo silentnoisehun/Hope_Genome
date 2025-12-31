@@ -1,9 +1,9 @@
 [package]
 name = "hope_core"
-version = "1.6.1"
+version = "1.7.0"
 edition = "2021"
 authors = ["Máté Róbert <stratosoiteam@gmail.com>"]
-description = "Tamper-evident cryptographic framework for AI accountability - Python Bindings Edition"
+description = "Tamper-evident cryptographic framework for AI accountability - Vas Szigora Edition (Iron Discipline Enforcement)"
 license = "MIT"
 repository = "https://github.com/silentnoisehun/Hope_Genome"
 keywords = ["ai-safety", "cryptography", "audit", "blockchain", "ethics"]

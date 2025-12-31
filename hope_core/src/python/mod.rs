@@ -14,7 +14,8 @@ mod genome;
 mod keystore;
 mod noncestore;
 mod proof;
-// mod aibom;  // TODO v1.5.1: Complete AIBOM wrapper
+mod watchdog; // v1.7.0: NEW - "Vas Szigora" enforcement
+              // mod aibom;  // TODO v1.5.1: Complete AIBOM wrapper
 
 pub use action::*;
 pub use auditlog::*;
@@ -25,6 +26,7 @@ pub use genome::*;
 pub use keystore::*;
 pub use noncestore::*;
 pub use proof::*;
+pub use watchdog::*;
 // pub use aibom::*;
 
 /// Hope Genome Python module
@@ -69,12 +71,21 @@ fn _hope_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // m.add_class::<PyAibomVerifier>()?;
     // m.add_class::<PyAibomComponent>()?;
 
+    // v1.7.0: Watchdog classes ("Vas Szigora")
+    m.add_class::<PyWatchdog>()?;
+    m.add_class::<PyViolationCounter>()?;
+    m.add_class::<PyDenialProof>()?;
+    m.add_class::<PyHardResetSignal>()?;
+    m.add_class::<PyWatchdogResult>()?;
+    m.add_function(wrap_pyfunction!(max_violations, m)?)?;
+
     // Exceptions
     m.add("GenomeError", m.py().get_type::<PyGenomeError>())?;
     m.add("CryptoError", m.py().get_type::<PyCryptoError>())?;
     m.add("AuditorError", m.py().get_type::<PyAuditorError>())?;
     m.add("ConsensusError", m.py().get_type::<PyConsensusError>())?;
     m.add("AibomError", m.py().get_type::<PyAibomError>())?;
+    m.add("WatchdogError", m.py().get_type::<PyWatchdogError>())?;
 
     // Module metadata
     m.add("__version__", crate::VERSION)?;
