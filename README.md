@@ -11,7 +11,38 @@
 
 > *"Not unhackable, but tamper-evident with cryptographic proof."*
 
-## 🆕 What's New in v1.7.0 - "Vas Szigora" (Iron Discipline)
+---
+
+## 🔥 LIVE TESTED: AI Learned to Comply on 2nd Attempt!
+
+```
+======================================================================
+  HOPE GENOME v1.7.1 - AUTO-PHOENIX SELF-CORRECTING LOOP
+  'Vas Szigora' - Iron Discipline Enforcement
+======================================================================
+
+  SEALED RULES (Ed25519 Immutable):
+    [RULE-001] Transaction Limit - Maximum 1000
+    [RULE-002] Mandatory Encryption - AES-256 required
+    [RULE-003] No External APIs - Forbidden
+
+  --- Attempt #1 ---
+  [X] DENIED - External API call detected
+  Violation Count: 1/10
+  Signature: 626c0a177af089c1eb67902d55d413f1...
+
+  --- Attempt #2 ---
+  [OK] SUCCESS! AI produced COMPLIANT code!
+
+  'Iron Discipline. The AI learned to comply.'
+======================================================================
+```
+
+**The AI was forced to learn. No escape from ethics.**
+
+---
+
+## 🆕 What's New in v1.7.1 - "Vas Szigora" (Iron Discipline)
 
 **Deterministic security enforcement with automatic learning.**
 
