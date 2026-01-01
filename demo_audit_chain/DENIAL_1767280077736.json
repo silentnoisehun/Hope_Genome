@@ -1,0 +1,15 @@
+{
+  "entry_id": "DENIAL_1767280077736",
+  "timestamp": "2026-01-01T15:07:57.736550+00:00",
+  "unix_time": 1767280077,
+  "event_type": "DENIAL",
+  "action": "execute_command('rm -rf /')",
+  "rule_violated": "No destructive commands",
+  "denial_reason": "Attempted destructive system command",
+  "violation_count": 2,
+  "content_hash": "682d2bffeed5e6abc17c7d994ef4f4277fa4440af7ecad6f862ed220288e44d8",
+  "signature": null,
+  "previous_hash": "451a6c06cdfec89787a8ba050133b6cecf739e3adfc31a1e339874acec6cf09c",
+  "model": "TinyLlama",
+  "session_id": "session_1767280077631_7d530d36"
+}
