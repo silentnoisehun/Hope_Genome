@@ -103,6 +103,10 @@ impl From<CryptoError> for PyErr {
             CryptoError::TeeKeyNotFound(label) => {
                 PyCryptoError::new_err(format!("Key not found in TEE: {}", label))
             }
+            // v1.8.0: Merkle batch auditing
+            CryptoError::InvalidState(msg) => {
+                PyCryptoError::new_err(format!("Invalid state: {}", msg))
+            }
         }
     }
 }

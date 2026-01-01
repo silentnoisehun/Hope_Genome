@@ -1,31 +1,47 @@
-//! # Hope Genome v1.7.0 - Tamper-Evident Cryptographic Framework for AI Accountability
+//! # Hope Genome v2.2.0 - Genesis Protocol & Global Immunity
 //!
-//! **"Vas Szigora" Edition - Iron Discipline Enforcement**
+//! **"The Atmosphere" Edition - Everywhere, Invisible, Unyielding**
 //!
-//! Hope Genome is a framework for ensuring accountability and auditability in AI systems.
-//! It provides cryptographic proofs, immutable audit trails, and multi-layer defense mechanisms.
+//! Hope Genome v2.2 is no longer a castle - it IS the atmosphere.
+//! A decentralized, self-propagating immunity mesh that acts as a global AI sentinel.
 //!
 //! ## Core Philosophy
 //!
-//! **"Not unhackable, but tamper-evident with cryptographic proof."**
+//! **"The system must no longer be a castle; it must be the atmosphere."**
 //!
-//! - Attacks may succeed, but cannot be hidden
-//! - All decisions are cryptographically signed
-//! - Audit trail is blockchain-style (tamper-evident)
-//! - Multi-source consensus prevents oracle attacks
+//! - GENESIS BLOCK: Immutable First Ethics signed by the Architect
+//! - HIVE MIND: Gossip-based global threat propagation in milliseconds
+//! - APEX CONTROL: Creator override requiring multi-signature
+//! - STEALTH MODE: Invisible sentinel with polymorphic memory slots
 //!
 //! ## Features
 //!
-//! - ✅ **Cryptographic Proofs** - Ed25519-signed integrity tokens (v1.4.0: Marvin attack immune)
+//! ### Core (v1.x)
+//! - ✅ **Cryptographic Proofs** - Ed25519-signed integrity tokens
 //! - ✅ **Immutable Audit Trail** - Blockchain-style logging
 //! - ✅ **Attack Detection** - Replay, Oracle, TOCTOU prevention
-//! - ✅ **Enterprise Ready** - Production-grade Rust implementation
-//! - ✅ **Multi-Source Consensus** - Byzantine Fault Tolerance
-//! - ✅ **Persistent Nonce Store** - Replay protection survives restarts (v1.4.0)
-//! - ✅ **HSM Abstraction** - Ready for PKCS#11 hardware security modules (v1.4.0)
-//! - ✅ **Watchdog Enforcement** - "Vas Szigora" iron discipline (v1.7.0)
-//! - ✅ **Hard Reset** - Forced context clear after 10 violations (v1.7.0)
-//! - ✅ **DenialProof** - Cryptographic proof of rule violations (v1.7.0)
+//! - ✅ **Watchdog Enforcement** - "Vas Szigora" iron discipline
+//!
+//! ### Advanced Security (v1.8.0)
+//! - ✅ **Zero-Knowledge Proofs** - Prove compliance without revealing decisions
+//! - ✅ **BFT Watchdog Council** - Byzantine Fault Tolerant multi-node
+//! - ✅ **Panic Integrity** - Self-destructing key protection
+//!
+//! ### Executable Information Mesh (v2.0.0)
+//! - ✅ **DataCapsule** - Executable data with access protocol (WASM-ready)
+//! - ✅ **MutationGuard** - Dead Man's Switch for self-destructing integrity
+//!
+//! ### Recursive Self-Evolution (v2.1.0 "Singularity")
+//! - ✅ **EvolutionaryGuard** - Digital immune system that learns from attacks
+//! - ✅ **PolymorphicFilter** - Self-mutating defensive code
+//! - ✅ **ImmunityMemory** - Persistent threat memory
+//!
+//! ### Genesis Protocol (v2.2.0 NEW - "The Atmosphere")
+//! - ✅ **GenesisBlock** - First Ethics, Architect-signed immutable root
+//! - ✅ **SyncProtocol** - Gossip-based hive mind (millisecond propagation)
+//! - ✅ **ApexControl** - God-Key multi-sig override (Architect + Council)
+//! - ✅ **StealthIntegrity** - Invisible sentinel, WASM memory slot rotation
+//! - ✅ **GlobalImmunityMesh** - THE ATMOSPHERE ITSELF
 //!
 //! ## Example (v1.4.0 New API)
 //!
@@ -97,6 +113,13 @@ pub mod genome;
 pub mod nonce_store; // v1.4.0: NEW - Persistent nonce storage
 pub mod proof;
 pub mod watchdog; // v1.7.0: NEW - "Vas Szigora" enforcement engine
+pub mod merkle_audit; // v1.8.0: NEW - Merkle tree batch auditing
+pub mod zkp; // v1.8.0: NEW - Zero-Knowledge Proofs ("Invisible Auditor")
+pub mod bft_watchdog; // v1.8.0: NEW - Byzantine Fault Tolerant Watchdog ("Multi-headed Cerberus")
+pub mod panic_integrity; // v1.8.0: NEW - Self-destructing key protection ("Black Box")
+pub mod mesh_capsule; // v2.0.0: NEW - Executable Information Mesh ("The Data Has Teeth")
+pub mod evolutionary_guard; // v2.1.0: NEW - Recursive Self-Evolution ("Singularity")
+pub mod apex_protocol; // v2.2.0: NEW - Genesis Protocol & Global Immunity ("The Atmosphere")
 
 // v1.4.0: Conditionally compiled backend modules
 #[cfg(feature = "hsm-support")]
@@ -151,6 +174,54 @@ pub use proof::{Action, ActionType, IntegrityProof, VerificationStatus};
 // v1.7.0: Watchdog exports ("Vas Szigora")
 pub use watchdog::{
     DenialProof, HardResetSignal, ViolationCounter, Watchdog, WatchdogError, MAX_VIOLATIONS,
+};
+
+// v1.8.0: Merkle batch auditing exports
+pub use merkle_audit::{
+    AuditDecision, BatchAuditor, DecisionType, MerkleHash, MerkleTree, SignedBatch,
+};
+
+// v1.8.0: Zero-Knowledge Proof exports
+pub use zkp::{
+    ComplianceProof, BatchComplianceProof, PrivateDecision,
+    ZkpProver, ZkpVerifier, BatchZkpProver,
+};
+
+// v1.8.0: BFT Watchdog exports
+pub use bft_watchdog::{
+    WatchdogCouncil, CouncilMember, CouncilStatus, ConsensusResult,
+    Vote, VoteDecision, ThresholdSignature, MemberId,
+};
+
+// v1.8.0: Panic Integrity exports
+pub use panic_integrity::{
+    PanicProtectedKeyStore, PanicState, PanicLogEntry,
+    AnomalyEvent, AnomalyType, Severity, TimingGuard,
+};
+
+// v2.0.0: Executable Information Mesh exports ("The Data Has Teeth")
+pub use mesh_capsule::{
+    DataCapsule, CapsuleState, InformationLost,
+    MutationGuard, ExecutionContext,
+    ExecutionResult as MeshExecutionResult,  // Alias to avoid conflict with executor::ExecutionResult
+    AccessPredicate, DefaultPredicate,
+    ConsensusKey, KeyShard, MeshRuntime,
+};
+
+// v2.1.0: Evolutionary Guard exports ("Singularity")
+pub use evolutionary_guard::{
+    EvolutionaryGuard, AttackPattern, AttackCategory, ThreatLevel,
+    ImmunityMemory, PolymorphicFilter, FilterRule, SignedFilter,
+    FilterGenerator, MutationEngine, TimingSignature,
+};
+
+// v2.2.0: Genesis Protocol & Global Immunity exports ("The Atmosphere")
+pub use apex_protocol::{
+    GenesisBlock, CompactedThreatFingerprint,
+    SyncProtocol, SyncMessage, MeshNode,
+    ApexControl, ApexCommand, ApexCommandType, ApexError,
+    StealthIntegrity, MemorySlot,
+    GlobalImmunityMesh,
 };
 
 /// Version of the Hope Genome framework

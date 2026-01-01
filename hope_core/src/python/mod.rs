@@ -15,6 +15,7 @@ mod keystore;
 mod noncestore;
 mod proof;
 mod watchdog; // v1.7.0: NEW - "Vas Szigora" enforcement
+mod merkle_audit; // v1.8.0: NEW - Merkle batch auditing
               // mod aibom;  // TODO v1.5.1: Complete AIBOM wrapper
 
 pub use action::*;
@@ -27,6 +28,7 @@ pub use keystore::*;
 pub use noncestore::*;
 pub use proof::*;
 pub use watchdog::*;
+pub use merkle_audit::*; // v1.8.0
 // pub use aibom::*;
 
 /// Hope Genome Python module
@@ -78,6 +80,13 @@ fn _hope_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyHardResetSignal>()?;
     m.add_class::<PyWatchdogResult>()?;
     m.add_function(wrap_pyfunction!(max_violations, m)?)?;
+
+    // v1.8.0: Merkle batch auditing classes
+    m.add_class::<PyDecisionType>()?;
+    m.add_class::<PyAuditDecision>()?;
+    m.add_class::<PyMerkleTree>()?;
+    m.add_class::<PySignedBatch>()?;
+    m.add_class::<PyBatchAuditor>()?;
 
     // Exceptions
     m.add("GenomeError", m.py().get_type::<PyGenomeError>())?;

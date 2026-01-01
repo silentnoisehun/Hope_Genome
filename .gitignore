@@ -45,5 +45,9 @@ audit_logs/
 *.key
 *.pub
 
+# Architect Keys (NEVER commit these!)
+architect_keys/
+hope_core/architect_keys/
+
 # Claude Code
 .claude/settings.local.json

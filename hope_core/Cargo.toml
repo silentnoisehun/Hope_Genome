@@ -1,9 +1,9 @@
 [package]
 name = "hope_core"
-version = "1.8.0"
+version = "2.0.0"
 edition = "2021"
 authors = ["Máté Róbert <stratosoiteam@gmail.com>"]
-description = "Tamper-evident cryptographic framework for AI accountability - Vas Szigora Edition with Multi-Model API Integrations"
+description = "Executable Information Mesh - Self-Validating Data Objects with ZKP, BFT, and Self-Destruction"
 license = "MIT"
 repository = "https://github.com/silentnoisehun/Hope_Genome"
 keywords = ["ai-safety", "cryptography", "audit", "blockchain", "ethics"]
@@ -30,7 +30,13 @@ signature = "2.2"
 
 # v1.4.2: Red Team Audit P3 Fixes
 subtle = "2.6"     # Constant-time comparisons (P3.2)
-zeroize = "1.8"    # Memory zeroing on drop (P3.3)
+zeroize = { version = "1.8", features = ["derive"] }    # Memory zeroing on drop (P3.3)
+
+# v1.8.0: Advanced Security Features ("Betonozás")
+# ZKP support - Schnorr-based zero-knowledge proofs
+curve25519-dalek = { version = "4.1", features = ["digest"] }
+# BFT support - threshold signatures
+parking_lot = "0.12"  # Fast mutexes for concurrent access
 
 # v1.4.0: Persistent Nonce Store (optional backends)
 rocksdb = { version = "0.22", optional = true }

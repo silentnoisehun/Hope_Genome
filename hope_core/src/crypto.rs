@@ -105,6 +105,10 @@ pub enum CryptoError {
 
     #[error("TEE key not found: {0}")]
     TeeKeyNotFound(String),
+
+    // v1.8.0: Merkle batch auditing errors
+    #[error("Invalid state: {0}")]
+    InvalidState(String),
 }
 
 pub type Result<T> = std::result::Result<T, CryptoError>;

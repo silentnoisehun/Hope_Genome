@@ -1,5 +1,5 @@
 """
-Hope Genome v1.7.1 - Python Bindings
+Hope Genome v1.8.0 - Python Bindings
 =====================================
 
 Tamper-evident cryptographic framework for AI accountability.
@@ -20,10 +20,16 @@ Watchdog Example (v1.7.0):
     >>> if result.hard_reset_required:
     ...     print("HARD RESET REQUIRED!")
 
-API Integrations (v1.7.1):
+API Integrations (v1.8.0):
     >>> from hope_genome.integrations import OpenAIWatchdog
     >>> client = OpenAIWatchdog(api_key="sk-...", rules=["No harm"])
     >>> response = client.chat("Hello!")  # Every call monitored!
+
+Merkle Batch Auditing (v1.8.0):
+    >>> from hope_genome import BatchAuditor, AuditDecision, DecisionType
+    >>> auditor = BatchAuditor(batch_size_limit=1000, batch_time_limit=60)
+    >>> decision = AuditDecision("dec-1", DecisionType.approve(), "Hello")
+    >>> batch = auditor.record(decision)  # Auto-commits at 1000 decisions
 """
 
 __version__ = "1.8.0"
@@ -58,6 +64,13 @@ from ._hope_core import (
     HardResetSignal,
     WatchdogResult,
     max_violations,
+
+    # v1.8.0: Merkle Batch Auditing
+    DecisionType,
+    AuditDecision,
+    MerkleTree,
+    SignedBatch,
+    BatchAuditor,
 
     # Exceptions
     GenomeError,
@@ -126,6 +139,13 @@ __all__ = [
     "HardResetSignal",
     "WatchdogResult",
     "max_violations",
+
+    # v1.8.0: Merkle Batch Auditing
+    "DecisionType",
+    "AuditDecision",
+    "MerkleTree",
+    "SignedBatch",
+    "BatchAuditor",
 
     # Exceptions
     "GenomeError",
