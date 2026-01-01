@@ -2,6 +2,9 @@ name: Publish to PyPI
 
 on:
   workflow_dispatch:  # Manual trigger
+  push:
+    tags:
+      - 'v*'  # Auto-publish on version tags (v1.7.1, v2.0.0, etc.)
 
 jobs:
   build-and-publish:
