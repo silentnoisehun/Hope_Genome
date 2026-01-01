@@ -36,6 +36,7 @@ ENV/
 docs/
 *.md
 !README.md
+!demo/*.md
 
 # CI/CD
 .github/workflows/

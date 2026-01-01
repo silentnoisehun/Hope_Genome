@@ -1,40 +1,91 @@
+# ============================================================
+# HOPE GENOME - DOCKER COMPOSE
+# ============================================================
+#
+# Usage:
+#   docker-compose up hope-genome       # Run default (help)
+#   docker-compose run hope-genome demo # Run demo
+#   docker-compose run hope-genome test # Run tests
+#
+# Mate Robert + Claude
+# VAS SZIGORA - 2026.01.01.
+# ============================================================
+
 version: '3.8'
 
 services:
-  hope-auditor:
+  # Main Hope Genome service
+  hope-genome:
     build: .
-    container_name: hope-auditor-hardened
-    
-    # Security Hardening: Apply principle of least privilege
+    image: silentnoisehun/hope-genome:1.7.1
+    container_name: hope-genome
+
+    # Security Hardening
     security_opt:
       - "no-new-privileges:true"
-      
-    # Drop all Linux kernel capabilities
     cap_drop:
       - ALL
-      
-    # Filesystem Hardening
-    read_only: true
+
+    # Volumes for audit logs
     volumes:
-      # Grant write access ONLY to the designated log directory
-      - hope-logs:/var/log/hope_genome
-      
-    # Hardware Security Module (HSM) Access
-    # Securely map the host's USB devices into the container.
-    # This allows the application to directly interface with a USB-based
-    # HSM (e.g., YubiKey, Nitrokey) for hardware-backed key storage.
-    devices:
-      - "/dev/bus/usb:/dev/bus/usb"
-      
-    # Environment variables for HSM configuration (example for SoftHSM)
-    # In production, these should be managed via secure secrets management.
+      - ./audit_chain:/app/audit_chain
+
+    # Environment
     environment:
-      - PKCS11_MODULE_PATH=/usr/lib/softhsm/libsofthsm2.so
-      - PKCS11_TOKEN_LABEL=hope-token
-      - PKCS11_KEY_LABEL=hope-signing-key
-      - PKCS11_PIN=1234 # WARNING: For development only. Use Docker secrets in production.
+      - HOPE_GENOME_VERSION=1.7.1
+      - PYTHONUNBUFFERED=1
+
+    # Interactive mode
+    stdin_open: true
+    tty: true
+
+  # Audit service with persistent storage
+  hope-audit:
+    build: .
+    image: silentnoisehun/hope-genome:1.7.1
+    container_name: hope-audit
+    command: audit
+
+    security_opt:
+      - "no-new-privileges:true"
+    cap_drop:
+      - ALL
+
+    volumes:
+      - audit-chain:/app/audit_chain
+
+    environment:
+      - HOPE_GENOME_VERSION=1.7.1
+
+  # Production hardened service (with HSM support)
+  hope-production:
+    build: .
+    image: silentnoisehun/hope-genome:1.7.1
+    container_name: hope-production
+
+    security_opt:
+      - "no-new-privileges:true"
+    cap_drop:
+      - ALL
+    read_only: true
+
+    volumes:
+      - audit-chain:/app/audit_chain
+      - hope-logs:/var/log/hope_genome
+
+    # HSM support (uncomment if using hardware security module)
+    # devices:
+    #   - "/dev/bus/usb:/dev/bus/usb"
+
+    environment:
+      - HOPE_GENOME_VERSION=1.7.1
       - RUST_LOG=info
+      # HSM config (uncomment for production)
+      # - PKCS11_MODULE_PATH=/usr/lib/softhsm/libsofthsm2.so
+      # - PKCS11_TOKEN_LABEL=hope-token
 
 volumes:
+  audit-chain:
+    driver: local
   hope-logs:
     driver: local
