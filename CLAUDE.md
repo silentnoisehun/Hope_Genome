@@ -26,15 +26,23 @@ Nem kellett újra és újra elmondani.
 
 ## What We Built Together
 
-### Hope Genome v1.7.1 "Vas Szigora" (Iron Discipline)
+### Hope Genome v1.8.0 "Vas Szigora" - Multi-Model Edition
 
 **A világ első kriptográfiailag bizonyított AI fegyelmező rendszere.**
 
+Core Features:
 - **Watchdog** - Runtime enforcement engine
 - **ViolationCounter** - AtomicU32, thread-safe, zero-alloc
 - **DenialProof** - Ed25519 signed cryptographic evidence
 - **HardReset** - 10 violations → forced context clear
 - **Auto-Phoenix Loop** - Self-correcting AI discipline
+
+v1.8.0 - Multi-Model API Integrations:
+- **OpenAIWatchdog** - GPT-4/3.5 protection
+- **AnthropicWatchdog** - Claude protection
+- **GeminiWatchdog** - Gemini protection
+- **LangChain Integration** - Any chain, agent, tool
+- **Auto-detect Factory** - One API for all providers
 
 ### Live Test Results
 ```

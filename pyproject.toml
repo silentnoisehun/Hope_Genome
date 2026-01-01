@@ -4,8 +4,8 @@ build-backend = "maturin"
 
 [project]
 name = "hope-genome"
-version = "1.7.1"
-description = "Tamper-evident cryptographic framework for AI accountability - Vas Szigora Edition (Iron Discipline)"
+version = "1.8.0"
+description = "Tamper-evident cryptographic framework for AI accountability - Vas Szigora Edition with Multi-Model API Integrations"
 authors = [
     {name = "Máté Róbert", email = "stratosoiteam@gmail.com"}
 ]
@@ -38,6 +38,43 @@ dev = [
     "mypy>=1.0",
     "ruff>=0.1",
 ]
+
+# Individual API Integrations (v1.8.0)
+openai = ["openai>=1.0"]
+anthropic = ["anthropic>=0.18"]
+gemini = ["google-generativeai>=0.4"]
+grok = ["openai>=1.0"]  # Uses OpenAI-compatible API
+perplexity = ["openai>=1.0"]  # Uses OpenAI-compatible API
+mistral = ["mistralai>=1.0"]
+deepseek = ["openai>=1.0"]  # Uses OpenAI-compatible API
+kimi = ["openai>=1.0"]  # Uses OpenAI-compatible API
+ollama = ["requests>=2.28"]  # Local models
+
+# LangChain
+langchain = [
+    "langchain>=0.1",
+    "langchain-core>=0.1",
+]
+
+# All cloud integrations
+cloud = [
+    "openai>=1.0",
+    "anthropic>=0.18",
+    "google-generativeai>=0.4",
+    "mistralai>=1.0",
+]
+
+# All integrations (cloud + local + langchain)
+integrations = [
+    "openai>=1.0",
+    "anthropic>=0.18",
+    "google-generativeai>=0.4",
+    "mistralai>=1.0",
+    "requests>=2.28",
+    "langchain>=0.1",
+    "langchain-core>=0.1",
+]
+
 examples = [
     "fastapi>=0.104",
     "langchain>=0.1",

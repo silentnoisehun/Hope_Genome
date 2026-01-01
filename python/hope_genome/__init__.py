@@ -1,5 +1,5 @@
 """
-Hope Genome v1.7.0 - Python Bindings
+Hope Genome v1.7.1 - Python Bindings
 =====================================
 
 Tamper-evident cryptographic framework for AI accountability.
@@ -19,9 +19,14 @@ Watchdog Example (v1.7.0):
     >>> result = watchdog.verify_action(action)
     >>> if result.hard_reset_required:
     ...     print("HARD RESET REQUIRED!")
+
+API Integrations (v1.7.1):
+    >>> from hope_genome.integrations import OpenAIWatchdog
+    >>> client = OpenAIWatchdog(api_key="sk-...", rules=["No harm"])
+    >>> response = client.chat("Hello!")  # Every call monitored!
 """
 
-__version__ = "1.7.0"
+__version__ = "1.8.0"
 __author__ = "Mate Robert <stratosoiteam@gmail.com>"
 
 # Import Rust core module
@@ -133,4 +138,13 @@ __all__ = [
     # Metadata
     "__version__",
     "__author__",
+
+    # v1.7.1: API Integrations
+    "integrations",
 ]
+
+# v1.7.1: API Integrations (lazy import to avoid dependency issues)
+try:
+    from . import integrations
+except ImportError:
+    integrations = None

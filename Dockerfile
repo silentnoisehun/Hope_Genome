@@ -1,8 +1,8 @@
 # ============================================================
-# HOPE GENOME - DOCKER IMAGE v1.7.1
+# HOPE GENOME - DOCKER IMAGE v1.8.0
 # ============================================================
 #
-# Vas Szigora Edition - AI Accountability in One Container!
+# Vas Szigora Edition - Multi-Model API Integrations!
 #
 # Usage:
 #   docker build -t hope-genome .
@@ -22,7 +22,7 @@ FROM python:3.11-slim
 # Labels
 LABEL org.opencontainers.image.title="Hope Genome"
 LABEL org.opencontainers.image.description="Tamper-Evident Cryptographic Framework for AI Accountability - VAS SZIGORA Edition"
-LABEL org.opencontainers.image.version="1.7.1"
+LABEL org.opencontainers.image.version="1.8.0"
 LABEL org.opencontainers.image.authors="Mate Robert <stratosoiteam@gmail.com>"
 LABEL org.opencontainers.image.url="https://github.com/silentnoisehun/Hope_Genome"
 LABEL org.opencontainers.image.documentation="https://silentnoisehun.github.io/Hope_Genome/"
@@ -33,7 +33,7 @@ LABEL org.opencontainers.image.source="https://github.com/silentnoisehun/Hope_Ge
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV HOPE_GENOME_DOCKER=1
-ENV HOPE_GENOME_VERSION=1.7.1
+ENV HOPE_GENOME_VERSION=1.8.0
 
 WORKDIR /app
 

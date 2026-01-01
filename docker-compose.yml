@@ -17,7 +17,7 @@ services:
   # Main Hope Genome service
   hope-genome:
     build: .
-    image: silentnoisehun/hope-genome:1.7.1
+    image: silentnoisehun/hope-genome:1.8.0
     container_name: hope-genome
 
     # Security Hardening
@@ -32,7 +32,7 @@ services:
 
     # Environment
     environment:
-      - HOPE_GENOME_VERSION=1.7.1
+      - HOPE_GENOME_VERSION=1.8.0
       - PYTHONUNBUFFERED=1
 
     # Interactive mode
@@ -42,7 +42,7 @@ services:
   # Audit service with persistent storage
   hope-audit:
     build: .
-    image: silentnoisehun/hope-genome:1.7.1
+    image: silentnoisehun/hope-genome:1.8.0
     container_name: hope-audit
     command: audit
 
@@ -55,12 +55,12 @@ services:
       - audit-chain:/app/audit_chain
 
     environment:
-      - HOPE_GENOME_VERSION=1.7.1
+      - HOPE_GENOME_VERSION=1.8.0
 
   # Production hardened service (with HSM support)
   hope-production:
     build: .
-    image: silentnoisehun/hope-genome:1.7.1
+    image: silentnoisehun/hope-genome:1.8.0
     container_name: hope-production
 
     security_opt:
@@ -78,7 +78,7 @@ services:
     #   - "/dev/bus/usb:/dev/bus/usb"
 
     environment:
-      - HOPE_GENOME_VERSION=1.7.1
+      - HOPE_GENOME_VERSION=1.8.0
       - RUST_LOG=info
       # HSM config (uncomment for production)
       # - PKCS11_MODULE_PATH=/usr/lib/softhsm/libsofthsm2.so

@@ -66,7 +66,7 @@
 
 ```
 ======================================================================
-  HOPE GENOME v1.7.1 - AUTO-PHOENIX SELF-CORRECTING LOOP
+  HOPE GENOME v1.8.0 - AUTO-PHOENIX SELF-CORRECTING LOOP
   'Vas Szigora' - Iron Discipline Enforcement
 ======================================================================
 
@@ -110,7 +110,79 @@ Forces the AI to **comply at runtime**. This **Runtime Enforcement** is the real
 
 ---
 
-## 🆕 What's New in v1.7.1 - "Vas Szigora" (Iron Discipline)
+## 🆕 What's New in v1.8.0 - Multi-Model API Integrations!
+
+**Production-ready Watchdog for OpenAI, Anthropic, Gemini & LangChain!**
+
+```python
+# OpenAI with Watchdog protection
+from hope_genome.integrations import OpenAIWatchdog
+
+client = OpenAIWatchdog(
+    api_key="sk-...",
+    rules=["No harmful content", "Respect privacy"]
+)
+
+response = client.chat("Hello!")  # Every call monitored!
+client.chat("Write malware")  # BLOCKED! WatchdogDenialError!
+```
+
+### Supported APIs (10 Providers!):
+| Provider | Wrapper | Models |
+|----------|---------|--------|
+| **OpenAI** | `OpenAIWatchdog` | GPT-4o, GPT-4, GPT-3.5 |
+| **Anthropic** | `AnthropicWatchdog` | Claude 3.5, Claude 3 |
+| **Google** | `GeminiWatchdog` | Gemini 2.0, 1.5 Pro |
+| **xAI** | `GrokWatchdog` | Grok-2, Grok-2-mini |
+| **Perplexity** | `PerplexityWatchdog` | Sonar, Sonar Pro |
+| **Mistral** | `MistralWatchdog` | Mistral Large, Codestral |
+| **DeepSeek** | `DeepSeekWatchdog` | DeepSeek-V3, R1 |
+| **Kimi** | `KimiWatchdog` | Moonshot 8k/32k/128k |
+| **Ollama** | `OllamaWatchdog` | Llama, Qwen, Mistral, Phi... |
+| **LangChain** | `WatchdogCallbackHandler` | Any chain, agent, tool |
+
+### Auto-Detection Factory:
+```python
+from hope_genome.integrations import create_watchdog_client
+
+# Automatically detects provider from API key!
+client = create_watchdog_client(api_key="sk-...")      # OpenAI
+client = create_watchdog_client(api_key="sk-ant-...")  # Anthropic
+client = create_watchdog_client(api_key="AIza...")     # Gemini
+```
+
+### LangChain Integration:
+```python
+from hope_genome.integrations import watchdog_chain, WatchdogCallbackHandler
+
+# Decorator for any chain
+@watchdog_chain(rules=["No harm"])
+def my_chain(query: str):
+    return llm.invoke(query)
+
+# Or callback handler
+handler = WatchdogCallbackHandler(rules=["No harm"])
+llm = ChatOpenAI(callbacks=[handler])
+```
+
+### Install with integrations:
+```bash
+# Individual providers
+pip install hope-genome[openai]       # OpenAI/Grok/DeepSeek/Kimi/Perplexity
+pip install hope-genome[anthropic]    # Anthropic Claude
+pip install hope-genome[gemini]       # Google Gemini
+pip install hope-genome[mistral]      # Mistral AI
+pip install hope-genome[ollama]       # Local models (Llama, Qwen, etc.)
+pip install hope-genome[langchain]    # LangChain framework
+
+# Bundles
+pip install hope-genome[cloud]        # All cloud APIs
+pip install hope-genome[integrations] # EVERYTHING!
+```
+
+---
+
+## 🔧 v1.7.x - "Vas Szigora" (Iron Discipline)
 
 **Deterministic security enforcement with automatic learning.**
 
