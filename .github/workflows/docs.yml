@@ -28,7 +28,7 @@ jobs:
         run: |
           cd hope_core
           cargo doc --no-deps --all-features
-          echo '<meta http-equiv="refresh" content="0; url=hope_core/index.html">' > target/doc/index.html
+          echo '<meta http-equiv="refresh" content="0; url=_hope_core/index.html">' > target/doc/index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
