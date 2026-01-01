@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "hope-genome"
-version = "1.7.0"
+version = "1.7.1"
 description = "Tamper-evident cryptographic framework for AI accountability - Vas Szigora Edition (Iron Discipline)"
 authors = [
     {name = "Máté Róbert", email = "stratosoiteam@gmail.com"}
@@ -53,7 +53,7 @@ Documentation = "https://github.com/silentnoisehun/Hope_Genome/blob/main/README.
 "Bug Tracker" = "https://github.com/silentnoisehun/Hope_Genome/issues"
 
 [tool.maturin]
-features = ["pyo3/extension-module"]
+features = ["python-bindings", "pyo3/extension-module"]
 module-name = "hope_genome._hope_core"
 python-source = "python"
 bindings = "pyo3"
