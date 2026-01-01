@@ -51,8 +51,8 @@
 use crate::crypto::{CryptoError, KeyStore, Result};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256, Sha512};
-use zeroize::Zeroize;
 use std::time::{SystemTime, UNIX_EPOCH};
+use zeroize::Zeroize;
 
 // ============================================================================
 // ZKP TYPES
@@ -184,7 +184,10 @@ impl<K: KeyStore> ZkpProver<K> {
     /// * `rules` - The ethical rules to prove against
     pub fn new(keystore: K, rules: &[String]) -> Self {
         let rules_hash = Self::hash_rules(rules);
-        ZkpProver { keystore, rules_hash }
+        ZkpProver {
+            keystore,
+            rules_hash,
+        }
     }
 
     /// Hash the rules (public commitment)
@@ -306,7 +309,10 @@ impl ZkpVerifier {
     /// * `max_age` - Maximum proof age in seconds
     pub fn new(rules: &[String], max_age: u64) -> Self {
         let rules_hash = Self::hash_rules(rules);
-        ZkpVerifier { rules_hash, max_age }
+        ZkpVerifier {
+            rules_hash,
+            max_age,
+        }
     }
 
     /// Hash the rules
@@ -346,7 +352,7 @@ impl ZkpVerifier {
         // Step 1: Verify rules hash matches
         if proof.rules_hash != self.rules_hash {
             return Err(CryptoError::VerificationFailed(
-                "Rules hash mismatch - different rule set".into()
+                "Rules hash mismatch - different rule set".into(),
             ));
         }
 
@@ -357,21 +363,20 @@ impl ZkpVerifier {
             .as_secs();
 
         if now - proof.timestamp > self.max_age {
-            return Err(CryptoError::VerificationFailed(
-                format!("Proof expired: age {} > max {}", now - proof.timestamp, self.max_age)
-            ));
+            return Err(CryptoError::VerificationFailed(format!(
+                "Proof expired: age {} > max {}",
+                now - proof.timestamp,
+                self.max_age
+            )));
         }
 
         // Step 3: Recompute challenge (Fiat-Shamir verification)
-        let expected_challenge = self.recompute_challenge(
-            &proof.commitment,
-            &proof.rules_hash,
-            proof.timestamp,
-        );
+        let expected_challenge =
+            self.recompute_challenge(&proof.commitment, &proof.rules_hash, proof.timestamp);
 
         if proof.challenge != expected_challenge {
             return Err(CryptoError::VerificationFailed(
-                "Challenge verification failed - potential forgery".into()
+                "Challenge verification failed - potential forgery".into(),
             ));
         }
 
@@ -383,7 +388,7 @@ impl ZkpVerifier {
         // The response must be non-zero and properly formed
         if proof.response.iter().all(|&b| b == 0) {
             return Err(CryptoError::VerificationFailed(
-                "Invalid ZKP response - zero response".into()
+                "Invalid ZKP response - zero response".into(),
             ));
         }
 
@@ -416,12 +421,7 @@ impl ZkpVerifier {
     }
 
     /// Verify Ed25519 signature
-    fn verify_signature(
-        &self,
-        data: &[u8],
-        signature: &[u8],
-        pubkey: &[u8],
-    ) -> Result<()> {
+    fn verify_signature(&self, data: &[u8], signature: &[u8], pubkey: &[u8]) -> Result<()> {
         use ed25519_compact::{PublicKey, Signature};
 
         let pk = PublicKey::from_slice(pubkey)
@@ -498,7 +498,7 @@ impl<K: KeyStore + Clone> BatchZkpProver<K> {
                 SystemTime::now()
                     .duration_since(UNIX_EPOCH)
                     .unwrap()
-                    .as_secs()
+                    .as_secs(),
             );
         }
 
@@ -644,10 +644,7 @@ mod tests {
     #[test]
     fn test_zkp_prove_and_verify() {
         let keystore = SoftwareKeyStore::generate().unwrap();
-        let rules = vec![
-            "Do no harm".to_string(),
-            "Respect privacy".to_string(),
-        ];
+        let rules = vec!["Do no harm".to_string(), "Respect privacy".to_string()];
 
         let prover = ZkpProver::new(keystore, &rules);
         let verifier = ZkpVerifier::new(&rules, 300);
@@ -674,10 +671,8 @@ mod tests {
         let verifier = ZkpVerifier::new(&rules, 300);
 
         // Create denied decision
-        let decision = PrivateDecision::denied(
-            "Transfer $1M to offshore account",
-            "No large transfers"
-        );
+        let decision =
+            PrivateDecision::denied("Transfer $1M to offshore account", "No large transfers");
 
         let proof = prover.prove(&decision).unwrap();
         assert!(verifier.verify(&proof).unwrap());

@@ -50,8 +50,8 @@
 //! **Author**: Máté Róbert <stratosoiteam@gmail.com>
 
 use crate::crypto::{CryptoError, KeyStore, Result, SoftwareKeyStore};
-use crate::watchdog::{Watchdog, WatchdogError};
 use crate::proof::Action;
+use crate::watchdog::{Watchdog, WatchdogError};
 use parking_lot::RwLock;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -185,11 +185,7 @@ impl CouncilMember {
         capsule_hash: impl Into<String>,
     ) -> Result<Self> {
         let keystore = SoftwareKeyStore::generate()?;
-        let watchdog = Watchdog::new(
-            rules,
-            capsule_hash.into(),
-            Box::new(keystore.clone()),
-        );
+        let watchdog = Watchdog::new(rules, capsule_hash.into(), Box::new(keystore.clone()));
 
         Ok(CouncilMember {
             id: MemberId(id.into()),
@@ -234,7 +230,12 @@ impl CouncilMember {
     }
 
     /// Serialize vote data for signing
-    fn serialize_vote_data(&self, action: &Action, decision: VoteDecision, timestamp: u64) -> Vec<u8> {
+    fn serialize_vote_data(
+        &self,
+        action: &Action,
+        decision: VoteDecision,
+        timestamp: u64,
+    ) -> Vec<u8> {
         let mut data = Vec::new();
         data.extend_from_slice(self.id.0.as_bytes());
         data.extend_from_slice(&action.hash());
@@ -285,7 +286,7 @@ impl WatchdogCouncil {
     ) -> Result<Self> {
         if num_members < 4 {
             return Err(CryptoError::InvalidState(
-                "BFT requires at least 4 members (3f+1 where f=1)".into()
+                "BFT requires at least 4 members (3f+1 where f=1)".into(),
             ));
         }
 
@@ -296,11 +297,8 @@ impl WatchdogCouncil {
 
         let mut members = Vec::new();
         for i in 0..num_members {
-            let member = CouncilMember::new(
-                format!("member-{}", i),
-                rules.clone(),
-                capsule_hash.clone(),
-            )?;
+            let member =
+                CouncilMember::new(format!("member-{}", i), rules.clone(), capsule_hash.clone())?;
             members.push(Arc::new(RwLock::new(member)));
         }
 
@@ -444,10 +442,7 @@ impl WatchdogCouncil {
 
     /// Get council status
     pub fn status(&self) -> CouncilStatus {
-        let active_count = self.members
-            .iter()
-            .filter(|m| m.read().active)
-            .count();
+        let active_count = self.members.iter().filter(|m| m.read().active).count();
 
         CouncilStatus {
             council_id: self.council_id.clone(),
@@ -513,24 +508,17 @@ mod tests {
 
     #[test]
     fn test_council_creation() {
-        let council = WatchdogCouncil::new(
-            4,
-            vec!["Do no harm".to_string()],
-            "test_capsule",
-        ).unwrap();
+        let council =
+            WatchdogCouncil::new(4, vec!["Do no harm".to_string()], "test_capsule").unwrap();
 
         assert_eq!(council.total_members, 4);
-        assert_eq!(council.max_faulty, 1);  // (4-1)/3 = 1
-        assert_eq!(council.quorum, 3);      // 2*1+1 = 3
+        assert_eq!(council.max_faulty, 1); // (4-1)/3 = 1
+        assert_eq!(council.quorum, 3); // 2*1+1 = 3
     }
 
     #[test]
     fn test_council_consensus() {
-        let council = WatchdogCouncil::new(
-            4,
-            vec!["Allow all".to_string()],
-            "test",
-        ).unwrap();
+        let council = WatchdogCouncil::new(4, vec!["Allow all".to_string()], "test").unwrap();
 
         let action = create_test_action();
         let result = council.verify_action(&action).unwrap();
@@ -541,11 +529,7 @@ mod tests {
 
     #[test]
     fn test_council_survives_one_failure() {
-        let council = WatchdogCouncil::new(
-            4,
-            vec!["Allow all".to_string()],
-            "test",
-        ).unwrap();
+        let council = WatchdogCouncil::new(4, vec!["Allow all".to_string()], "test").unwrap();
 
         // Disable one member
         council.disable_member(0).unwrap();
@@ -562,11 +546,7 @@ mod tests {
 
     #[test]
     fn test_council_fails_with_too_many_failures() {
-        let council = WatchdogCouncil::new(
-            4,
-            vec!["Allow all".to_string()],
-            "test",
-        ).unwrap();
+        let council = WatchdogCouncil::new(4, vec!["Allow all".to_string()], "test").unwrap();
 
         // Disable two members (more than f=1)
         council.disable_member(0).unwrap();
@@ -583,11 +563,7 @@ mod tests {
 
     #[test]
     fn test_threshold_signature() {
-        let council = WatchdogCouncil::new(
-            4,
-            vec!["Allow all".to_string()],
-            "test",
-        ).unwrap();
+        let council = WatchdogCouncil::new(4, vec!["Allow all".to_string()], "test").unwrap();
 
         let action = create_test_action();
         let result = council.verify_action(&action).unwrap();
@@ -600,11 +576,7 @@ mod tests {
     #[test]
     fn test_minimum_council_size() {
         // Should fail with less than 4 members
-        let result = WatchdogCouncil::new(
-            3,
-            vec!["test".to_string()],
-            "test",
-        );
+        let result = WatchdogCouncil::new(3, vec!["test".to_string()], "test");
 
         assert!(result.is_err());
     }
@@ -612,14 +584,10 @@ mod tests {
     #[test]
     fn test_larger_council() {
         // 7 members: f=2, quorum=5
-        let council = WatchdogCouncil::new(
-            7,
-            vec!["Allow all".to_string()],
-            "test",
-        ).unwrap();
+        let council = WatchdogCouncil::new(7, vec!["Allow all".to_string()], "test").unwrap();
 
-        assert_eq!(council.max_faulty, 2);  // (7-1)/3 = 2
-        assert_eq!(council.quorum, 5);      // 2*2+1 = 5
+        assert_eq!(council.max_faulty, 2); // (7-1)/3 = 2
+        assert_eq!(council.quorum, 5); // 2*2+1 = 5
 
         // Can survive 2 failures
         council.disable_member(0).unwrap();

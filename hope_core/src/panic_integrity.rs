@@ -309,9 +309,7 @@ impl<K: KeyStore> PanicProtectedKeyStore<K> {
         trigger: AnomalyEvent,
     ) -> PanicLogEntry {
         let log = self.panic_log.read();
-        let prev_hash = log.last()
-            .map(|e| e.entry_hash)
-            .unwrap_or([0u8; 32]);
+        let prev_hash = log.last().map(|e| e.entry_hash).unwrap_or([0u8; 32]);
 
         let id = log.len() as u64;
         let timestamp = SystemTime::now()
@@ -399,10 +397,14 @@ impl<K: KeyStore> PanicProtectedKeyStore<K> {
 impl<K: KeyStore> KeyStore for PanicProtectedKeyStore<K> {
     fn sign(&self, data: &[u8]) -> Result<Vec<u8>> {
         if self.is_destroyed() {
-            return Err(CryptoError::InvalidState("KeyStore destroyed - keys zeroed".into()));
+            return Err(CryptoError::InvalidState(
+                "KeyStore destroyed - keys zeroed".into(),
+            ));
         }
         if self.is_frozen() {
-            return Err(CryptoError::InvalidState("KeyStore frozen - panic triggered".into()));
+            return Err(CryptoError::InvalidState(
+                "KeyStore frozen - panic triggered".into(),
+            ));
         }
 
         let guard = self.inner.read();

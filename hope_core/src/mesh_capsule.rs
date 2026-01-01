@@ -62,9 +62,9 @@
 //! **Version**: 2.0.0 (Executable Information Mesh)
 //! **Author**: Máté Róbert <stratosoiteam@gmail.com>
 
+use crate::bft_watchdog::{ThresholdSignature, VoteDecision};
 use crate::crypto::{CryptoError, KeyStore, Result, SoftwareKeyStore};
 use crate::zkp::{ComplianceProof, ZkpVerifier};
-use crate::bft_watchdog::{ThresholdSignature, VoteDecision};
 use parking_lot::RwLock;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -782,10 +782,7 @@ pub struct MeshRuntime {
 impl MeshRuntime {
     /// Create new mesh runtime
     pub fn new(consensus_threshold: usize, total_members: usize) -> Self {
-        let runtime_id = format!(
-            "mesh-{:x}",
-            rand::random::<u64>()
-        );
+        let runtime_id = format!("mesh-{:x}", rand::random::<u64>());
 
         MeshRuntime {
             capsules: RwLock::new(Vec::new()),
@@ -862,8 +859,8 @@ impl MeshRuntime {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::zkp::{PrivateDecision, ZkpProver};
     use crate::bft_watchdog::MemberId;
+    use crate::zkp::{PrivateDecision, ZkpProver};
 
     fn create_test_context(rules: &[String]) -> ExecutionContext {
         let keystore = SoftwareKeyStore::generate().unwrap();
@@ -893,13 +890,8 @@ mod tests {
         let rules = vec!["test rule".to_string()];
         let predicate = Box::new(DefaultPredicate::new(&rules, 3, 300));
 
-        let capsule = DataCapsule::new(
-            "test-capsule",
-            b"SECRET DATA",
-            predicate,
-            10,
-            3600,
-        ).unwrap();
+        let capsule =
+            DataCapsule::new("test-capsule", b"SECRET DATA", predicate, 10, 3600).unwrap();
 
         assert_eq!(capsule.state(), CapsuleState::Sealed);
         assert_eq!(capsule.id(), "test-capsule");
@@ -910,13 +902,8 @@ mod tests {
         let rules = vec!["test rule".to_string()];
         let predicate = Box::new(DefaultPredicate::new(&rules, 3, 300));
 
-        let capsule = DataCapsule::new(
-            "test-capsule",
-            b"SECRET DATA",
-            predicate,
-            10,
-            3600,
-        ).unwrap();
+        let capsule =
+            DataCapsule::new("test-capsule", b"SECRET DATA", predicate, 10, 3600).unwrap();
 
         let context = create_test_context(&rules);
 
@@ -935,13 +922,8 @@ mod tests {
         let rules = vec!["test rule".to_string()];
         let predicate = Box::new(DefaultPredicate::new(&rules, 3, 300));
 
-        let capsule = DataCapsule::new(
-            "test-capsule",
-            b"SECRET DATA",
-            predicate,
-            10,
-            3600,
-        ).unwrap();
+        let capsule =
+            DataCapsule::new("test-capsule", b"SECRET DATA", predicate, 10, 3600).unwrap();
 
         // Simulate tampering
         capsule.simulate_tampering();
@@ -979,7 +961,8 @@ mod tests {
             predicate,
             10,
             0, // No TTL, but we'll manually check
-        ).unwrap();
+        )
+        .unwrap();
 
         // Capsule should not be expired if TTL is 0 (means forever)
         assert!(!capsule.is_expired());
@@ -1013,13 +996,8 @@ mod tests {
         let rules = vec!["test rule".to_string()];
         let predicate = Box::new(DefaultPredicate::new(&rules, 3, 300));
 
-        let capsule = Arc::new(DataCapsule::new(
-            "mesh-capsule",
-            b"MESH DATA",
-            predicate,
-            10,
-            3600,
-        ).unwrap());
+        let capsule =
+            Arc::new(DataCapsule::new("mesh-capsule", b"MESH DATA", predicate, 10, 3600).unwrap());
 
         // Register capsule
         assert!(runtime.register_capsule(capsule));
@@ -1054,13 +1032,7 @@ mod tests {
 
         let predicate = Box::new(DefaultPredicate::new(&rules, 3, 300));
 
-        let capsule = DataCapsule::new(
-            "test-capsule",
-            b"SECRET",
-            predicate,
-            10,
-            3600,
-        ).unwrap();
+        let capsule = DataCapsule::new("test-capsule", b"SECRET", predicate, 10, 3600).unwrap();
 
         // Create context with wrong rules
         let context = create_test_context(&wrong_rules);

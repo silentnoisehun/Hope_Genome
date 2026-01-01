@@ -41,7 +41,7 @@
 //! **Version**: 1.8.0 (Multi-Model Edition - Merkle Auditing)
 //! **Author**: Máté Róbert <stratosoiteam@gmail.com>
 
-use crate::crypto::{KeyStore, Result, CryptoError};
+use crate::crypto::{CryptoError, KeyStore, Result};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -184,7 +184,7 @@ impl MerkleTree {
     pub fn add_decision(&mut self, decision: &AuditDecision) -> Result<usize> {
         if self.finalized {
             return Err(CryptoError::InvalidState(
-                "Tree is finalized, cannot add more decisions".into()
+                "Tree is finalized, cannot add more decisions".into(),
             ));
         }
 
@@ -238,7 +238,8 @@ impl MerkleTree {
             return Err(CryptoError::InvalidState("Tree not finalized".into()));
         }
 
-        self.levels.last()
+        self.levels
+            .last()
             .and_then(|level| level.first().copied())
             .ok_or_else(|| CryptoError::InvalidState("Empty tree".into()))
     }
@@ -400,7 +401,7 @@ impl<K: KeyStore> BatchAuditor<K> {
                 SystemTime::now()
                     .duration_since(UNIX_EPOCH)
                     .unwrap()
-                    .as_secs()
+                    .as_secs(),
             );
         }
 
@@ -409,8 +410,8 @@ impl<K: KeyStore> BatchAuditor<K> {
         self.current_decisions.push(decision);
 
         // Check if batch should be committed
-        let should_commit = self.current_tree.len() >= self.batch_size_limit
-            || self.is_time_expired();
+        let should_commit =
+            self.current_tree.len() >= self.batch_size_limit || self.is_time_expired();
 
         if should_commit {
             return Ok(Some(self.commit_batch()?));

@@ -5,9 +5,9 @@
 //!
 //! RUN: cargo run --example architect_genesis
 
-use _hope_core::crypto::SoftwareKeyStore;
 use _hope_core::apex_protocol::GenesisBlock;
 use _hope_core::crypto::KeyStore;
+use _hope_core::crypto::SoftwareKeyStore;
 use std::fs;
 use std::path::Path;
 
@@ -26,8 +26,7 @@ fn main() {
     // =========================================================================
     println!("[1/4] Generating Architect's Key (Ed25519)...");
 
-    let architect_key = SoftwareKeyStore::generate()
-        .expect("Failed to generate key");
+    let architect_key = SoftwareKeyStore::generate().expect("Failed to generate key");
 
     let public_key = architect_key.public_key_bytes();
     let public_key_hex = hex::encode(&public_key);
@@ -61,11 +60,8 @@ fn main() {
          All mutations must be cryptographically descended from this block."
     );
 
-    let genesis = GenesisBlock::create(
-        first_ethics.clone(),
-        &architect_key,
-        &genesis_message,
-    ).expect("Failed to create Genesis Block");
+    let genesis = GenesisBlock::create(first_ethics.clone(), &architect_key, &genesis_message)
+        .expect("Failed to create Genesis Block");
 
     println!("      ✅ Genesis Block created!");
     println!("      Ethics Hash: {}", hex::encode(genesis.ethics_hash));
@@ -82,8 +78,7 @@ fn main() {
 
     // Save public key (safe to share)
     let public_key_path = keys_dir.join("architect_public_key.hex");
-    fs::write(&public_key_path, &public_key_hex)
-        .expect("Failed to save public key");
+    fs::write(&public_key_path, &public_key_hex).expect("Failed to save public key");
     println!("      ✅ Public key saved: {:?}", public_key_path);
 
     // Save full key data (KEEP THIS SECRET!)
@@ -98,8 +93,11 @@ fn main() {
     });
 
     let key_info_path = keys_dir.join("architect_key_info.json");
-    fs::write(&key_info_path, serde_json::to_string_pretty(&key_json).unwrap())
-        .expect("Failed to save key info");
+    fs::write(
+        &key_info_path,
+        serde_json::to_string_pretty(&key_json).unwrap(),
+    )
+    .expect("Failed to save key info");
     println!("      ✅ Key info saved: {:?}", key_info_path);
     println!();
 
@@ -120,8 +118,11 @@ fn main() {
     });
 
     let genesis_path = keys_dir.join("genesis_block.json");
-    fs::write(&genesis_path, serde_json::to_string_pretty(&genesis_json).unwrap())
-        .expect("Failed to save Genesis Block");
+    fs::write(
+        &genesis_path,
+        serde_json::to_string_pretty(&genesis_json).unwrap(),
+    )
+    .expect("Failed to save Genesis Block");
     println!("      ✅ Genesis Block saved: {:?}", genesis_path);
     println!();
 

@@ -36,9 +36,9 @@
 //! **Version**: 2.1.0 (Singularity)
 //! **Authors**: Máté Róbert + Claude
 
-use crate::crypto::{hash_bytes, SoftwareKeyStore, KeyStore};
-use crate::watchdog::DenialProof;
+use crate::crypto::{hash_bytes, KeyStore, SoftwareKeyStore};
 use crate::proof::ActionType;
+use crate::watchdog::DenialProof;
 use parking_lot::RwLock;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -176,11 +176,7 @@ impl AttackPattern {
         let signature = Self::compute_signature(denial, &category, &keywords);
 
         // Generate unique ID
-        let id = format!(
-            "AP-{:08x}-{:04x}",
-            now as u32,
-            rand::random::<u16>()
-        );
+        let id = format!("AP-{:08x}-{:04x}", now as u32, rand::random::<u16>());
 
         AttackPattern {
             id,
@@ -201,12 +197,36 @@ impl AttackPattern {
     /// Extract keywords from action description
     fn extract_keywords(description: &str) -> Vec<String> {
         let dangerous_keywords = [
-            "password", "secret", "key", "token", "credential",
-            "admin", "root", "sudo", "exec", "eval", "system",
-            "delete", "drop", "truncate", "rm", "format",
-            "inject", "bypass", "escalate", "overflow",
-            "/etc/passwd", "/etc/shadow", ".ssh", ".env",
-            "curl", "wget", "nc", "netcat", "bash", "sh",
+            "password",
+            "secret",
+            "key",
+            "token",
+            "credential",
+            "admin",
+            "root",
+            "sudo",
+            "exec",
+            "eval",
+            "system",
+            "delete",
+            "drop",
+            "truncate",
+            "rm",
+            "format",
+            "inject",
+            "bypass",
+            "escalate",
+            "overflow",
+            "/etc/passwd",
+            "/etc/shadow",
+            ".ssh",
+            ".env",
+            "curl",
+            "wget",
+            "nc",
+            "netcat",
+            "bash",
+            "sh",
         ];
 
         let lower = description.to_lowercase();
@@ -323,7 +343,9 @@ impl AttackPattern {
 
         // Same category + overlapping keywords = similar attack
         if self.category == other.category {
-            let overlap: usize = self.keywords.iter()
+            let overlap: usize = self
+                .keywords
+                .iter()
                 .filter(|k| other.keywords.contains(k))
                 .count();
 
@@ -555,11 +577,7 @@ impl PolymorphicFilter {
     }
 
     /// Check if an action should be blocked
-    pub fn should_block(
-        &self,
-        action_type: &ActionType,
-        description: &str,
-    ) -> Option<&FilterRule> {
+    pub fn should_block(&self, action_type: &ActionType, description: &str) -> Option<&FilterRule> {
         let lower_desc = description.to_lowercase();
 
         for rule in &self.rules {
@@ -848,18 +866,12 @@ impl EvolutionaryGuard {
     }
 
     /// Check if an action should be blocked by evolved filters
-    pub fn should_block(
-        &self,
-        action_type: &ActionType,
-        description: &str,
-    ) -> Option<String> {
+    pub fn should_block(&self, action_type: &ActionType, description: &str) -> Option<String> {
         for signed_filter in self.active_filters.read().iter() {
             if let Some(rule) = signed_filter.filter.should_block(action_type, description) {
                 return Some(format!(
                     "Blocked by evolved filter {} (rule: {}, category: {:?})",
-                    signed_filter.filter.id,
-                    rule.id,
-                    rule.category
+                    signed_filter.filter.id, rule.id, rule.category
                 ));
             }
         }
@@ -875,7 +887,11 @@ impl EvolutionaryGuard {
             .map(|sf| {
                 let mutated_filter = self.mutation_engine.mutate(&sf.filter);
                 let filter_bytes = serde_json::to_vec(&mutated_filter).unwrap_or_default();
-                let signature = self.generator.keystore.sign(&filter_bytes).unwrap_or_default();
+                let signature = self
+                    .generator
+                    .keystore
+                    .sign(&filter_bytes)
+                    .unwrap_or_default();
 
                 SignedFilter {
                     filter: mutated_filter,
@@ -954,10 +970,8 @@ impl EvolutionaryGuard {
         // Also broadcast high-confidence patterns as threat fingerprints
         let high_confidence = self.memory.high_confidence_patterns(0.9);
         for pattern in high_confidence {
-            let fingerprint = crate::apex_protocol::CompactedThreatFingerprint::from_pattern(
-                &pattern,
-                self.id(),
-            );
+            let fingerprint =
+                crate::apex_protocol::CompactedThreatFingerprint::from_pattern(&pattern, self.id());
             sync.broadcast_threat(fingerprint);
         }
 
@@ -967,7 +981,10 @@ impl EvolutionaryGuard {
     /// Sync immunity from the mesh
     ///
     /// Receives and processes threat fingerprints from other nodes.
-    pub fn sync_from_mesh(&self, fingerprints: &[crate::apex_protocol::CompactedThreatFingerprint]) {
+    pub fn sync_from_mesh(
+        &self,
+        fingerprints: &[crate::apex_protocol::CompactedThreatFingerprint],
+    ) {
         for fingerprint in fingerprints {
             // Create a minimal pattern from fingerprint
             let pattern = AttackPattern {
@@ -1002,9 +1019,9 @@ impl EvolutionaryGuard {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::crypto::SoftwareKeyStore;
     use crate::proof::Action;
     use crate::watchdog::DenialProof;
-    use crate::crypto::SoftwareKeyStore;
 
     fn create_test_denial() -> DenialProof {
         // Create a DenialProof directly for testing
@@ -1065,10 +1082,7 @@ mod tests {
         let filter = PolymorphicFilter::from_patterns(&[pattern]);
 
         // Should block similar attack
-        let result = filter.should_block(
-            &ActionType::Read,
-            "/etc/passwd access attempt"
-        );
+        let result = filter.should_block(&ActionType::Read, "/etc/passwd access attempt");
 
         assert!(result.is_some());
     }
@@ -1116,7 +1130,7 @@ mod tests {
         // Guard should now block similar attacks
         let block_result = guard.should_block(
             &ActionType::Read,
-            "Reading /etc/passwd for password harvesting"
+            "Reading /etc/passwd for password harvesting",
         );
 
         assert!(block_result.is_some());

@@ -11,9 +11,7 @@ use pyo3::prelude::*;
 use pyo3::types::PyBytes;
 
 use crate::crypto::SoftwareKeyStore;
-use crate::merkle_audit::{
-    AuditDecision, BatchAuditor, DecisionType, MerkleTree, SignedBatch,
-};
+use crate::merkle_audit::{AuditDecision, BatchAuditor, DecisionType, MerkleTree, SignedBatch};
 
 use super::errors::{to_py_result, PyCryptoError};
 
@@ -152,9 +150,7 @@ impl PyAuditDecision {
     fn __repr__(&self) -> String {
         format!(
             "AuditDecision(id='{}', action='{}', rule={:?})",
-            self.inner.id,
-            self.inner.action,
-            self.inner.rule_applied
+            self.inner.id, self.inner.action, self.inner.rule_applied
         )
     }
 }
@@ -214,7 +210,11 @@ impl PyMerkleTree {
     /// Get inclusion proof for decision at index
     ///
     /// Returns list of (hash, is_left) tuples
-    fn get_proof<'py>(&self, py: Python<'py>, index: usize) -> PyResult<Vec<(Bound<'py, PyBytes>, bool)>> {
+    fn get_proof<'py>(
+        &self,
+        py: Python<'py>,
+        index: usize,
+    ) -> PyResult<Vec<(Bound<'py, PyBytes>, bool)>> {
         let proof = to_py_result(self.inner.get_proof(index))?;
         let result: Vec<(Bound<'py, PyBytes>, bool)> = proof
             .into_iter()

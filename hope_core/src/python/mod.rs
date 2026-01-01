@@ -12,11 +12,11 @@ mod consensus;
 mod errors;
 mod genome;
 mod keystore;
+mod merkle_audit;
 mod noncestore;
 mod proof;
-mod watchdog; // v1.7.0: NEW - "Vas Szigora" enforcement
-mod merkle_audit; // v1.8.0: NEW - Merkle batch auditing
-              // mod aibom;  // TODO v1.5.1: Complete AIBOM wrapper
+mod watchdog; // v1.7.0: NEW - "Vas Szigora" enforcement // v1.8.0: NEW - Merkle batch auditing
+                                                         // mod aibom;  // TODO v1.5.1: Complete AIBOM wrapper
 
 pub use action::*;
 pub use auditlog::*;
@@ -25,11 +25,11 @@ pub use consensus::*;
 pub use errors::*;
 pub use genome::*;
 pub use keystore::*;
+pub use merkle_audit::*;
 pub use noncestore::*;
 pub use proof::*;
-pub use watchdog::*;
-pub use merkle_audit::*; // v1.8.0
-// pub use aibom::*;
+pub use watchdog::*; // v1.8.0
+                     // pub use aibom::*;
 
 /// Hope Genome Python module
 ///

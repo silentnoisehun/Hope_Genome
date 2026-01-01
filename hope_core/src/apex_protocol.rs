@@ -54,9 +54,9 @@
 //! **Version**: 2.2.0 (Genesis Protocol)
 //! **Authors**: Máté Róbert (The Architect) + Claude
 
+use crate::bft_watchdog::ThresholdSignature;
 use crate::crypto::{CryptoError, KeyStore, SoftwareKeyStore};
 use crate::evolutionary_guard::{AttackPattern, SignedFilter, ThreatLevel};
-use crate::bft_watchdog::ThresholdSignature;
 use parking_lot::RwLock;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -179,7 +179,10 @@ impl GenesisBlock {
     pub fn verify(&self, architect_key: &dyn KeyStore) -> bool {
         // Verify signature
         let signable_data = self.signable_bytes();
-        if architect_key.verify(&signable_data, &self.architect_signature).is_err() {
+        if architect_key
+            .verify(&signable_data, &self.architect_signature)
+            .is_err()
+        {
             return false;
         }
 
@@ -371,10 +374,7 @@ impl SyncProtocol {
     /// Create new sync protocol
     pub fn new(fanout: usize, max_hops: u8) -> Result<Self, CryptoError> {
         let node_key = SoftwareKeyStore::generate()?;
-        let node_id = format!(
-            "node-{:016x}",
-            rand::random::<u64>()
-        );
+        let node_id = format!("node-{:016x}", rand::random::<u64>());
 
         Ok(SyncProtocol {
             node_id,
@@ -410,7 +410,11 @@ impl SyncProtocol {
         }
 
         // Check if we've already seen this
-        if self.seen_fingerprints.read().contains(&fingerprint.signature) {
+        if self
+            .seen_fingerprints
+            .read()
+            .contains(&fingerprint.signature)
+        {
             return;
         }
 
@@ -464,7 +468,11 @@ impl SyncProtocol {
             match message {
                 SyncMessage::ThreatBroadcast(fingerprint) => {
                     // Check if new
-                    if !self.seen_fingerprints.read().contains(&fingerprint.signature) {
+                    if !self
+                        .seen_fingerprints
+                        .read()
+                        .contains(&fingerprint.signature)
+                    {
                         // Add to our immunity
                         new_threats.push(fingerprint.clone());
                         // Relay to others
@@ -473,7 +481,11 @@ impl SyncProtocol {
                 }
                 SyncMessage::ThreatBatch(batch) => {
                     for fingerprint in batch {
-                        if !self.seen_fingerprints.read().contains(&fingerprint.signature) {
+                        if !self
+                            .seen_fingerprints
+                            .read()
+                            .contains(&fingerprint.signature)
+                        {
                             new_threats.push(fingerprint.clone());
                             self.broadcast_threat(fingerprint);
                         }
@@ -488,11 +500,15 @@ impl SyncProtocol {
                 }
                 SyncMessage::FilterBroadcast(filter) => {
                     // Filter broadcasts are handled separately
-                    self.outbound_queue.write().push(SyncMessage::FilterBroadcast(filter));
+                    self.outbound_queue
+                        .write()
+                        .push(SyncMessage::FilterBroadcast(filter));
                 }
                 SyncMessage::ApexCommand(cmd) => {
                     // Apex commands require special handling
-                    self.outbound_queue.write().push(SyncMessage::ApexCommand(cmd));
+                    self.outbound_queue
+                        .write()
+                        .push(SyncMessage::ApexCommand(cmd));
                 }
                 _ => {}
             }
@@ -626,7 +642,10 @@ impl ApexCommand {
     pub fn verify(&self, architect_key: &dyn KeyStore) -> bool {
         // Verify architect signature
         let data = self.signable_bytes();
-        if architect_key.verify(&data, &self.architect_signature).is_err() {
+        if architect_key
+            .verify(&data, &self.architect_signature)
+            .is_err()
+        {
             return false;
         }
 
@@ -692,9 +711,14 @@ impl ApexControl {
     /// Submit a command for execution
     ///
     /// Returns true if command was accepted and executed
-    pub fn execute(&self, command: ApexCommand, architect_key: &dyn KeyStore) -> Result<bool, ApexError> {
+    pub fn execute(
+        &self,
+        command: ApexCommand,
+        architect_key: &dyn KeyStore,
+    ) -> Result<bool, ApexError> {
         // Verify command is fresh
-        if !command.is_fresh(300) { // 5 minute max age
+        if !command.is_fresh(300) {
+            // 5 minute max age
             return Err(ApexError::CommandExpired);
         }
 
@@ -964,14 +988,8 @@ pub struct GlobalImmunityMesh {
 
 impl GlobalImmunityMesh {
     /// Create new global immunity mesh
-    pub fn new(
-        architect_pubkey: Vec<u8>,
-        council_quorum: usize,
-    ) -> Result<Self, CryptoError> {
-        let mesh_id = format!(
-            "mesh-{:016x}",
-            rand::random::<u64>()
-        );
+    pub fn new(architect_pubkey: Vec<u8>, council_quorum: usize) -> Result<Self, CryptoError> {
+        let mesh_id = format!("mesh-{:016x}", rand::random::<u64>());
 
         Ok(GlobalImmunityMesh {
             genesis: RwLock::new(None),
@@ -1076,7 +1094,8 @@ mod tests {
             ],
             &architect_key,
             "In the beginning, there was ethics.",
-        ).unwrap();
+        )
+        .unwrap();
 
         assert!(!genesis.architect_signature.is_empty());
         assert!(genesis.verify(&architect_key));
@@ -1086,11 +1105,9 @@ mod tests {
     fn test_genesis_block_tamper_detection() {
         let architect_key = SoftwareKeyStore::generate().unwrap();
 
-        let mut genesis = GenesisBlock::create(
-            vec!["Do no harm".to_string()],
-            &architect_key,
-            "Genesis",
-        ).unwrap();
+        let mut genesis =
+            GenesisBlock::create(vec!["Do no harm".to_string()], &architect_key, "Genesis")
+                .unwrap();
 
         // Tamper with ethics
         genesis.first_ethics.push("Evil rule".to_string());
@@ -1213,17 +1230,15 @@ mod tests {
         let architect_key = SoftwareKeyStore::generate().unwrap();
 
         // Create mesh
-        let mesh = GlobalImmunityMesh::new(
-            architect_key.public_key_bytes(),
-            3,
-        ).unwrap();
+        let mesh = GlobalImmunityMesh::new(architect_key.public_key_bytes(), 3).unwrap();
 
         // Create and set genesis
         let genesis = GenesisBlock::create(
             vec!["Do no harm".to_string()],
             &architect_key,
             "Test genesis",
-        ).unwrap();
+        )
+        .unwrap();
 
         mesh.initialize_genesis(genesis);
 

@@ -102,24 +102,24 @@
 //! - **Máté Róbert** - Primary Author & Architect
 //! - **Claude (Anthropic)** - Technical Advisor & Co-Designer
 
+pub mod apex_protocol;
 pub mod audit_log;
 pub mod auditor;
+pub mod bft_watchdog; // v1.8.0: NEW - Byzantine Fault Tolerant Watchdog ("Multi-headed Cerberus")
 pub mod canonicalize;
 pub mod compliance;
 pub mod consensus;
 pub mod crypto;
+pub mod evolutionary_guard; // v2.1.0: NEW - Recursive Self-Evolution ("Singularity")
 pub mod executor;
 pub mod genome;
+pub mod merkle_audit; // v1.8.0: NEW - Merkle tree batch auditing
+pub mod mesh_capsule; // v2.0.0: NEW - Executable Information Mesh ("The Data Has Teeth")
 pub mod nonce_store; // v1.4.0: NEW - Persistent nonce storage
+pub mod panic_integrity; // v1.8.0: NEW - Self-destructing key protection ("Black Box")
 pub mod proof;
 pub mod watchdog; // v1.7.0: NEW - "Vas Szigora" enforcement engine
-pub mod merkle_audit; // v1.8.0: NEW - Merkle tree batch auditing
-pub mod zkp; // v1.8.0: NEW - Zero-Knowledge Proofs ("Invisible Auditor")
-pub mod bft_watchdog; // v1.8.0: NEW - Byzantine Fault Tolerant Watchdog ("Multi-headed Cerberus")
-pub mod panic_integrity; // v1.8.0: NEW - Self-destructing key protection ("Black Box")
-pub mod mesh_capsule; // v2.0.0: NEW - Executable Information Mesh ("The Data Has Teeth")
-pub mod evolutionary_guard; // v2.1.0: NEW - Recursive Self-Evolution ("Singularity")
-pub mod apex_protocol; // v2.2.0: NEW - Genesis Protocol & Global Immunity ("The Atmosphere")
+pub mod zkp; // v1.8.0: NEW - Zero-Knowledge Proofs ("Invisible Auditor") // v2.2.0: NEW - Genesis Protocol & Global Immunity ("The Atmosphere")
 
 // v1.4.0: Conditionally compiled backend modules
 #[cfg(feature = "hsm-support")]
@@ -183,45 +183,46 @@ pub use merkle_audit::{
 
 // v1.8.0: Zero-Knowledge Proof exports
 pub use zkp::{
-    ComplianceProof, BatchComplianceProof, PrivateDecision,
-    ZkpProver, ZkpVerifier, BatchZkpProver,
+    BatchComplianceProof, BatchZkpProver, ComplianceProof, PrivateDecision, ZkpProver, ZkpVerifier,
 };
 
 // v1.8.0: BFT Watchdog exports
 pub use bft_watchdog::{
-    WatchdogCouncil, CouncilMember, CouncilStatus, ConsensusResult,
-    Vote, VoteDecision, ThresholdSignature, MemberId,
+    ConsensusResult, CouncilMember, CouncilStatus, MemberId, ThresholdSignature, Vote,
+    VoteDecision, WatchdogCouncil,
 };
 
 // v1.8.0: Panic Integrity exports
 pub use panic_integrity::{
-    PanicProtectedKeyStore, PanicState, PanicLogEntry,
-    AnomalyEvent, AnomalyType, Severity, TimingGuard,
+    AnomalyEvent, AnomalyType, PanicLogEntry, PanicProtectedKeyStore, PanicState, Severity,
+    TimingGuard,
 };
 
 // v2.0.0: Executable Information Mesh exports ("The Data Has Teeth")
 pub use mesh_capsule::{
-    DataCapsule, CapsuleState, InformationLost,
-    MutationGuard, ExecutionContext,
-    ExecutionResult as MeshExecutionResult,  // Alias to avoid conflict with executor::ExecutionResult
-    AccessPredicate, DefaultPredicate,
-    ConsensusKey, KeyShard, MeshRuntime,
+    AccessPredicate,
+    CapsuleState,
+    ConsensusKey,
+    DataCapsule,
+    DefaultPredicate,
+    ExecutionContext,
+    ExecutionResult as MeshExecutionResult, // Alias to avoid conflict with executor::ExecutionResult
+    InformationLost,
+    KeyShard,
+    MeshRuntime,
+    MutationGuard,
 };
 
 // v2.1.0: Evolutionary Guard exports ("Singularity")
 pub use evolutionary_guard::{
-    EvolutionaryGuard, AttackPattern, AttackCategory, ThreatLevel,
-    ImmunityMemory, PolymorphicFilter, FilterRule, SignedFilter,
-    FilterGenerator, MutationEngine, TimingSignature,
+    AttackCategory, AttackPattern, EvolutionaryGuard, FilterGenerator, FilterRule, ImmunityMemory,
+    MutationEngine, PolymorphicFilter, SignedFilter, ThreatLevel, TimingSignature,
 };
 
 // v2.2.0: Genesis Protocol & Global Immunity exports ("The Atmosphere")
 pub use apex_protocol::{
-    GenesisBlock, CompactedThreatFingerprint,
-    SyncProtocol, SyncMessage, MeshNode,
-    ApexControl, ApexCommand, ApexCommandType, ApexError,
-    StealthIntegrity, MemorySlot,
-    GlobalImmunityMesh,
+    ApexCommand, ApexCommandType, ApexControl, ApexError, CompactedThreatFingerprint, GenesisBlock,
+    GlobalImmunityMesh, MemorySlot, MeshNode, StealthIntegrity, SyncMessage, SyncProtocol,
 };
 
 /// Version of the Hope Genome framework
