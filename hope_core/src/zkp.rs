@@ -158,13 +158,13 @@ impl PrivateDecision {
 
         // Hash of decision content
         let decision_hash = Sha256::digest(self.content.as_bytes());
-        hasher.update(&decision_hash);
+        hasher.update(decision_hash);
 
         // Blinding factor (randomness)
-        hasher.update(&self.blinding);
+        hasher.update(self.blinding);
 
         // Approval status
-        hasher.update(&[if self.approved { 1u8 } else { 0u8 }]);
+        hasher.update([if self.approved { 1u8 } else { 0u8 }]);
 
         // Applied rule (if any)
         if let Some(ref rule) = self.applied_rule {
@@ -256,8 +256,8 @@ impl<K: KeyStore> ZkpProver<K> {
     fn compute_challenge(&self, commitment: &[u8; 32], timestamp: u64) -> [u8; 32] {
         let mut hasher = Sha256::new();
         hasher.update(commitment);
-        hasher.update(&self.rules_hash);
-        hasher.update(&timestamp.to_le_bytes());
+        hasher.update(self.rules_hash);
+        hasher.update(timestamp.to_le_bytes());
         hasher.finalize().into()
     }
 
@@ -270,14 +270,14 @@ impl<K: KeyStore> ZkpProver<K> {
 
         // Hash challenge with decision
         hasher.update(challenge);
-        hasher.update(&Sha256::digest(decision.content.as_bytes()));
-        hasher.update(&decision.blinding);
-        hasher.update(&[if decision.approved { 1u8 } else { 0u8 }]);
+        hasher.update(Sha256::digest(decision.content.as_bytes()));
+        hasher.update(decision.blinding);
+        hasher.update([if decision.approved { 1u8 } else { 0u8 }]);
 
         // Additional entropy
         let mut entropy = [0u8; 32];
         rand::RngCore::fill_bytes(&mut rand::rngs::OsRng, &mut entropy);
-        hasher.update(&entropy);
+        hasher.update(entropy);
 
         hasher.finalize().to_vec()
     }
@@ -287,7 +287,7 @@ impl<K: KeyStore> ZkpProver<K> {
         &self,
         commitment: &[u8; 32],
         challenge: &[u8; 32],
-        response: &Vec<u8>,
+        response: &[u8],
         timestamp: u64,
     ) -> Vec<u8> {
         let mut data = Vec::with_capacity(32 + 32 + 64 + 32 + 8);
@@ -405,7 +405,7 @@ impl ZkpVerifier {
         let mut hasher = Sha256::new();
         hasher.update(commitment);
         hasher.update(rules_hash);
-        hasher.update(&timestamp.to_le_bytes());
+        hasher.update(timestamp.to_le_bytes());
         hasher.finalize().into()
     }
 
@@ -567,11 +567,11 @@ impl<K: KeyStore + Clone> BatchZkpProver<K> {
 
             for chunk in level.chunks(2) {
                 let mut hasher = Sha256::new();
-                hasher.update(&chunk[0]);
+                hasher.update(chunk[0]);
                 if chunk.len() > 1 {
-                    hasher.update(&chunk[1]);
+                    hasher.update(chunk[1]);
                 } else {
-                    hasher.update(&chunk[0]); // duplicate for odd
+                    hasher.update(chunk[0]); // duplicate for odd
                 }
                 next_level.push(hasher.finalize().into());
             }
@@ -586,9 +586,9 @@ impl<K: KeyStore + Clone> BatchZkpProver<K> {
     fn compute_batch_challenge(&self, commitment: &[u8; 32], timestamp: u64) -> [u8; 32] {
         let mut hasher = Sha256::new();
         hasher.update(commitment);
-        hasher.update(&self.prover.rules_hash);
-        hasher.update(&timestamp.to_le_bytes());
-        hasher.update(&(self.commitments.len() as u64).to_le_bytes());
+        hasher.update(self.prover.rules_hash);
+        hasher.update(timestamp.to_le_bytes());
+        hasher.update((self.commitments.len() as u64).to_le_bytes());
         hasher.finalize().into()
     }
 
@@ -603,7 +603,7 @@ impl<K: KeyStore + Clone> BatchZkpProver<K> {
 
         let mut entropy = [0u8; 32];
         rand::RngCore::fill_bytes(&mut rand::rngs::OsRng, &mut entropy);
-        hasher.update(&entropy);
+        hasher.update(entropy);
 
         hasher.finalize().to_vec()
     }
@@ -613,7 +613,7 @@ impl<K: KeyStore + Clone> BatchZkpProver<K> {
         &self,
         commitment: &[u8; 32],
         challenge: &[u8; 32],
-        response: &Vec<u8>,
+        response: &[u8],
         timestamp: u64,
     ) -> Vec<u8> {
         let mut data = Vec::new();

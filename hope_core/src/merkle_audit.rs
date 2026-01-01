@@ -260,6 +260,7 @@ impl MerkleTree {
         let mut current_index = index;
 
         for level in &self.levels[..self.levels.len() - 1] {
+            #[allow(clippy::manual_is_multiple_of)]
             let sibling_index = if current_index % 2 == 0 {
                 current_index + 1
             } else {

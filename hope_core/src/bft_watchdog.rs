@@ -153,6 +153,7 @@ pub struct CouncilMember {
 ///
 /// Implements Byzantine Fault Tolerant consensus for Watchdog decisions.
 /// Requires 2f+1 out of 3f+1 members to agree for a valid decision.
+#[allow(dead_code)]
 pub struct WatchdogCouncil {
     /// Council members
     members: Vec<Arc<RwLock<CouncilMember>>>,
@@ -386,7 +387,7 @@ impl WatchdogCouncil {
     fn create_threshold_signature(
         &self,
         votes: &[Vote],
-        action: &Action,
+        _action: &Action,
     ) -> Result<ThresholdSignature> {
         let mut combined = Vec::new();
         let mut pubkeys = Vec::new();

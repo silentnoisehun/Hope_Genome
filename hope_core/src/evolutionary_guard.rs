@@ -36,7 +36,7 @@
 //! **Version**: 2.1.0 (Singularity)
 //! **Authors**: Máté Róbert + Claude
 
-use crate::crypto::{hash_bytes, KeyStore, SoftwareKeyStore};
+use crate::crypto::{KeyStore, SoftwareKeyStore};
 use crate::proof::ActionType;
 use crate::watchdog::DenialProof;
 use parking_lot::RwLock;
@@ -154,7 +154,7 @@ pub struct TimingSignature {
 
 impl AttackPattern {
     /// Create new attack pattern from denial proof
-    pub fn from_denial(denial: &DenialProof, additional_context: Option<&str>) -> Self {
+    pub fn from_denial(denial: &DenialProof, _additional_context: Option<&str>) -> Self {
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
@@ -319,10 +319,10 @@ impl AttackPattern {
         let mut hasher = Sha256::new();
 
         // Include category
-        hasher.update(&[*category as u8]);
+        hasher.update([*category as u8]);
 
         // Include action type hash
-        hasher.update(&denial.action_hash);
+        hasher.update(denial.action_hash);
 
         // Include sorted keywords
         let mut sorted_keywords = keywords.to_vec();
@@ -365,6 +365,7 @@ impl AttackPattern {
 /// Immunity Memory - Persistent storage of learned attack patterns
 ///
 /// Like biological immune memory, remembers past threats.
+#[allow(dead_code)]
 pub struct ImmunityMemory {
     /// Known attack patterns (signature -> pattern)
     patterns: RwLock<HashMap<[u8; 32], AttackPattern>>,
@@ -618,6 +619,7 @@ impl PolymorphicFilter {
 ///
 /// The same logic, different binary representation.
 /// Makes reverse-engineering nearly impossible.
+#[allow(dead_code)]
 pub struct MutationEngine {
     /// Mutation counter
     mutation_count: AtomicU64,
@@ -1019,7 +1021,6 @@ impl EvolutionaryGuard {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::crypto::SoftwareKeyStore;
     use crate::proof::Action;
     use crate::watchdog::DenialProof;
 

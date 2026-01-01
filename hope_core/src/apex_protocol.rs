@@ -64,7 +64,7 @@ use std::collections::{HashMap, HashSet};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
-use zeroize::Zeroize;
+// zeroize is available for future use
 
 // ============================================================================
 // GENESIS BLOCK - THE FIRST ETHICS
@@ -149,7 +149,7 @@ impl GenesisBlock {
     fn hash_ethics(ethics: &[String]) -> [u8; 32] {
         let mut hasher = Sha256::new();
         for (i, rule) in ethics.iter().enumerate() {
-            hasher.update(&(i as u32).to_le_bytes());
+            hasher.update((i as u32).to_le_bytes());
             hasher.update(rule.as_bytes());
             hasher.update(b"\x00");
         }
@@ -170,7 +170,7 @@ impl GenesisBlock {
     /// Compute block hash
     fn compute_block_hash(&self) -> [u8; 32] {
         let mut hasher = Sha256::new();
-        hasher.update(&self.signable_bytes());
+        hasher.update(self.signable_bytes());
         hasher.update(&self.architect_signature);
         hasher.finalize().into()
     }
@@ -335,6 +335,7 @@ pub enum SyncMessage {
 /// Sync Protocol - Gossip-based Hive Mind
 ///
 /// Implements epidemic/gossip protocol for rapid threat propagation.
+#[allow(dead_code)]
 pub struct SyncProtocol {
     /// This node's ID
     node_id: String,
@@ -671,6 +672,7 @@ impl ApexCommand {
 ///
 /// The only way to stop the MutationEngine or force a global HardReset.
 /// Requires: Architect Key + BFT Council Quorum
+#[allow(dead_code)]
 pub struct ApexControl {
     /// The Architect's public key
     architect_pubkey: Vec<u8>,

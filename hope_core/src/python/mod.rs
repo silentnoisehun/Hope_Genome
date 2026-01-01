@@ -16,7 +16,7 @@ mod merkle_audit;
 mod noncestore;
 mod proof;
 mod watchdog; // v1.7.0: NEW - "Vas Szigora" enforcement // v1.8.0: NEW - Merkle batch auditing
-                                                         // mod aibom;  // TODO v1.5.1: Complete AIBOM wrapper
+              // mod aibom;  // TODO v1.5.1: Complete AIBOM wrapper
 
 pub use action::*;
 pub use auditlog::*;

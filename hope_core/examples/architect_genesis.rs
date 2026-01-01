@@ -49,8 +49,7 @@ fn main() {
         "Vas Szigora - Iron Discipline, no escape from ethics".to_string(),
     ];
 
-    let genesis_message = format!(
-        "Hope Genome Genesis Block\n\
+    let genesis_message = "Hope Genome Genesis Block\n\
          Created by: Máté Róbert (The Architect)\n\
          Date: 2026-01-01\n\
          \n\
@@ -58,7 +57,7 @@ fn main() {
          \n\
          This is the immutable root of all Hope Genome ethics.\n\
          All mutations must be cryptographically descended from this block."
-    );
+        .to_string();
 
     let genesis = GenesisBlock::create(first_ethics.clone(), &architect_key, &genesis_message)
         .expect("Failed to create Genesis Block");

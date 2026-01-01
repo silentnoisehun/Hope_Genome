@@ -63,8 +63,8 @@
 //! **Author**: Máté Róbert <stratosoiteam@gmail.com>
 
 use crate::bft_watchdog::{ThresholdSignature, VoteDecision};
-use crate::crypto::{CryptoError, KeyStore, Result, SoftwareKeyStore};
-use crate::zkp::{ComplianceProof, ZkpVerifier};
+use crate::crypto::{KeyStore, Result, SoftwareKeyStore};
+use crate::zkp::ComplianceProof;
 use parking_lot::RwLock;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -364,6 +364,7 @@ impl AccessPredicate for DefaultPredicate {
 ///
 /// Encapsulates encrypted data AND logic predicate.
 /// Data cannot be "read" - only "executed" via run_access_protocol().
+#[allow(dead_code)]
 pub struct DataCapsule {
     /// Capsule unique ID
     id: String,
@@ -566,8 +567,8 @@ impl DataCapsule {
         // Create breach signature
         let mut hasher = Sha256::new();
         hasher.update(reason.as_bytes());
-        hasher.update(&now.to_le_bytes());
-        hasher.update(&self.guard.integrity_hash());
+        hasher.update(now.to_le_bytes());
+        hasher.update(self.guard.integrity_hash());
         let breach_data = hasher.finalize();
 
         let breach_signature = self.keystore.sign(&breach_data).unwrap_or_default();
@@ -859,7 +860,6 @@ impl MeshRuntime {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::bft_watchdog::MemberId;
     use crate::zkp::{PrivateDecision, ZkpProver};
 
     fn create_test_context(rules: &[String]) -> ExecutionContext {

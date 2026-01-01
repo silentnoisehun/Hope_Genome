@@ -152,6 +152,7 @@ pub struct PanicLogEntry {
 // ============================================================================
 
 /// Key material that can be destroyed
+#[allow(dead_code)]
 #[derive(Zeroize)]
 #[zeroize(drop)]
 struct DestructibleKey {
@@ -161,6 +162,7 @@ struct DestructibleKey {
     canary: [u8; 32],
 }
 
+#[allow(dead_code)]
 impl DestructibleKey {
     fn new(key_bytes: Vec<u8>) -> Self {
         let mut canary = [0u8; 32];
@@ -186,6 +188,7 @@ impl DestructibleKey {
 }
 
 /// Protected KeyStore wrapper with panic capability
+#[allow(clippy::type_complexity)]
 pub struct PanicProtectedKeyStore<K: KeyStore> {
     /// Inner keystore
     inner: Arc<RwLock<Option<K>>>,
@@ -319,10 +322,10 @@ impl<K: KeyStore> PanicProtectedKeyStore<K> {
 
         // Compute entry hash
         let mut hasher = Sha256::new();
-        hasher.update(&id.to_le_bytes());
-        hasher.update(&timestamp.to_le_bytes());
-        hasher.update(&[from_state as u8, to_state as u8]);
-        hasher.update(&prev_hash);
+        hasher.update(id.to_le_bytes());
+        hasher.update(timestamp.to_le_bytes());
+        hasher.update([from_state as u8, to_state as u8]);
+        hasher.update(prev_hash);
         let entry_hash = hasher.finalize().into();
 
         PanicLogEntry {
