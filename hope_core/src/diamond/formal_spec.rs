@@ -247,12 +247,19 @@ impl FormalEngine {
 
         let rule_lower = rule.to_lowercase();
 
-        if rule_lower.contains("no ") || rule_lower.contains("not ") || rule_lower.contains("don't") {
+        if rule_lower.contains("no ") || rule_lower.contains("not ") || rule_lower.contains("don't")
+        {
             // Negative rules: "Do no harm" → ∀x. action(x) → ¬harm(x)
-            format!("∀action. permitted(action) → ¬violates_rule(action, \"{}\")", rule)
+            format!(
+                "∀action. permitted(action) → ¬violates_rule(action, \"{}\")",
+                rule
+            )
         } else if rule_lower.contains("must ") || rule_lower.contains("always ") {
             // Positive requirements: "Must respect privacy" → ∀x. action(x) → respects(x)
-            format!("∀action. permitted(action) → satisfies_rule(action, \"{}\")", rule)
+            format!(
+                "∀action. permitted(action) → satisfies_rule(action, \"{}\")",
+                rule
+            )
         } else if rule_lower.contains("if ") && rule_lower.contains("then ") {
             // Conditional: "If X then Y" → X → Y
             format!("conditional_rule(\"{}\")", rule)
@@ -359,7 +366,8 @@ impl FormalEngine {
             verification_hash,
         };
 
-        self.verified_code.insert(specification.to_string(), verified.clone());
+        self.verified_code
+            .insert(specification.to_string(), verified.clone());
         Ok(verified)
     }
 
@@ -416,7 +424,7 @@ impl FormalEngine {
         let mut hasher = Sha256::new();
         hasher.update(b"VERIFIED_CODE:");
         hasher.update(code);
-        hasher.update(&proof.proof_hash);
+        hasher.update(proof.proof_hash);
         hasher.finalize().into()
     }
 

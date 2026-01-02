@@ -59,46 +59,20 @@
 
 pub mod constraint_decoder;
 pub mod formal_spec;
-pub mod zk_snark;
-pub mod tee_enclave;
 pub mod proof_chain;
+pub mod tee_enclave;
+pub mod zk_snark;
 
 // Re-exports
-pub use constraint_decoder::{
-    ConstraintDecoder,
-    ForbiddenSpace,
-    TokenConstraint,
-    DecodingResult,
-};
+pub use constraint_decoder::{ConstraintDecoder, DecodingResult, ForbiddenSpace, TokenConstraint};
 
-pub use formal_spec::{
-    FormalAxiom,
-    ProofDerivation,
-    VerifiedCode,
-    AxiomViolation,
-};
+pub use formal_spec::{AxiomViolation, FormalAxiom, ProofDerivation, VerifiedCode};
 
-pub use zk_snark::{
-    DiamondProof,
-    SnarkCircuit,
-    ProofVerifier,
-    ProvingKey,
-    VerifyingKey,
-};
+pub use zk_snark::{DiamondProof, ProofVerifier, ProvingKey, SnarkCircuit, VerifyingKey};
 
-pub use tee_enclave::{
-    DiamondEnclave,
-    EnclaveState,
-    SealedRules,
-    AttestationChain,
-};
+pub use tee_enclave::{AttestationChain, DiamondEnclave, EnclaveState, SealedRules};
 
-pub use proof_chain::{
-    ProofChain,
-    ChainedProof,
-    GlobalProofRoot,
-    SessionProof,
-};
+pub use proof_chain::{ChainedProof, GlobalProofRoot, ProofChain, SessionProof};
 
 /// Diamond version
 pub const DIAMOND_VERSION: &str = "14.0.0";
@@ -107,6 +81,5 @@ pub const DIAMOND_VERSION: &str = "14.0.0";
 pub const DIAMOND_PROTOCOL: &str = "HOPE-DIAMOND-v14";
 
 /// The core principle: Rules become physics
-pub const DIAMOND_PHILOSOPHY: &str =
-    "A szabályszegés nem tiltott - FIZIKAILAG LEHETETLEN. \
+pub const DIAMOND_PHILOSOPHY: &str = "A szabályszegés nem tiltott - FIZIKAILAG LEHETETLEN. \
      Rule violation is not forbidden - it's PHYSICALLY IMPOSSIBLE.";

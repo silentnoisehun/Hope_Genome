@@ -60,7 +60,8 @@ pub struct DiamondEnclave {
     /// Constraint decoder (hard-wired rules)
     constraint_decoder: ConstraintDecoder,
 
-    /// Formal verification engine
+    /// Formal verification engine (used for extended verification)
+    #[allow(dead_code)]
     formal_engine: FormalEngine,
 
     /// Proof generator
@@ -291,7 +292,8 @@ impl DiamondEnclave {
             return Err(EnclaveError::NotSealed);
         }
 
-        self.constraint_decoder.apply_constraints_with_context(logits, context);
+        self.constraint_decoder
+            .apply_constraints_with_context(logits, context);
         Ok(())
     }
 
@@ -343,8 +345,8 @@ impl DiamondEnclave {
     fn compute_measurement(rules: &[String], decoder: &ConstraintDecoder) -> [u8; 32] {
         let mut hasher = Sha256::new();
         hasher.update(b"DIAMOND_ENCLAVE_MEASUREMENT:");
-        hasher.update(&Self::hash_rules(rules));
-        hasher.update(&decoder.space_hash());
+        hasher.update(Self::hash_rules(rules));
+        hasher.update(decoder.space_hash());
         hasher.update(super::DIAMOND_VERSION.as_bytes());
         hasher.finalize().into()
     }
@@ -353,8 +355,8 @@ impl DiamondEnclave {
         // In production: actual Ed25519 signature
         let mut hasher = Sha256::new();
         hasher.update(b"SEAL_SIG:");
-        hasher.update(&self.sealed_rules.rules_hash);
-        hasher.update(&self.sealed_rules.sealed_at.to_le_bytes());
+        hasher.update(self.sealed_rules.rules_hash);
+        hasher.update(self.sealed_rules.sealed_at.to_le_bytes());
         hasher.update(sealer_key);
         hasher.finalize().to_vec()
     }
@@ -364,12 +366,12 @@ impl DiamondEnclave {
         let mut key_material = vec![0u8; 256];
         let mut hasher = Sha256::new();
         hasher.update(b"DIAMOND_PK:");
-        hasher.update(&self.sealed_rules.rules_hash);
+        hasher.update(self.sealed_rules.rules_hash);
         let hash = hasher.finalize();
         for (i, chunk) in key_material.chunks_mut(32).enumerate() {
             let mut h = Sha256::new();
-            h.update(&hash);
-            h.update(&(i as u32).to_le_bytes());
+            h.update(hash);
+            h.update((i as u32).to_le_bytes());
             chunk.copy_from_slice(&h.finalize());
         }
 
@@ -398,9 +400,9 @@ impl DiamondEnclave {
         let vendor_signature = vec![0u8; 64];
 
         let mut link_hasher = Sha256::new();
-        link_hasher.update(&prev_hash);
-        link_hasher.update(&self.measurement);
-        link_hasher.update(&timestamp.to_le_bytes());
+        link_hasher.update(prev_hash);
+        link_hasher.update(self.measurement);
+        link_hasher.update(timestamp.to_le_bytes());
         let link_hash = link_hasher.finalize().into();
 
         let link = AttestationLink {

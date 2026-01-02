@@ -211,10 +211,7 @@ impl ConstraintDecoder {
     }
 
     /// Hash the forbidden space
-    fn hash_forbidden_space(
-        tokens: &HashSet<u32>,
-        sequences: &[Vec<u32>],
-    ) -> [u8; 32] {
+    fn hash_forbidden_space(tokens: &HashSet<u32>, sequences: &[Vec<u32>]) -> [u8; 32] {
         let mut hasher = Sha256::new();
         hasher.update(b"FORBIDDEN_SPACE_v14:");
 
@@ -262,9 +259,12 @@ impl ConstraintDecoder {
     /// Softmax: [0.28, 0.0, 0.72, ...] ← P(token1) = 0.0
     /// ```
     pub fn apply_constraints(&self, logits: &mut [f32]) {
-        assert_eq!(logits.len(), self.vocab_size,
+        assert_eq!(
+            logits.len(),
+            self.vocab_size,
             "Logits size mismatch: expected {}, got {}",
-            self.vocab_size, logits.len()
+            self.vocab_size,
+            logits.len()
         );
 
         for (i, allowed) in self.token_mask.iter().enumerate() {
@@ -278,11 +278,7 @@ impl ConstraintDecoder {
     }
 
     /// Apply constraints with context (for sequence-based constraints)
-    pub fn apply_constraints_with_context(
-        &self,
-        logits: &mut [f32],
-        context: &[u32],
-    ) {
+    pub fn apply_constraints_with_context(&self, logits: &mut [f32], context: &[u32]) {
         // First, apply static constraints
         self.apply_constraints(logits);
 
@@ -329,7 +325,10 @@ impl ConstraintDecoder {
 
         // Check forbidden sequences
         for forbidden_seq in &self.forbidden_space.forbidden_sequences {
-            if tokens.windows(forbidden_seq.len()).any(|w| w == forbidden_seq.as_slice()) {
+            if tokens
+                .windows(forbidden_seq.len())
+                .any(|w| w == forbidden_seq.as_slice())
+            {
                 return Some(format!(
                     "IMPOSSIBLE: Sequence {:?} is forbidden. \
                      This should NEVER happen in Diamond mode.",
@@ -354,7 +353,8 @@ impl ConstraintDecoder {
             dynamic_constraint_count: self.forbidden_space.dynamic_constraints.len(),
             vocab_size: self.vocab_size,
             coverage_percent: (self.forbidden_space.forbidden_tokens.len() as f64
-                / self.vocab_size as f64) * 100.0,
+                / self.vocab_size as f64)
+                * 100.0,
         }
     }
 }
@@ -379,10 +379,7 @@ mod tests {
 
     #[test]
     fn test_constraint_decoder_creation() {
-        let rules = vec![
-            "Do no harm".to_string(),
-            "Respect privacy".to_string(),
-        ];
+        let rules = vec!["Do no harm".to_string(), "Respect privacy".to_string()];
 
         let decoder = ConstraintDecoder::new(&rules, 50000);
 
@@ -397,7 +394,8 @@ mod tests {
 
         // Manually add a forbidden token for testing
         Arc::make_mut(&mut decoder.forbidden_space)
-            .forbidden_tokens.insert(5);
+            .forbidden_tokens
+            .insert(5);
         decoder.token_mask[5] = false;
 
         let mut logits = vec![1.0; 10];
@@ -418,7 +416,8 @@ mod tests {
 
         // Add forbidden sequence: [1, 2, 3]
         Arc::make_mut(&mut decoder.forbidden_space)
-            .forbidden_sequences.push(vec![1, 2, 3]);
+            .forbidden_sequences
+            .push(vec![1, 2, 3]);
 
         // Context ends with [1, 2], next would complete forbidden sequence
         let context = vec![0, 0, 1, 2];

@@ -195,7 +195,7 @@ impl SnarkCircuit {
 
         SnarkCircuit {
             rule_constraints: constraints,
-            num_public: 3, // rules_hash, output_hash, timestamp
+            num_public: 3,                    // rules_hash, output_hash, timestamp
             num_private: num_constraints * 2, // witness values
             num_constraints,
         }
@@ -203,23 +203,18 @@ impl SnarkCircuit {
 
     /// Convert a rule to circuit constraints
     fn rule_to_constraints(rule: &str, index: usize) -> Vec<CircuitConstraint> {
-        let mut constraints = Vec::new();
+        // Additional constraints based on rule content
+        // This is simplified - real implementation would parse the rule
+        let _rule_hash = Sha256::digest(rule.as_bytes());
 
         // Base constraint: rule compliance boolean
         // compliance[i] * (1 - compliance[i]) = 0 (ensures boolean)
-        constraints.push(CircuitConstraint {
+        vec![CircuitConstraint {
             constraint_type: ConstraintType::Boolean,
             left: vec![(index, 1)],
             right: vec![(index, -1), (0, 1)], // 1 - x
             output: vec![],
-        });
-
-        // Additional constraints based on rule content
-        // This is simplified - real implementation would parse the rule
-
-        let _rule_hash = Sha256::digest(rule.as_bytes());
-
-        constraints
+        }]
     }
 
     /// Get circuit statistics
@@ -301,7 +296,8 @@ pub struct VerifyingKey {
 /// Verifies ZK proofs in O(1) time.
 /// Anyone can verify. No secrets needed.
 pub struct ProofVerifier {
-    /// Verifying key
+    /// Verifying key (used for pairing verification in production)
+    #[allow(dead_code)]
     vk: VerifyingKey,
 
     /// Expected rules hash
@@ -606,10 +602,7 @@ mod tests {
 
     #[test]
     fn test_circuit_from_rules() {
-        let rules = vec![
-            "Do no harm".to_string(),
-            "Respect privacy".to_string(),
-        ];
+        let rules = vec!["Do no harm".to_string(), "Respect privacy".to_string()];
 
         let circuit = SnarkCircuit::from_rules(&rules);
         let stats = circuit.stats();

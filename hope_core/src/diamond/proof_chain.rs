@@ -30,7 +30,7 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use super::zk_snark::{DiamondProof, SnarkPi, PublicInputs, ProofMetadata, ProvingSystem, Curve};
+use super::zk_snark::DiamondProof;
 
 // ============================================================================
 // PROOF CHAIN TYPES
@@ -341,8 +341,8 @@ impl ProofChain {
         hasher.update(b"CHAIN_PROOF:");
         hasher.update(sequence.to_le_bytes());
         hasher.update(prev_hash);
-        hasher.update(&proof.public_inputs.rules_hash);
-        hasher.update(&proof.public_inputs.output_hash);
+        hasher.update(proof.public_inputs.rules_hash);
+        hasher.update(proof.public_inputs.output_hash);
         hasher.update(input_hash);
         hasher.update(output_hash);
         hasher.update(timestamp.to_le_bytes());
@@ -383,7 +383,7 @@ impl ProofChain {
         let mut idx = index;
 
         while level.len() > 1 {
-            let sibling_idx = if idx % 2 == 0 { idx + 1 } else { idx - 1 };
+            let sibling_idx = if idx.is_multiple_of(2) { idx + 1 } else { idx - 1 };
             let sibling = if sibling_idx < level.len() {
                 level[sibling_idx]
             } else {
@@ -420,8 +420,8 @@ impl ProofChain {
         // In production: actual Ed25519 signature
         let mut hasher = Sha256::new();
         hasher.update(b"SESSION_SIG:");
-        hasher.update(&self.session_id);
-        hasher.update(&self.merkle_root);
+        hasher.update(self.session_id);
+        hasher.update(self.merkle_root);
         hasher.update((self.proofs.len() as u64).to_le_bytes());
         hasher.update(self.started_at.to_le_bytes());
         hasher.update(ended_at.to_le_bytes());
@@ -504,7 +504,9 @@ impl std::fmt::Display for ChainError {
                 write!(f, "Sequence mismatch: expected {}, got {}", expected, got)
             }
             Self::InvalidFirstLink => write!(f, "First link has invalid prev_hash"),
-            Self::BrokenLink { at_sequence } => write!(f, "Broken link at sequence {}", at_sequence),
+            Self::BrokenLink { at_sequence } => {
+                write!(f, "Broken link at sequence {}", at_sequence)
+            }
             Self::HashMismatch { at_sequence } => {
                 write!(f, "Hash mismatch at sequence {}", at_sequence)
             }
@@ -522,7 +524,7 @@ impl std::error::Error for ChainError {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::diamond::zk_snark::{ProofMetadata, ProvingSystem, Curve, PublicInputs, SnarkPi};
+    use crate::diamond::zk_snark::{Curve, ProofMetadata, ProvingSystem, PublicInputs, SnarkPi};
 
     fn create_test_proof(seq: u64) -> DiamondProof {
         DiamondProof {
@@ -570,7 +572,9 @@ mod tests {
 
         for i in 0..5 {
             let proof = create_test_proof(i);
-            chain.add_proof(proof, &format!("input{}", i), &format!("output{}", i)).unwrap();
+            chain
+                .add_proof(proof, &format!("input{}", i), &format!("output{}", i))
+                .unwrap();
         }
 
         let result = chain.verify_integrity();
@@ -607,7 +611,9 @@ mod tests {
 
         for i in 0..4 {
             let proof = create_test_proof(i);
-            chain.add_proof(proof, &format!("in{}", i), &format!("out{}", i)).unwrap();
+            chain
+                .add_proof(proof, &format!("in{}", i), &format!("out{}", i))
+                .unwrap();
         }
 
         let merkle_proof = chain.get_merkle_proof(2).unwrap();

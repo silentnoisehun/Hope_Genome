@@ -110,6 +110,7 @@ pub mod canonicalize;
 pub mod compliance;
 pub mod consensus;
 pub mod crypto;
+pub mod diamond;
 pub mod evolutionary_guard; // v2.1.0: NEW - Recursive Self-Evolution ("Singularity")
 pub mod executor;
 pub mod genome;
@@ -119,8 +120,7 @@ pub mod nonce_store; // v1.4.0: NEW - Persistent nonce storage
 pub mod panic_integrity; // v1.8.0: NEW - Self-destructing key protection ("Black Box")
 pub mod proof;
 pub mod watchdog; // v1.7.0: NEW - "Vas Szigora" enforcement engine
-pub mod zkp; // v1.8.0: NEW - Zero-Knowledge Proofs ("Invisible Auditor") // v2.2.0: NEW - Genesis Protocol & Global Immunity ("The Atmosphere")
-pub mod diamond; // v14.0.0: NEW - Diamond Protocol ("The Impossible Made Real")
+pub mod zkp; // v1.8.0: NEW - Zero-Knowledge Proofs ("Invisible Auditor") // v2.2.0: NEW - Genesis Protocol & Global Immunity ("The Atmosphere") // v14.0.0: NEW - Diamond Protocol ("The Impossible Made Real")
 
 // v1.4.0: Conditionally compiled backend modules
 #[cfg(feature = "hsm-support")]
@@ -228,16 +228,32 @@ pub use apex_protocol::{
 
 // v14.0.0: Diamond Protocol exports ("The Impossible Made Real")
 pub use diamond::{
+    AttestationChain,
+    AxiomViolation,
+    ChainedProof,
     // Constraint Decoder - Neurális Hard-Wiring
-    ConstraintDecoder, ForbiddenSpace, TokenConstraint, DecodingResult,
-    // Formal Spec - Mathematical Verification
-    FormalAxiom, ProofDerivation, VerifiedCode, AxiomViolation,
-    // ZK-SNARK - Zero-Knowledge Proofs
-    DiamondProof, SnarkCircuit, ProofVerifier, ProvingKey, VerifyingKey,
+    ConstraintDecoder,
+    DecodingResult,
     // TEE Enclave - Hardware Isolation
-    DiamondEnclave, EnclaveState, SealedRules, AttestationChain,
+    DiamondEnclave,
+    // ZK-SNARK - Zero-Knowledge Proofs
+    DiamondProof,
+    EnclaveState,
+    ForbiddenSpace,
+    // Formal Spec - Mathematical Verification
+    FormalAxiom,
+    GlobalProofRoot,
     // Proof Chain - Atomic Responses
-    ProofChain, ChainedProof, GlobalProofRoot, SessionProof,
+    ProofChain,
+    ProofDerivation,
+    ProofVerifier,
+    ProvingKey,
+    SealedRules,
+    SessionProof,
+    SnarkCircuit,
+    TokenConstraint,
+    VerifiedCode,
+    VerifyingKey,
 };
 
 /// Version of the Hope Genome framework
