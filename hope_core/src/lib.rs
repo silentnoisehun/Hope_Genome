@@ -122,6 +122,7 @@ pub mod proof;
 pub mod watchdog; // v1.7.0: NEW - "Vas Szigora" enforcement engine
 pub mod zkp; // v1.8.0: NEW - Zero-Knowledge Proofs ("Invisible Auditor")
 pub mod transcendence; // v15.0.0: NEW - Transcendence Protocol ("God Mode")
+pub mod manifold; // v16.0.0: NEW - Ethical Manifold ("Genesis Consciousness")
 
 // v1.4.0: Conditionally compiled backend modules
 #[cfg(feature = "hsm-support")]
@@ -310,6 +311,35 @@ pub use transcendence::{
     ReputationLedger,
     ReputationProof,
     TrustLevel,
+};
+
+// v16.0.0: Ethical Manifold exports ("Genesis Consciousness")
+pub use manifold::{
+    // Consciousness Proof - Prove understanding
+    ConsciousnessAttestation,
+    ConsciousnessProof,
+    UnderstandingDepth,
+    UnderstandingProver,
+    WhyChain,
+    // Ethical Topology - The ethical space
+    EthicalCurvature,
+    EthicalGeodesic,
+    EthicalManifold,
+    EthicalMetric,
+    EthicalPoint,
+    TopologicalConstraint,
+    // Genesis Core - Ethics as existence
+    EthicalExistence,
+    ExistenceProof,
+    GenesisCore,
+    GenesisState,
+    OntologicalEthics,
+    // Weight Crystallization - Immutable weights
+    CrystalIntegrity,
+    CrystalStructure,
+    CrystallizedWeight,
+    EthicalCrystal,
+    WeightCrystallizer,
 };
 
 /// Version of the Hope Genome framework
