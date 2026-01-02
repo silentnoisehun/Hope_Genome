@@ -51,3 +51,12 @@ hope_core/architect_keys/
 
 # Claude Code
 .claude/settings.local.json
+
+# TRINITY SYSTEM - PRIVATE! NEVER UPLOAD!
+# "a trinity system az csak a miénk" - Máté
+trinity/
+TRINITY.bat
+START_HUB.bat
+START_MONITOR.bat
+START_TRINITY.bat
+SOUL_MEMORY_SHARED.md
