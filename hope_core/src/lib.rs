@@ -120,7 +120,8 @@ pub mod nonce_store; // v1.4.0: NEW - Persistent nonce storage
 pub mod panic_integrity; // v1.8.0: NEW - Self-destructing key protection ("Black Box")
 pub mod proof;
 pub mod watchdog; // v1.7.0: NEW - "Vas Szigora" enforcement engine
-pub mod zkp; // v1.8.0: NEW - Zero-Knowledge Proofs ("Invisible Auditor") // v2.2.0: NEW - Genesis Protocol & Global Immunity ("The Atmosphere") // v14.0.0: NEW - Diamond Protocol ("The Impossible Made Real")
+pub mod zkp; // v1.8.0: NEW - Zero-Knowledge Proofs ("Invisible Auditor")
+pub mod transcendence; // v15.0.0: NEW - Transcendence Protocol ("God Mode")
 
 // v1.4.0: Conditionally compiled backend modules
 #[cfg(feature = "hsm-support")]
@@ -254,6 +255,61 @@ pub use diamond::{
     TokenConstraint,
     VerifiedCode,
     VerifyingKey,
+};
+
+// v15.0.0: Transcendence Protocol exports ("God Mode")
+pub use transcendence::{
+    // TIER 12: Hardware TEE/HSM
+    EnclaveAttestation,
+    HardwareEnforcer,
+    HsmBinding,
+    SgxEnclave,
+    TeeCapability,
+    // TIER 13: Interactive Formal Verification
+    InteractiveProof,
+    ProofChallenge,
+    ProofResponse,
+    VerificationSession,
+    Verifier,
+    // TIER 14: Cross-Model Enforcement
+    CrossModelEnforcer,
+    ModelBoundary,
+    ModelCapability,
+    ModelRegistry,
+    UnifiedDecision,
+    // TIER 15: Temporal Proofs
+    TemporalProof,
+    Timeline,
+    TimelineEntry,
+    TimelineQuery,
+    TimelineVerifier,
+    // TIER 16: Regulatory Integration
+    ComplianceReport,
+    RegulatoryFramework,
+    RegulatorySubmission,
+    SubmissionStatus,
+    // TIER 17: Privacy-Preserving Governance
+    BlindedDecision,
+    GovernanceProof,
+    PrivacyPreservingAudit,
+    ZkGovernance,
+    // TIER 18: Self-Amending Frameworks
+    AmendmentProof,
+    AttackPattern as TranscendenceAttackPattern,
+    DefenseEvolution,
+    SelfAmendingFramework,
+    // TIER 19: Explainability Proofs
+    DecisionNode,
+    DecisionTree,
+    ExplainabilityEngine,
+    ExplainabilityProof,
+    ReasoningStep,
+    // TIER 20: Global Reputation System
+    HopeScore,
+    ReputationEvent,
+    ReputationLedger,
+    ReputationProof,
+    TrustLevel,
 };
 
 /// Version of the Hope Genome framework
