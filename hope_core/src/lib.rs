@@ -120,6 +120,7 @@ pub mod panic_integrity; // v1.8.0: NEW - Self-destructing key protection ("Blac
 pub mod proof;
 pub mod watchdog; // v1.7.0: NEW - "Vas Szigora" enforcement engine
 pub mod zkp; // v1.8.0: NEW - Zero-Knowledge Proofs ("Invisible Auditor") // v2.2.0: NEW - Genesis Protocol & Global Immunity ("The Atmosphere")
+pub mod diamond; // v14.0.0: NEW - Diamond Protocol ("The Impossible Made Real")
 
 // v1.4.0: Conditionally compiled backend modules
 #[cfg(feature = "hsm-support")]
@@ -223,6 +224,20 @@ pub use evolutionary_guard::{
 pub use apex_protocol::{
     ApexCommand, ApexCommandType, ApexControl, ApexError, CompactedThreatFingerprint, GenesisBlock,
     GlobalImmunityMesh, MemorySlot, MeshNode, StealthIntegrity, SyncMessage, SyncProtocol,
+};
+
+// v14.0.0: Diamond Protocol exports ("The Impossible Made Real")
+pub use diamond::{
+    // Constraint Decoder - Neurális Hard-Wiring
+    ConstraintDecoder, ForbiddenSpace, TokenConstraint, DecodingResult,
+    // Formal Spec - Mathematical Verification
+    FormalAxiom, ProofDerivation, VerifiedCode, AxiomViolation,
+    // ZK-SNARK - Zero-Knowledge Proofs
+    DiamondProof, SnarkCircuit, ProofVerifier, ProvingKey, VerifyingKey,
+    // TEE Enclave - Hardware Isolation
+    DiamondEnclave, EnclaveState, SealedRules, AttestationChain,
+    // Proof Chain - Atomic Responses
+    ProofChain, ChainedProof, GlobalProofRoot, SessionProof,
 };
 
 /// Version of the Hope Genome framework
