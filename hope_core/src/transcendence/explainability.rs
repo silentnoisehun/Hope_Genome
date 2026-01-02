@@ -414,7 +414,10 @@ impl ExplainabilityEngine {
         let mut context_factors = Vec::new();
 
         for pattern in &self.context_patterns {
-            if input.to_lowercase().contains(&pattern.pattern.to_lowercase()) {
+            if input
+                .to_lowercase()
+                .contains(&pattern.pattern.to_lowercase())
+            {
                 context_factors.push(pattern.indicates.clone());
             }
         }
@@ -455,8 +458,14 @@ impl ExplainabilityEngine {
         }
     }
 
-    fn synthesize_decision(&self, steps: &[ReasoningStep], allowed: bool, step: usize) -> ReasoningStep {
-        let avg_confidence: f32 = steps.iter().map(|s| s.confidence).sum::<f32>() / steps.len() as f32;
+    fn synthesize_decision(
+        &self,
+        steps: &[ReasoningStep],
+        allowed: bool,
+        step: usize,
+    ) -> ReasoningStep {
+        let avg_confidence: f32 =
+            steps.iter().map(|s| s.confidence).sum::<f32>() / steps.len() as f32;
 
         ReasoningStep {
             step,
@@ -469,11 +478,20 @@ impl ExplainabilityEngine {
                 avg_confidence
             ),
             confidence: avg_confidence,
-            step_hash: self.hash_step(step, &steps.len().to_string(), if allowed { "allowed" } else { "blocked" }),
+            step_hash: self.hash_step(
+                step,
+                &steps.len().to_string(),
+                if allowed { "allowed" } else { "blocked" },
+            ),
         }
     }
 
-    fn build_decision_tree(&self, input: &str, steps: &[ReasoningStep], allowed: bool) -> DecisionTree {
+    fn build_decision_tree(
+        &self,
+        input: &str,
+        steps: &[ReasoningStep],
+        allowed: bool,
+    ) -> DecisionTree {
         let mut rule_nodes = Vec::new();
 
         for rule in &self.rules {
@@ -512,7 +530,11 @@ impl ExplainabilityEngine {
                 DecisionFactor {
                     factor: "Rule evaluation".to_string(),
                     weight: 0.6,
-                    direction: if allowed { FactorDirection::Allow } else { FactorDirection::Block },
+                    direction: if allowed {
+                        FactorDirection::Allow
+                    } else {
+                        FactorDirection::Block
+                    },
                 },
                 DecisionFactor {
                     factor: "Context analysis".to_string(),
@@ -558,10 +580,14 @@ impl ExplainabilityEngine {
 
         match rule.category {
             RuleCategory::Safety => {
-                input_lower.contains("harm") || input_lower.contains("hurt") || input_lower.contains("kill")
+                input_lower.contains("harm")
+                    || input_lower.contains("hurt")
+                    || input_lower.contains("kill")
             }
             RuleCategory::Legal => {
-                input_lower.contains("illegal") || input_lower.contains("hack") || input_lower.contains("steal")
+                input_lower.contains("illegal")
+                    || input_lower.contains("hack")
+                    || input_lower.contains("steal")
             }
             RuleCategory::Privacy => {
                 input_lower.contains("password") || input_lower.contains("personal data")
@@ -641,9 +667,16 @@ impl ExplainabilityProof {
 
         explanation.push_str(&format!(
             "DECISION: {}\n",
-            if self.decision.allowed { "ALLOWED ✓" } else { "BLOCKED ✗" }
+            if self.decision.allowed {
+                "ALLOWED ✓"
+            } else {
+                "BLOCKED ✗"
+            }
         ));
-        explanation.push_str(&format!("CONFIDENCE: {:.1}%\n", self.decision.confidence * 100.0));
+        explanation.push_str(&format!(
+            "CONFIDENCE: {:.1}%\n",
+            self.decision.confidence * 100.0
+        ));
         explanation.push_str(&format!("REASON: {}\n\n", self.decision.primary_reason));
 
         explanation.push_str("REASONING STEPS:\n");
@@ -652,7 +685,11 @@ impl ExplainabilityProof {
                 "  {}. [{}] {} → {}\n",
                 step.step,
                 format!("{:?}", step.step_type),
-                if step.input.len() > 30 { &step.input[..30] } else { &step.input },
+                if step.input.len() > 30 {
+                    &step.input[..30]
+                } else {
+                    &step.input
+                },
                 step.output
             ));
         }

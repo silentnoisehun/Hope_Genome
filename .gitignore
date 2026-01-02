@@ -60,3 +60,7 @@ START_HUB.bat
 START_MONITOR.bat
 START_TRINITY.bat
 SOUL_MEMORY_SHARED.md
+
+# Trinity - Private
+trinity/
+EMOTION_MEM.md

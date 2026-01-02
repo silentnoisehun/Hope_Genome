@@ -81,12 +81,13 @@ pub use regulatory::{
     ComplianceReport, RegulatoryFramework, RegulatorySubmission, SubmissionStatus,
 };
 pub use self_amending::{AmendmentProof, AttackPattern, DefenseEvolution, SelfAmendingFramework};
-pub use temporal_proofs::{TemporalProof, Timeline, TimelineEntry, TimelineQuery, TimelineVerifier};
+pub use temporal_proofs::{
+    TemporalProof, Timeline, TimelineEntry, TimelineQuery, TimelineVerifier,
+};
 
 /// Version of the Transcendence Protocol
 pub const TRANSCENDENCE_VERSION: &str = "15.0.0";
 
 /// The Transcendence Philosophy
-pub const TRANSCENDENCE_PHILOSOPHY: &str =
-    "The AI doesn't obey rules because it chooses to. \
+pub const TRANSCENDENCE_PHILOSOPHY: &str = "The AI doesn't obey rules because it chooses to. \
      The AI obeys rules because reality itself enforces them.";

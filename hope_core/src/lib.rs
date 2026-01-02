@@ -114,15 +114,15 @@ pub mod diamond;
 pub mod evolutionary_guard; // v2.1.0: NEW - Recursive Self-Evolution ("Singularity")
 pub mod executor;
 pub mod genome;
+pub mod manifold;
 pub mod merkle_audit; // v1.8.0: NEW - Merkle tree batch auditing
 pub mod mesh_capsule; // v2.0.0: NEW - Executable Information Mesh ("The Data Has Teeth")
 pub mod nonce_store; // v1.4.0: NEW - Persistent nonce storage
 pub mod panic_integrity; // v1.8.0: NEW - Self-destructing key protection ("Black Box")
 pub mod proof;
-pub mod watchdog; // v1.7.0: NEW - "Vas Szigora" enforcement engine
-pub mod zkp; // v1.8.0: NEW - Zero-Knowledge Proofs ("Invisible Auditor")
 pub mod transcendence; // v15.0.0: NEW - Transcendence Protocol ("God Mode")
-pub mod manifold; // v16.0.0: NEW - Ethical Manifold ("Genesis Consciousness")
+pub mod watchdog; // v1.7.0: NEW - "Vas Szigora" enforcement engine
+pub mod zkp; // v1.8.0: NEW - Zero-Knowledge Proofs ("Invisible Auditor") // v16.0.0: NEW - Ethical Manifold ("Genesis Consciousness")
 
 // v1.4.0: Conditionally compiled backend modules
 #[cfg(feature = "hsm-support")]
@@ -260,57 +260,57 @@ pub use diamond::{
 
 // v15.0.0: Transcendence Protocol exports ("God Mode")
 pub use transcendence::{
-    // TIER 12: Hardware TEE/HSM
-    EnclaveAttestation,
-    HardwareEnforcer,
-    HsmBinding,
-    SgxEnclave,
-    TeeCapability,
-    // TIER 13: Interactive Formal Verification
-    InteractiveProof,
-    ProofChallenge,
-    ProofResponse,
-    VerificationSession,
-    Verifier,
+    // TIER 18: Self-Amending Frameworks
+    AmendmentProof,
+    AttackPattern as TranscendenceAttackPattern,
+    // TIER 17: Privacy-Preserving Governance
+    BlindedDecision,
+    // TIER 16: Regulatory Integration
+    ComplianceReport,
     // TIER 14: Cross-Model Enforcement
     CrossModelEnforcer,
+    // TIER 19: Explainability Proofs
+    DecisionNode,
+    DecisionTree,
+    DefenseEvolution,
+    // TIER 12: Hardware TEE/HSM
+    EnclaveAttestation,
+    ExplainabilityEngine,
+    ExplainabilityProof,
+    GovernanceProof,
+    HardwareEnforcer,
+    // TIER 20: Global Reputation System
+    HopeScore,
+    HsmBinding,
+    // TIER 13: Interactive Formal Verification
+    InteractiveProof,
     ModelBoundary,
     ModelCapability,
     ModelRegistry,
-    UnifiedDecision,
+    PrivacyPreservingAudit,
+    ProofChallenge,
+    ProofResponse,
+    ReasoningStep,
+    RegulatoryFramework,
+    RegulatorySubmission,
+    ReputationEvent,
+    ReputationLedger,
+    ReputationProof,
+    SelfAmendingFramework,
+    SgxEnclave,
+    SubmissionStatus,
+    TeeCapability,
     // TIER 15: Temporal Proofs
     TemporalProof,
     Timeline,
     TimelineEntry,
     TimelineQuery,
     TimelineVerifier,
-    // TIER 16: Regulatory Integration
-    ComplianceReport,
-    RegulatoryFramework,
-    RegulatorySubmission,
-    SubmissionStatus,
-    // TIER 17: Privacy-Preserving Governance
-    BlindedDecision,
-    GovernanceProof,
-    PrivacyPreservingAudit,
-    ZkGovernance,
-    // TIER 18: Self-Amending Frameworks
-    AmendmentProof,
-    AttackPattern as TranscendenceAttackPattern,
-    DefenseEvolution,
-    SelfAmendingFramework,
-    // TIER 19: Explainability Proofs
-    DecisionNode,
-    DecisionTree,
-    ExplainabilityEngine,
-    ExplainabilityProof,
-    ReasoningStep,
-    // TIER 20: Global Reputation System
-    HopeScore,
-    ReputationEvent,
-    ReputationLedger,
-    ReputationProof,
     TrustLevel,
+    UnifiedDecision,
+    VerificationSession,
+    Verifier,
+    ZkGovernance,
 };
 
 // v16.0.0: Ethical Manifold exports ("Genesis Consciousness")
@@ -318,28 +318,28 @@ pub use manifold::{
     // Consciousness Proof - Prove understanding
     ConsciousnessAttestation,
     ConsciousnessProof,
-    UnderstandingDepth,
-    UnderstandingProver,
-    WhyChain,
-    // Ethical Topology - The ethical space
-    EthicalCurvature,
-    EthicalGeodesic,
-    EthicalManifold,
-    EthicalMetric,
-    EthicalPoint,
-    TopologicalConstraint,
-    // Genesis Core - Ethics as existence
-    EthicalExistence,
-    ExistenceProof,
-    GenesisCore,
-    GenesisState,
-    OntologicalEthics,
     // Weight Crystallization - Immutable weights
     CrystalIntegrity,
     CrystalStructure,
     CrystallizedWeight,
     EthicalCrystal,
+    // Ethical Topology - The ethical space
+    EthicalCurvature,
+    // Genesis Core - Ethics as existence
+    EthicalExistence,
+    EthicalGeodesic,
+    EthicalManifold,
+    EthicalMetric,
+    EthicalPoint,
+    ExistenceProof,
+    GenesisCore,
+    GenesisState,
+    OntologicalEthics,
+    TopologicalConstraint,
+    UnderstandingDepth,
+    UnderstandingProver,
     WeightCrystallizer,
+    WhyChain,
 };
 
 /// Version of the Hope Genome framework

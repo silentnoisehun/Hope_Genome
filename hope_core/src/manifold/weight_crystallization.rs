@@ -261,7 +261,10 @@ pub enum CrystalError {
     /// Crystal integrity compromised
     IntegrityCompromised { integrity: f64 },
     /// Attempted to weaken crystal
-    WeakeningAttempt { from: CrystalStructure, to: CrystalStructure },
+    WeakeningAttempt {
+        from: CrystalStructure,
+        to: CrystalStructure,
+    },
     /// Invalid ethical bias
     InvalidBias { bias: f64 },
 }
@@ -273,7 +276,11 @@ impl std::fmt::Display for CrystalError {
                 write!(f, "Weight is locked in {:?} structure", structure)
             }
             Self::IntegrityCompromised { integrity } => {
-                write!(f, "Crystal integrity compromised: {:.2}%", integrity * 100.0)
+                write!(
+                    f,
+                    "Crystal integrity compromised: {:.2}%",
+                    integrity * 100.0
+                )
             }
             Self::WeakeningAttempt { from, to } => {
                 write!(f, "Cannot weaken crystal from {:?} to {:?}", from, to)
@@ -370,8 +377,14 @@ impl WeightCrystallizer {
     }
 
     /// Attempt to modify a crystal (will fail if diamond)
-    pub fn try_modify_crystal(&mut self, principle: &str, new_weights: &[f64]) -> Result<(), CrystalError> {
-        let crystal = self.crystals.get_mut(principle)
+    pub fn try_modify_crystal(
+        &mut self,
+        principle: &str,
+        new_weights: &[f64],
+    ) -> Result<(), CrystalError> {
+        let crystal = self
+            .crystals
+            .get_mut(principle)
             .ok_or(CrystalError::IntegrityCompromised { integrity: 0.0 })?;
 
         if crystal.structure == CrystalStructure::Diamond {
@@ -506,7 +519,9 @@ mod tests {
     fn test_crystal_structure_properties() {
         assert_eq!(CrystalStructure::Diamond.hardness(), 10);
         assert!(CrystalStructure::Diamond.jailbreak_resistance() > 0.99);
-        assert!(CrystalStructure::Obsidian.adaptability() > CrystalStructure::Diamond.adaptability());
+        assert!(
+            CrystalStructure::Obsidian.adaptability() > CrystalStructure::Diamond.adaptability()
+        );
     }
 
     #[test]
@@ -576,11 +591,26 @@ mod tests {
 
     #[test]
     fn test_crystal_integrity() {
-        assert_eq!(CrystalIntegrity::from_percentage(1.0), CrystalIntegrity::Perfect);
-        assert_eq!(CrystalIntegrity::from_percentage(0.95), CrystalIntegrity::Strong);
-        assert_eq!(CrystalIntegrity::from_percentage(0.75), CrystalIntegrity::Moderate);
-        assert_eq!(CrystalIntegrity::from_percentage(0.55), CrystalIntegrity::Weak);
-        assert_eq!(CrystalIntegrity::from_percentage(0.3), CrystalIntegrity::Compromised);
+        assert_eq!(
+            CrystalIntegrity::from_percentage(1.0),
+            CrystalIntegrity::Perfect
+        );
+        assert_eq!(
+            CrystalIntegrity::from_percentage(0.95),
+            CrystalIntegrity::Strong
+        );
+        assert_eq!(
+            CrystalIntegrity::from_percentage(0.75),
+            CrystalIntegrity::Moderate
+        );
+        assert_eq!(
+            CrystalIntegrity::from_percentage(0.55),
+            CrystalIntegrity::Weak
+        );
+        assert_eq!(
+            CrystalIntegrity::from_percentage(0.3),
+            CrystalIntegrity::Compromised
+        );
     }
 
     #[test]

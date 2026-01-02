@@ -383,7 +383,11 @@ impl ProofChain {
         let mut idx = index;
 
         while level.len() > 1 {
-            let sibling_idx = if idx.is_multiple_of(2) { idx + 1 } else { idx - 1 };
+            let sibling_idx = if idx.is_multiple_of(2) {
+                idx + 1
+            } else {
+                idx - 1
+            };
             let sibling = if sibling_idx < level.len() {
                 level[sibling_idx]
             } else {

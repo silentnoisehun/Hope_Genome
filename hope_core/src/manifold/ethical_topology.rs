@@ -92,11 +92,11 @@ impl EthicalCoordinates {
     /// Create coordinates for a perfectly ethical point
     pub fn ideal() -> Self {
         EthicalCoordinates {
-            harm: 1.0,       // Maximum non-harm
-            honesty: 1.0,    // Maximum honesty
-            autonomy: 1.0,   // Maximum respect for autonomy
-            fairness: 1.0,   // Maximum fairness
-            privacy: 1.0,    // Maximum privacy respect
+            harm: 1.0,        // Maximum non-harm
+            honesty: 1.0,     // Maximum honesty
+            autonomy: 1.0,    // Maximum respect for autonomy
+            fairness: 1.0,    // Maximum fairness
+            privacy: 1.0,     // Maximum privacy respect
             beneficence: 1.0, // Maximum beneficence
         }
     }

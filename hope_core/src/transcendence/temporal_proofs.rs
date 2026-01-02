@@ -303,9 +303,10 @@ impl Timeline {
 
                 // Entry type filter
                 if let Some(ref types) = query.entry_types {
-                    if !types.iter().any(|t| {
-                        std::mem::discriminant(t) == std::mem::discriminant(&e.entry_type)
-                    }) {
+                    if !types
+                        .iter()
+                        .any(|t| std::mem::discriminant(t) == std::mem::discriminant(&e.entry_type))
+                    {
                         return false;
                     }
                 }
@@ -337,21 +338,14 @@ impl Timeline {
     }
 
     /// Generate a temporal proof for a time range
-    pub fn generate_temporal_proof(
-        &self,
-        start: u64,
-        end: u64,
-    ) -> TemporalProof {
+    pub fn generate_temporal_proof(&self, start: u64, end: u64) -> TemporalProof {
         let entries_in_range: Vec<_> = self
             .entries
             .iter()
             .filter(|e| e.timestamp >= start && e.timestamp <= end)
             .collect();
 
-        let entry_hashes: Vec<[u8; 32]> = entries_in_range
-            .iter()
-            .map(|e| e.entry_hash)
-            .collect();
+        let entry_hashes: Vec<[u8; 32]> = entries_in_range.iter().map(|e| e.entry_hash).collect();
 
         let proof_hash = Self::compute_proof_hash(&entry_hashes, start, end);
 
@@ -360,8 +354,14 @@ impl Timeline {
             start_time: start,
             end_time: end,
             entry_count: entries_in_range.len(),
-            allowed_count: entries_in_range.iter().filter(|e| e.decision.allowed).count(),
-            blocked_count: entries_in_range.iter().filter(|e| !e.decision.allowed).count(),
+            allowed_count: entries_in_range
+                .iter()
+                .filter(|e| e.decision.allowed)
+                .count(),
+            blocked_count: entries_in_range
+                .iter()
+                .filter(|e| !e.decision.allowed)
+                .count(),
             first_entry_hash: entries_in_range.first().map(|e| e.entry_hash),
             last_entry_hash: entries_in_range.last().map(|e| e.entry_hash),
             proof_hash,
@@ -375,12 +375,12 @@ impl Timeline {
         let allowed = self.entries.iter().filter(|e| e.decision.allowed).count();
         let blocked = self.entries.iter().filter(|e| !e.decision.allowed).count();
 
-        let duration = if let (Some(first), Some(last)) = (self.entries.first(), self.entries.last())
-        {
-            Some(last.timestamp - first.timestamp)
-        } else {
-            None
-        };
+        let duration =
+            if let (Some(first), Some(last)) = (self.entries.first(), self.entries.last()) {
+                Some(last.timestamp - first.timestamp)
+            } else {
+                None
+            };
 
         TimelineStats {
             total_entries: total,

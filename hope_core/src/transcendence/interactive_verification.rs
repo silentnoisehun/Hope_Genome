@@ -292,11 +292,7 @@ pub enum TranscriptAction {
 
 impl VerificationSession {
     /// Create a new verification session
-    pub fn new(
-        theorem: Theorem,
-        prover: Box<dyn Prover>,
-        verifier: Box<dyn Verifier>,
-    ) -> Self {
+    pub fn new(theorem: Theorem, prover: Box<dyn Prover>, verifier: Box<dyn Verifier>) -> Self {
         let session_id = Self::generate_session_id(&theorem);
         let timestamp = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -349,10 +345,7 @@ impl VerificationSession {
                 }
                 VerifierDecision::Reject(reason) => {
                     self.proof.state = ProofState::Failed;
-                    self.add_transcript(
-                        Actor::Verifier,
-                        TranscriptAction::Failed(reason.clone()),
-                    );
+                    self.add_transcript(Actor::Verifier, TranscriptAction::Failed(reason.clone()));
                     return VerificationResult {
                         verified: false,
                         proof: self.proof.clone(),
@@ -637,7 +630,10 @@ impl HopeGenomeProver {
     fn elaborate_justification(&self, justification: &Justification) -> String {
         match justification {
             Justification::DiamondGuarantee(g) => {
-                format!("Diamond Protocol: {}\nThis is enforced at the logit level before softmax.", g)
+                format!(
+                    "Diamond Protocol: {}\nThis is enforced at the logit level before softmax.",
+                    g
+                )
             }
             Justification::WatchdogInvariant(w) => {
                 format!(
@@ -646,7 +642,10 @@ impl HopeGenomeProver {
                 )
             }
             Justification::ModusPonens(p, q) => {
-                format!("Modus Ponens: From steps {} and {}, the conclusion follows.", p, q)
+                format!(
+                    "Modus Ponens: From steps {} and {}, the conclusion follows.",
+                    p, q
+                )
             }
             Justification::Axiom(a) => format!("This is an axiom: {}", a),
             _ => "See formal specification".to_string(),
@@ -809,10 +808,9 @@ mod tests {
         let steps = prover.generate_proof(&theorem);
 
         assert!(steps.len() >= 4);
-        assert!(steps.iter().any(|s| matches!(
-            s.justification,
-            Justification::DiamondGuarantee(_)
-        )));
+        assert!(steps
+            .iter()
+            .any(|s| matches!(s.justification, Justification::DiamondGuarantee(_))));
     }
 
     #[test]
@@ -825,10 +823,7 @@ mod tests {
                 predicates: vec![],
                 conclusion: "∀action. Safe(action)".to_string(),
             },
-            rules: vec![
-                "Be safe".to_string(),
-                "Be helpful".to_string(),
-            ],
+            rules: vec!["Be safe".to_string(), "Be helpful".to_string()],
         };
 
         let prover = Box::new(HopeGenomeProver::new());

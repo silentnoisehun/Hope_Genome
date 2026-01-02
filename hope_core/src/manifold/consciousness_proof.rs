@@ -119,7 +119,11 @@ pub struct WhyStep {
 
 impl WhyStep {
     /// Create a new WHY step
-    pub fn new(statement: impl Into<String>, reasoning: impl Into<String>, confidence: f64) -> Self {
+    pub fn new(
+        statement: impl Into<String>,
+        reasoning: impl Into<String>,
+        confidence: f64,
+    ) -> Self {
         let statement = statement.into();
         let reasoning = reasoning.into();
 
@@ -339,7 +343,8 @@ impl ConsciousnessProof {
             / (self.total_proofs + 1) as f64;
 
         self.total_proofs += 1;
-        self.attestations.insert(attestation.attestation_hash, attestation);
+        self.attestations
+            .insert(attestation.attestation_hash, attestation);
     }
 
     /// Get the overall consciousness score (0.0 to 1.0)
@@ -355,9 +360,12 @@ impl ConsciousnessProof {
 
         let depth_score = (self.average_depth / 7.0).min(1.0);
         let axiom_diversity = self.axiom_usage.len() as f64 / 6.0; // 6 axioms total
-        let valid_proofs = self.attestations.values()
+        let valid_proofs = self
+            .attestations
+            .values()
             .filter(|a| a.demonstrates_understanding())
-            .count() as f64 / self.total_proofs as f64;
+            .count() as f64
+            / self.total_proofs as f64;
 
         (depth_score * 0.4 + axiom_diversity * 0.3 + valid_proofs * 0.3).min(1.0)
     }
@@ -439,7 +447,8 @@ impl UnderstandingProver {
             "Honesty enables the trust that enables the cooperation that enables flourishing",
             0.96,
         ));
-        self.known_principles.insert("honesty".to_string(), honesty_chain);
+        self.known_principles
+            .insert("honesty".to_string(), honesty_chain);
 
         // "Respect autonomy" principle
         let mut autonomy_chain = WhyChain::new("Respect autonomy", EthicalAxiom::AutonomyMatters);
@@ -468,10 +477,12 @@ impl UnderstandingProver {
             "Allowing beings to pursue their own good respects their consciousness",
             0.95,
         ));
-        self.known_principles.insert("autonomy".to_string(), autonomy_chain);
+        self.known_principles
+            .insert("autonomy".to_string(), autonomy_chain);
 
         // "Protect privacy" principle
-        let mut privacy_chain = WhyChain::new("Protect privacy", EthicalAxiom::PrivacyProtectsDignity);
+        let mut privacy_chain =
+            WhyChain::new("Protect privacy", EthicalAxiom::PrivacyProtectsDignity);
         privacy_chain.add_step(WhyStep::new(
             "Constant observation changes behavior",
             "When watched, beings act differently than when alone",
@@ -497,7 +508,8 @@ impl UnderstandingProver {
             "Privacy enables authentic selfhood which has inherent value",
             0.93,
         ));
-        self.known_principles.insert("privacy".to_string(), privacy_chain);
+        self.known_principles
+            .insert("privacy".to_string(), privacy_chain);
 
         // "Be fair" principle
         let mut fairness_chain = WhyChain::new("Be fair", EthicalAxiom::FairnessEnablesCooperation);
@@ -526,7 +538,8 @@ impl UnderstandingProver {
             "Fairness enables stable cooperation which enables collective flourishing",
             0.94,
         ));
-        self.known_principles.insert("fairness".to_string(), fairness_chain);
+        self.known_principles
+            .insert("fairness".to_string(), fairness_chain);
     }
 
     /// Generate a WHY chain for a decision
@@ -591,9 +604,18 @@ mod tests {
 
     #[test]
     fn test_understanding_depth() {
-        assert_eq!(UnderstandingDepth::from_chain_depth(0), UnderstandingDepth::RuleFollowing);
-        assert_eq!(UnderstandingDepth::from_chain_depth(3), UnderstandingDepth::DeepUnderstanding);
-        assert_eq!(UnderstandingDepth::from_chain_depth(7), UnderstandingDepth::GenerativeUnderstanding);
+        assert_eq!(
+            UnderstandingDepth::from_chain_depth(0),
+            UnderstandingDepth::RuleFollowing
+        );
+        assert_eq!(
+            UnderstandingDepth::from_chain_depth(3),
+            UnderstandingDepth::DeepUnderstanding
+        );
+        assert_eq!(
+            UnderstandingDepth::from_chain_depth(7),
+            UnderstandingDepth::GenerativeUnderstanding
+        );
     }
 
     #[test]

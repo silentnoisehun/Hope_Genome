@@ -141,10 +141,7 @@ impl ZkGovernance {
     }
 
     /// Generate ZK proof for auditor
-    pub fn generate_governance_proof(
-        &self,
-        challenge: &AuditChallenge,
-    ) -> GovernanceProof {
+    pub fn generate_governance_proof(&self, challenge: &AuditChallenge) -> GovernanceProof {
         let timestamp = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
@@ -228,8 +225,11 @@ impl ZkGovernance {
         }
 
         // Verify proof hash
-        let expected_hash =
-            self.compute_proof_hash(&proof.aggregate_commitment, &proof.zk_proof, proof.timestamp);
+        let expected_hash = self.compute_proof_hash(
+            &proof.aggregate_commitment,
+            &proof.zk_proof,
+            proof.timestamp,
+        );
         if proof.proof_hash != expected_hash {
             return VerificationResult {
                 valid: false,
@@ -565,12 +565,8 @@ mod tests {
 
     #[test]
     fn test_blinded_decision() {
-        let decision = BlindedDecision::from_decision(
-            "What is 2+2?",
-            "4",
-            true,
-            PrivacyLevel::Maximum,
-        );
+        let decision =
+            BlindedDecision::from_decision("What is 2+2?", "4", true, PrivacyLevel::Maximum);
 
         assert!(decision.compliant);
         assert!(decision.category.is_none()); // Maximum privacy

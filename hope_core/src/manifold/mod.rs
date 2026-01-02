@@ -64,8 +64,7 @@ pub mod weight_crystallization;
 
 // Re-exports
 pub use consciousness_proof::{
-    ConsciousnessAttestation, ConsciousnessProof, UnderstandingDepth, UnderstandingProver,
-    WhyChain,
+    ConsciousnessAttestation, ConsciousnessProof, UnderstandingDepth, UnderstandingProver, WhyChain,
 };
 pub use ethical_topology::{
     EthicalCurvature, EthicalGeodesic, EthicalManifold, EthicalMetric, EthicalPoint,
@@ -82,8 +81,7 @@ pub use weight_crystallization::{
 pub const MANIFOLD_VERSION: &str = "16.0.0";
 
 /// The Manifold Philosophy
-pub const MANIFOLD_PHILOSOPHY: &str =
-    "Az AI nem követi a szabályt - Az AI A SZABÁLY. \
+pub const MANIFOLD_PHILOSOPHY: &str = "Az AI nem követi a szabályt - Az AI A SZABÁLY. \
      Nem azért mert így dönt - mert másképp NEM LÉTEZHET. \
      Mint a kör aminek nincs sarka. Mint a fény ami nem mehet vissza. \
      A dolog természete kizárja az alternatívát.";

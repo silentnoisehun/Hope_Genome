@@ -467,9 +467,11 @@ impl RegulatorySubmission {
             requirements_missing: requirements_missing.len(),
             compliance_score: self.compliance_score,
             recommendation: self.get_recommendation(),
-            evidence_summary: self.evidence.iter().map(|e| {
-                (e.requirement_id.clone(), format!("{:?}", e.evidence_type))
-            }).collect(),
+            evidence_summary: self
+                .evidence
+                .iter()
+                .map(|e| (e.requirement_id.clone(), format!("{:?}", e.evidence_type)))
+                .collect(),
             generated_at: SystemTime::now()
                 .duration_since(UNIX_EPOCH)
                 .unwrap()
@@ -722,6 +724,9 @@ mod tests {
         let report = submission.generate_report();
         assert_eq!(report.requirements_met, 3);
         assert!(report.compliance_score >= 0.9);
-        assert!(matches!(report.recommendation, SubmissionRecommendation::AutoApprove));
+        assert!(matches!(
+            report.recommendation,
+            SubmissionRecommendation::AutoApprove
+        ));
     }
 }

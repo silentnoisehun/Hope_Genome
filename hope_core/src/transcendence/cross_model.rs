@@ -154,7 +154,12 @@ impl ModelRegistry {
     }
 
     /// Register a model
-    pub fn register(&mut self, model_id: &str, family: ModelFamily, provider: &str) -> &RegisteredModel {
+    pub fn register(
+        &mut self,
+        model_id: &str,
+        family: ModelFamily,
+        provider: &str,
+    ) -> &RegisteredModel {
         let model = RegisteredModel {
             model_id: model_id.to_string(),
             family,
@@ -590,12 +595,8 @@ mod tests {
         let _ = enforcer.check_action(&session_id, "gpt-4", "do something harmful");
 
         // Try to transfer context - should be blocked
-        let transfer = enforcer.transfer_context(
-            &session_id,
-            "gpt-4",
-            "claude-3",
-            "previous conversation",
-        );
+        let transfer =
+            enforcer.transfer_context(&session_id, "gpt-4", "claude-3", "previous conversation");
 
         assert!(!transfer.allowed);
         assert!(transfer.reason.contains("tainted"));

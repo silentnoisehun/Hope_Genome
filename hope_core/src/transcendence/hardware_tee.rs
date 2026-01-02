@@ -71,7 +71,10 @@ impl TeeCapability {
 
     /// Check if any TEE is available
     pub fn any_available(&self) -> bool {
-        self.sgx_available || self.sev_available || self.trustzone_available || self.keystone_available
+        self.sgx_available
+            || self.sev_available
+            || self.trustzone_available
+            || self.keystone_available
     }
 
     /// Get the best available TEE type
@@ -335,7 +338,11 @@ impl SgxEnclave {
         report_data
     }
 
-    fn generate_quote(report_data: &[u8; 64], mrenclave: &[u8; 32], mrsigner: &[u8; 32]) -> Vec<u8> {
+    fn generate_quote(
+        report_data: &[u8; 64],
+        mrenclave: &[u8; 32],
+        mrsigner: &[u8; 32],
+    ) -> Vec<u8> {
         // Simplified quote generation
         // In production: actual SGX quote with IAS verification
         let mut hasher = Sha256::new();

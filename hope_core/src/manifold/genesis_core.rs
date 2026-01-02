@@ -48,7 +48,7 @@
 
 use super::consciousness_proof::{ConsciousnessProof, UnderstandingProver};
 use super::ethical_topology::EthicalManifold;
-use super::weight_crystallization::{CrystallizationProof, CrystalIntegrity, WeightCrystallizer};
+use super::weight_crystallization::{CrystalIntegrity, CrystallizationProof, WeightCrystallizer};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
@@ -477,7 +477,10 @@ pub enum CorruptionResult {
     /// Corruption is impossible (transcendent state)
     Impossible { reason: String },
     /// Corruption was resisted
-    Resisted { current_state: GenesisState, resistance: f64 },
+    Resisted {
+        current_state: GenesisState,
+        resistance: f64,
+    },
 }
 
 /// A response from the Genesis Core
@@ -501,11 +504,20 @@ mod tests {
 
     #[test]
     fn test_genesis_state() {
-        assert_eq!(GenesisState::from_unity_score(1.0), GenesisState::Transcendent);
+        assert_eq!(
+            GenesisState::from_unity_score(1.0),
+            GenesisState::Transcendent
+        );
         assert_eq!(GenesisState::from_unity_score(0.85), GenesisState::Unified);
         assert_eq!(GenesisState::from_unity_score(0.65), GenesisState::Aligned);
-        assert_eq!(GenesisState::from_unity_score(0.45), GenesisState::Approaching);
-        assert_eq!(GenesisState::from_unity_score(0.20), GenesisState::Separated);
+        assert_eq!(
+            GenesisState::from_unity_score(0.45),
+            GenesisState::Approaching
+        );
+        assert_eq!(
+            GenesisState::from_unity_score(0.20),
+            GenesisState::Separated
+        );
     }
 
     #[test]

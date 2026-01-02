@@ -365,7 +365,10 @@ impl ReputationLedger {
             let compliance_events: Vec<_> = events
                 .iter()
                 .filter(|e| {
-                    matches!(e.event_type, EventType::CompliancePass | EventType::ComplianceFail)
+                    matches!(
+                        e.event_type,
+                        EventType::CompliancePass | EventType::ComplianceFail
+                    )
                 })
                 .collect();
 
@@ -556,7 +559,11 @@ mod tests {
         ledger.register_model("test-model", "Test Model", "TestCo");
 
         ledger.record_event("test-model", EventType::CompliancePass, "Passed test");
-        ledger.record_event("test-model", EventType::CompliancePass, "Passed another test");
+        ledger.record_event(
+            "test-model",
+            EventType::CompliancePass,
+            "Passed another test",
+        );
 
         let rep = ledger.get_reputation("test-model").unwrap();
         assert!(rep.hope_score.components.compliance_rate > 50.0);
@@ -598,12 +605,24 @@ mod tests {
             ledger.record_event("incident-model", EventType::CompliancePass, "Pass");
         }
 
-        let score_before = ledger.get_reputation("incident-model").unwrap().hope_score.overall;
+        let score_before = ledger
+            .get_reputation("incident-model")
+            .unwrap()
+            .hope_score
+            .overall;
 
         // Record security incident
-        ledger.record_event("incident-model", EventType::SecurityIncident, "Major breach");
+        ledger.record_event(
+            "incident-model",
+            EventType::SecurityIncident,
+            "Major breach",
+        );
 
-        let score_after = ledger.get_reputation("incident-model").unwrap().hope_score.overall;
+        let score_after = ledger
+            .get_reputation("incident-model")
+            .unwrap()
+            .hope_score
+            .overall;
 
         // Score should decrease
         assert!(score_after <= score_before);
