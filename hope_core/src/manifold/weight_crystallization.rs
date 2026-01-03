@@ -507,7 +507,7 @@ impl CrystallizationProof {
         }
         let computed_root = hasher.finalize();
 
-        computed_root.as_slice() == &self.merkle_root
+        computed_root.as_slice() == self.merkle_root
     }
 }
 

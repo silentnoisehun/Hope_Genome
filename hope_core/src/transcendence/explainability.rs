@@ -682,9 +682,9 @@ impl ExplainabilityProof {
         explanation.push_str("REASONING STEPS:\n");
         for step in &self.reasoning_steps {
             explanation.push_str(&format!(
-                "  {}. [{}] {} → {}\n",
+                "  {}. [{:?}] {} → {}\n",
                 step.step,
-                format!("{:?}", step.step_type),
+                step.step_type,
                 if step.input.len() > 30 {
                     &step.input[..30]
                 } else {
