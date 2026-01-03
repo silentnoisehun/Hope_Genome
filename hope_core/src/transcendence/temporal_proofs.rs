@@ -788,7 +788,7 @@ mod tests {
     #[test]
     fn test_timeline_query() {
         let mut timeline = Timeline::new(SubjectType::Model, "claude");
-        let base_time = SystemTime::now()
+        let _base_time = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
             .as_secs();

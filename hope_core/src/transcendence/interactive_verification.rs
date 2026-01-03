@@ -243,6 +243,7 @@ pub enum ResponseType {
 // ============================================================================
 
 /// A verification session between prover and verifier
+#[allow(dead_code)]
 pub struct VerificationSession {
     /// Session ID
     session_id: [u8; 32],
@@ -468,6 +469,7 @@ pub enum VerifierDecision {
 // ============================================================================
 
 /// Prover specialized for Hope Genome theorems
+#[allow(dead_code)]
 pub struct HopeGenomeProver {
     /// Known axioms
     axioms: HashMap<String, String>,

@@ -441,10 +441,11 @@ pub enum BoundaryCondition {
 
 /// The complete ethical manifold
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct EthicalManifold {
     /// Metric tensor
     metric: EthicalMetric,
-    /// Topological constraints
+    /// Topological constraints (reserved for future use)
     constraints: Vec<TopologicalConstraint>,
     /// Cached curvature map
     curvature_map: HashMap<[u8; 32], EthicalCurvature>,
