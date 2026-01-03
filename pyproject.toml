@@ -4,8 +4,8 @@ build-backend = "maturin"
 
 [project]
 name = "hope-genome"
-version = "1.8.0"
-description = "Tamper-evident cryptographic framework for AI accountability - Vas Szigora Edition with Multi-Model API Integrations"
+version = "2.5.0"
+description = "Enterprise AI Safety: TEE, Post-Quantum Crypto, FHE, Mechanistic Interpretability - Quantum-Ready, Hardware-Secured"
 authors = [
     {name = "Máté Róbert", email = "stratosoiteam@gmail.com"}
 ]
