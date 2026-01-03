@@ -1,6 +1,15 @@
 # Hope Genome 🛡️
 
-**Tamper-Evident Cryptographic Framework for AI Accountability**
+<p align="center">
+  <img src="docs/assets/hope_genome_logo.png" alt="Hope Genome Logo" width="300"/>
+</p>
+
+<p align="center">
+  <strong>Tamper-Evident Cryptographic Framework for AI Accountability</strong>
+</p>
+<p align="center">
+  <em>DNA = Code | Heart = Hope | Arrow = Progress</em>
+</p>
 
 [![CI](https://github.com/silentnoisehun/Hope_Genome/actions/workflows/ci.yml/badge.svg)](https://github.com/silentnoisehun/Hope_Genome/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
