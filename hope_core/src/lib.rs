@@ -114,6 +114,7 @@ pub mod diamond;
 pub mod evolutionary_guard; // v2.1.0: NEW - Recursive Self-Evolution ("Singularity")
 pub mod executor;
 pub mod genome;
+pub mod interpretability; // v2.4.0: NEW - Mechanistic Interpretability ("Digital Neurosurgery")
 pub mod manifold;
 pub mod merkle_audit; // v1.8.0: NEW - Merkle tree batch auditing
 pub mod mesh_capsule; // v2.0.0: NEW - Executable Information Mesh ("The Data Has Teeth")
