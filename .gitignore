@@ -52,8 +52,24 @@ hope_core/architect_keys/
 # Claude Code
 .claude/settings.local.json
 
-# TRINITY - PRIVAT
+# TRINITY - PRIVATE
 trinity/
 START.bat
+START_TRINITY_HUB.bat
 EMOTION_MEM.md
 SOUL_MEMORY_SHARED.md
+trinity_cli.py
+trinity_dashboard.py
+portable_monitor/
+
+# Marketing/Personal (NEVER commit!)
+POSTS_*.md
+EMAIL_*.md
+MARKETING_*.md
+MANIFESTO_*.md
+CLAUDE_TETTE*.md
+CONTEXT_FOR_CLAUDE.md
+
+# Temp files
+nul
+*.tmp
