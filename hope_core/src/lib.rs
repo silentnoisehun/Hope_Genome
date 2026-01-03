@@ -113,6 +113,7 @@ pub mod crypto;
 pub mod diamond;
 pub mod evolutionary_guard; // v2.1.0: NEW - Recursive Self-Evolution ("Singularity")
 pub mod executor;
+pub mod fhe; // v2.5.0: NEW - Fully Homomorphic Encryption ("Encrypted Inference")
 pub mod genome;
 pub mod interpretability; // v2.4.0: NEW - Mechanistic Interpretability ("Digital Neurosurgery")
 pub mod manifold;
