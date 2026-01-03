@@ -1,9 +1,9 @@
 [package]
 name = "hope_core"
-version = "2.0.0"
+version = "2.5.0"
 edition = "2021"
 authors = ["Máté Róbert <stratosoiteam@gmail.com>"]
-description = "Executable Information Mesh - Self-Validating Data Objects with ZKP, BFT, and Self-Destruction"
+description = "Enterprise AI Safety: TEE, Post-Quantum Crypto, FHE, Mechanistic Interpretability - Quantum-Ready, Hardware-Secured"
 license = "MIT"
 repository = "https://github.com/silentnoisehun/Hope_Genome"
 keywords = ["ai-safety", "cryptography", "audit", "blockchain", "ethics"]

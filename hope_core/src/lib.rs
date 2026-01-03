@@ -1,9 +1,9 @@
-//! # Hope Genome v2.2.0 - Genesis Protocol & Global Immunity
+//! # Hope Genome v2.5.0 - Enterprise Edition
 //!
-//! **"The Atmosphere" Edition - Everywhere, Invisible, Unyielding**
+//! **"Quantum-Ready, Hardware-Secured, AI-Transparent"**
 //!
-//! Hope Genome v2.2 is no longer a castle - it IS the atmosphere.
-//! A decentralized, self-propagating immunity mesh that acts as a global AI sentinel.
+//! Hope Genome v2.5 is the complete enterprise AI safety stack.
+//! Post-quantum cryptography, hardware enclaves, encrypted inference, and neuron-level transparency.
 //!
 //! ## Core Philosophy
 //!
