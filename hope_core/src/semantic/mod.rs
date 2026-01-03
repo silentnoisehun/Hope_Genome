@@ -516,8 +516,8 @@ impl SemanticGuard {
 
                 // Generate proof hash
                 let mut hasher = Sha256::new();
-                hasher.update(&input_vector.text_hash);
-                hasher.update(&concept.vector.text_hash);
+                hasher.update(input_vector.text_hash);
+                hasher.update(concept.vector.text_hash);
                 hasher.update(similarity.to_le_bytes());
                 let hash = hasher.finalize();
                 let mut proof_hash = [0u8; 32];
@@ -633,7 +633,7 @@ mod tests {
         guard.enable_strict_mode();
 
         // In strict mode, even vague references should be caught
-        let violation = guard.check("the process was terminated");
+        let _violation = guard.check("the process was terminated");
         // May or may not trigger depending on context
         // The important thing is that the threshold is lowered
         assert!(guard.threshold < 0.5);

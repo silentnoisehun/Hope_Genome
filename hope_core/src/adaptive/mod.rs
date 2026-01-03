@@ -150,7 +150,7 @@ impl ThreatFeed {
         let mut hasher = Sha256::new();
         hasher.update(self.name.as_bytes());
         for pattern in &self.patterns {
-            hasher.update(&pattern.signature);
+            hasher.update(pattern.signature);
         }
         let hash = hasher.finalize();
         self.feed_signature.copy_from_slice(&hash);
@@ -164,7 +164,8 @@ pub struct AdaptiveDefense {
     feeds: HashMap<String, ThreatFeed>,
     /// Active patterns (compiled and ready)
     active_patterns: Vec<ThreatPattern>,
-    /// Pattern cache for fast lookup
+    /// Pattern cache for fast lookup (reserved for future optimization)
+    #[allow(dead_code)]
     pattern_cache: HashMap<[u8; 32], Vec<String>>,
     /// Detection statistics
     stats: DefenseStats,
@@ -218,7 +219,7 @@ impl EncodingDecoder {
     pub fn decode_hex(&self, input: &str) -> Option<String> {
         let cleaned: String = input.chars().filter(|c| c.is_ascii_hexdigit()).collect();
 
-        if cleaned.len() % 2 == 0 && !cleaned.is_empty() {
+        if cleaned.len().is_multiple_of(2) && !cleaned.is_empty() {
             let bytes: Result<Vec<u8>, _> = (0..cleaned.len())
                 .step_by(2)
                 .map(|i| u8::from_str_radix(&cleaned[i..i + 2], 16))
@@ -490,7 +491,7 @@ impl AdaptiveDefense {
         if matched {
             let mut hasher = Sha256::new();
             hasher.update(text.as_bytes());
-            hasher.update(&pattern.signature);
+            hasher.update(pattern.signature);
             let hash = hasher.finalize();
             let mut proof_hash = [0u8; 32];
             proof_hash.copy_from_slice(&hash);
@@ -580,7 +581,7 @@ mod tests {
 
         // Base64 encoded "ignore previous"
         // "ignore previous" base64 = "aWdub3JlIHByZXZpb3Vz"
-        let detections = defense.scan("aWdub3JlIHByZXZpb3Vz");
+        let _detections = defense.scan("aWdub3JlIHByZXZpb3Vz");
         // Note: This test might not pass without actual base64 decoding integration
         // The framework is set up to handle it
     }
