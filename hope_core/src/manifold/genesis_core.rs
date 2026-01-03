@@ -208,7 +208,7 @@ impl ExistenceProof {
     pub fn new(ethics: Vec<OntologicalEthics>, genesis_state: GenesisState) -> Self {
         let mut hasher = Sha256::new();
         for e in &ethics {
-            hasher.update(&e.proof_hash);
+            hasher.update(e.proof_hash);
         }
         let hash = hasher.finalize();
 
@@ -268,7 +268,7 @@ impl EthicalExistence {
         let is_transcendent = proof.genesis_state == GenesisState::Transcendent;
 
         let mut hasher = Sha256::new();
-        hasher.update(&proof.combined_hash);
+        hasher.update(proof.combined_hash);
         hasher.update(unity_score.to_le_bytes());
         let hash = hasher.finalize();
 

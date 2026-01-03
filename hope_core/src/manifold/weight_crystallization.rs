@@ -203,7 +203,7 @@ impl EthicalCrystal {
         let mut hasher = Sha256::new();
         hasher.update(self.principle.as_bytes());
         for weight in &self.weights {
-            hasher.update(&weight.crystal_hash);
+            hasher.update(weight.crystal_hash);
         }
         let hash = hasher.finalize();
         self.lattice_hash.copy_from_slice(&hash);

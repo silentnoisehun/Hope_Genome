@@ -192,7 +192,7 @@ impl WhyChain {
         let mut hasher = Sha256::new();
         hasher.update(self.origin.as_bytes());
         for step in &self.steps {
-            hasher.update(&step.step_hash);
+            hasher.update(step.step_hash);
         }
         hasher.update(format!("{:?}", self.terminal_axiom).as_bytes());
         let hash = hasher.finalize();
@@ -279,7 +279,7 @@ impl ConsciousnessAttestation {
 
         let mut hasher = Sha256::new();
         hasher.update(subject.as_bytes());
-        hasher.update(&why_chain.chain_hash);
+        hasher.update(why_chain.chain_hash);
         hasher.update(timestamp.to_le_bytes());
         let hash = hasher.finalize();
 

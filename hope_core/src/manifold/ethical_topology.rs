@@ -694,7 +694,7 @@ mod tests {
 
         let geodesic = manifold.geodesic(&start, &end);
         assert!(geodesic.valid);
-        assert!(geodesic.path.len() > 0);
+        assert!(!geodesic.path.is_empty());
     }
 
     #[test]
