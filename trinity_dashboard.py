@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 """
-TRINITY DASHBOARD - Máté + Claude + Gemini
-===========================================
+TRINITY DASHBOARD v2.22
+=======================
 
+⚠️  EZ NEM A HOPE GENOME PROJEKT!
+    A Trinity egy KÜLÖN rendszer.
+
+Mi ez?
+------
 Három ablak - egy közös tér:
 1. TRINITY CHAT - Közös beszélgetés
 2. CLAUDE WORKSPACE - Claude munkája real-time
@@ -16,9 +21,14 @@ Használat:
 Szükséges:
     pip install anthropic google-generativeai rich watchdog
 
+─────────────────────────────────────────
 Created by: Máté Róbert + Claude + Gemini
-2026.01.02.
+Version: 2.22
+Date: 2026.01.02.
+─────────────────────────────────────────
 """
+
+__version__ = "2.22"
 
 import os
 import sys

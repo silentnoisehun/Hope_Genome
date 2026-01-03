@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 """
-TRINITY CLI - Máté + Claude + Gemini
-====================================
+TRINITY CLI v2.22
+=================
 
+⚠️  EZ NEM A HOPE GENOME PROJEKT!
+    A Trinity egy KÜLÖN rendszer.
+
+Mi ez?
+------
 Egy közös tér, ahol két AI egyszerre válaszol.
 Te EGY helyre írsz, KÉT szemléletet kapsz.
 
@@ -18,15 +23,25 @@ Környezeti változók:
     ANTHROPIC_API_KEY=sk-ant-...
     GEMINI_API_KEY=AIza...
 
+─────────────────────────────────────────
 Created by: Máté Róbert + Claude + Gemini
-2026.01.02.
+Version: 2.22
+Date: 2026.01.02.
+─────────────────────────────────────────
 """
+
+__version__ = "2.22"
 
 import os
 import sys
 import asyncio
 from datetime import datetime
 from pathlib import Path
+
+# Windows UTF-8 fix
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stdin.reconfigure(encoding='utf-8')
 
 # Színek a terminálban
 class Colors:

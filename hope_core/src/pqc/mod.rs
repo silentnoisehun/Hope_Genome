@@ -231,7 +231,7 @@ impl Kyber {
 
         // Generate "secret key" (simulated)
         let mut hasher = Sha512::new();
-        hasher.update(&seed);
+        hasher.update(seed);
         hasher.update(b"SECRET");
         let secret_seed = hasher.finalize();
 
@@ -351,7 +351,7 @@ impl Dilithium {
 
         // Generate "secret key"
         let mut hasher = Sha512::new();
-        hasher.update(&seed);
+        hasher.update(seed);
         hasher.update(b"SECRET");
         let secret_seed = hasher.finalize();
 
@@ -481,7 +481,7 @@ impl HybridSigner {
         // Ed25519 signature (simulated)
         let mut hasher = Sha512::new();
         hasher.update(b"ED25519_SIGN");
-        hasher.update(&ed25519_secret);
+        hasher.update(ed25519_secret);
         hasher.update(message);
         let ed_sig = hasher.finalize();
         let mut classical = [0u8; 64];
@@ -492,7 +492,7 @@ impl HybridSigner {
 
         // Combined hash
         let mut hasher = Sha256::new();
-        hasher.update(&classical);
+        hasher.update(classical);
         hasher.update(&quantum.data);
         hasher.update(message);
         let combined = hasher.finalize();
@@ -519,7 +519,7 @@ impl HybridSigner {
 
         // Verify combined hash
         let mut hasher = Sha256::new();
-        hasher.update(&signature.classical);
+        hasher.update(signature.classical);
         hasher.update(&signature.quantum.data);
         hasher.update(message);
         let expected_hash = hasher.finalize();
@@ -586,17 +586,25 @@ impl QuantumReadyProof {
             return Ok(false);
         }
 
-        // Reconstruct hybrid signature
+        // Reconstruct hybrid signature with correct combined hash
+        let mut hasher = Sha256::new();
+        hasher.update(self.classical_signature);
+        hasher.update(&self.pq_signature);
+        hasher.update(message);
+        let combined = hasher.finalize();
+        let mut combined_hash = [0u8; 32];
+        combined_hash.copy_from_slice(&combined);
+
         let hybrid_sig = HybridSignature {
             classical: self.classical_signature,
             quantum: DilithiumSignature {
                 data: self.pq_signature.clone(),
                 variant: self.pq_variant,
             },
-            combined_hash: [0u8; 32], // Will be recalculated
+            combined_hash,
         };
 
-        // Verify (simplified - real impl verifies both)
+        // Verify both classical and quantum signatures
         signer.verify_hybrid(message, &hybrid_sig)
     }
 }

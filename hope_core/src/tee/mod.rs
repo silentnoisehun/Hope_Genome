@@ -314,9 +314,9 @@ impl SecureEnclave {
 
         // Generate signature (simulated)
         let mut hasher = Sha256::new();
-        hasher.update(&measurement);
-        hasher.update(&signer);
-        hasher.update(&report_data);
+        hasher.update(measurement);
+        hasher.update(signer);
+        hasher.update(report_data);
         let sig_hash = hasher.finalize();
         let mut signature = [0u8; 64];
         signature[0..32].copy_from_slice(&sig_hash);
@@ -361,9 +361,9 @@ impl SecureEnclave {
 
         // Verify signature (simplified)
         let mut hasher = Sha256::new();
-        hasher.update(&report.measurement);
-        hasher.update(&report.signer);
-        hasher.update(&report.report_data);
+        hasher.update(report.measurement);
+        hasher.update(report.signer);
+        hasher.update(report.report_data);
         let expected_sig = hasher.finalize();
 
         if report.signature[0..32] != expected_sig[..] {
@@ -383,10 +383,10 @@ impl SecureEnclave {
 
         // Generate key ID based on policy
         let mut hasher = Sha256::new();
-        hasher.update(match policy {
-            SealingPolicy::EnclaveIdentity => b"MRENCLAVE",
-            SealingPolicy::SignerIdentity => b"MRSIGNER",
-        });
+        match policy {
+            SealingPolicy::EnclaveIdentity => hasher.update(b"MRENCLAVE"),
+            SealingPolicy::SignerIdentity => hasher.update(b"MRSIGNER"),
+        };
         hasher.update(self.enclave_id.to_le_bytes());
         let key_hash = hasher.finalize();
         let mut key_id = [0u8; 32];
@@ -408,8 +408,8 @@ impl SecureEnclave {
 
         // Generate tag
         let mut hasher = Sha256::new();
-        hasher.update(&key_id);
-        hasher.update(&nonce);
+        hasher.update(key_id);
+        hasher.update(nonce);
         hasher.update(&ciphertext);
         let tag_hash = hasher.finalize();
         let mut tag = [0u8; 16];
@@ -435,8 +435,8 @@ impl SecureEnclave {
 
         // Verify tag
         let mut hasher = Sha256::new();
-        hasher.update(&sealed.key_id);
-        hasher.update(&sealed.nonce);
+        hasher.update(sealed.key_id);
+        hasher.update(sealed.nonce);
         hasher.update(&sealed.ciphertext);
         let expected_tag = hasher.finalize();
 
