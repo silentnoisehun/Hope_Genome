@@ -102,12 +102,12 @@
 //! - **Máté Róbert** - Primary Author & Architect
 //! - **Claude (Anthropic)** - Technical Advisor & Co-Designer
 
+pub mod adaptive; // v2.2.0: NEW - Adaptive Defense ("Virus Scanner Updates")
 pub mod apex_protocol;
 pub mod audit_log;
 pub mod auditor;
 pub mod bft_watchdog; // v1.8.0: NEW - Byzantine Fault Tolerant Watchdog ("Multi-headed Cerberus")
 pub mod canonicalize;
-pub mod compliance;
 pub mod consensus;
 pub mod crypto;
 pub mod diamond;
@@ -122,7 +122,8 @@ pub mod panic_integrity; // v1.8.0: NEW - Self-destructing key protection ("Blac
 pub mod proof;
 pub mod transcendence; // v15.0.0: NEW - Transcendence Protocol ("God Mode")
 pub mod watchdog; // v1.7.0: NEW - "Vas Szigora" enforcement engine
-pub mod zkp; // v1.8.0: NEW - Zero-Knowledge Proofs ("Invisible Auditor") // v16.0.0: NEW - Ethical Manifold ("Genesis Consciousness")
+pub mod semantic; // v2.2.0: NEW - Semantic Embeddings ("Anti-Blindness")
+pub mod zkp; // v1.8.0: NEW - Zero-Knowledge Proofs ("Invisible Auditor")
 
 // v1.4.0: Conditionally compiled backend modules
 #[cfg(feature = "hsm-support")]
@@ -138,9 +139,6 @@ pub mod python;
 pub use audit_log::{AuditEntry, AuditLog, Decision};
 pub use auditor::ProofAuditor;
 pub use canonicalize::{are_equivalent, canonicalize_action, CanonicalAction};
-pub use compliance::{
-    validate_component_integrity, validate_integrity, AiBom, ComplianceError, Component, Hash,
-};
 pub use consensus::{ConsensusVerifier, SensorReading};
 
 // v1.4.0: Updated crypto exports

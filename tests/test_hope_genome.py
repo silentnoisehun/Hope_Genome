@@ -371,66 +371,6 @@ class TestAuditLogger:
         assert entries[0].action_description == "Test action"
 
 
-class TestAibom:
-    """Test AIBOM classes"""
-
-    def test_create_component(self):
-        component = hg.AibomComponent(
-            name="test-model",
-            version="1.0.0",
-            hash_sha256="a" * 64,
-            component_type="ML-Model"
-        )
-
-        assert component.name == "test-model"
-        assert component.version == "1.0.0"
-        assert len(component.hash_sha256) == 64
-
-    def test_component_to_dict(self):
-        component = hg.AibomComponent(
-            name="test-model",
-            version="1.0.0",
-            hash_sha256="a" * 64
-        )
-
-        d = component.to_dict()
-        assert d["name"] == "test-model"
-
-    def test_create_verifier(self):
-        components = [
-            hg.AibomComponent(
-                name="model-1",
-                version="1.0.0",
-                hash_sha256="a" * 64
-            )
-        ]
-
-        verifier = hg.AibomVerifier.from_components(components)
-        assert len(verifier.get_components()) == 1
-
-    def test_verify_component(self):
-        """Test Fort Knox integrity enforcement"""
-        import hashlib
-
-        data = b"test model data"
-        hash_hex = hashlib.sha256(data).hexdigest()
-
-        component = hg.AibomComponent(
-            name="test-model",
-            version="1.0.0",
-            hash_sha256=hash_hex
-        )
-
-        verifier = hg.AibomVerifier.from_components([component])
-
-        # Correct hash should pass
-        verifier.verify_component("test-model", data)  # Should not raise
-
-        # Wrong data should fail (Fort Knox policy: HALT on mismatch)
-        with pytest.raises(hg.AibomError, match="mismatch"):
-            verifier.verify_component("test-model", b"wrong data")
-
-
 class TestExceptions:
     """Test exception hierarchy"""
 

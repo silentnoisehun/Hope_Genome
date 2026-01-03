@@ -33,12 +33,6 @@ create_exception!(
 );
 create_exception!(
     _hope_core,
-    PyAibomError,
-    PyException,
-    "AI-BOM verification error"
-);
-create_exception!(
-    _hope_core,
     PyWatchdogError,
     PyException,
     "Watchdog enforcement error (v1.7.0)"

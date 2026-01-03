@@ -394,7 +394,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 - **Blockchain-Style Logging**: Immutable audit trail with cryptographic chaining
 - **Byzantine Fault Tolerance**: Multi-source consensus for critical decisions
 - **CISA CPG 2.0 Compliant**: Meets US government cybersecurity standards
-- **OWASP AI-SBOM**: Runtime integrity verification for AI models
 
 ### 🐍 Python Integration
 
@@ -479,22 +478,6 @@ async def delete_file(filename: str):
         "signature": proof.signature_hex(),
         "timestamp": proof.timestamp()
     }
-```
-
-### 3. AI Model Integrity Verification
-
-```python
-# AIBOM verification
-import hope_genome as hg
-
-# Load AI model with integrity check
-model_hash = hg.compute_model_hash("model.pt")
-aibom = hg.AibomVerifier("aibom.xml")
-
-if aibom.verify_component("GPT-Model", model_hash):
-    model = torch.load("model.pt")  # Safe to load
-else:
-    raise SecurityError("Model tampered!")  # ABORT
 ```
 
 ## 🔒 Security

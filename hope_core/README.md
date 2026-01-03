@@ -133,7 +133,6 @@ pub trait KeyStore: Send + Sync {
 - **⏱️ Time-To-Live (TTL)** - Proof expiration for temporal security
 - **🏛️ Sealed Genomes** - Immutable ethical rulesets with cryptographic binding
 - **🔍 Multi-Source Consensus** - Byzantine Fault Tolerance for sensor data
-- **📊 OWASP AI-SBOM Compliance** - CycloneDX integration for ML model integrity
 - **🔌 Pluggable Backends** - Trait-based architecture (KeyStore, NonceStore)
 
 ### Defense Mechanisms
@@ -145,7 +144,6 @@ pub trait KeyStore: Send + Sync {
 | **Replay** | Persistent nonce store | `RocksDbNonceStore` |
 | **Integrity** | Blockchain-style chain | `AuditLog::append()` |
 | **Consensus** | Multi-source voting | `ConsensusVerifier` |
-| **Compliance** | AIBOM hash validation | `validate_component_integrity()` |
 
 ---
 
@@ -439,30 +437,7 @@ let auditor = ProofAuditor::new(
 );
 ```
 
-### Example 2: OWASP AI-SBOM Integration
-
-```rust
-use hope_core::compliance::*;
-
-// Load AIBOM from CycloneDX JSON
-let aibom = AiBom::from_file("model.aibom.json")?;
-
-// Find ML model component
-let model = aibom.find_component("fraud-detection-model")?;
-
-// Get expected hash
-let expected_hash = model.get_hash("SHA-256")?;
-
-// Compute runtime hash
-let model_data = std::fs::read("model.pkl")?;
-let runtime_hash = hex::encode(hope_core::crypto::hash_bytes(&model_data));
-
-// Validate integrity (Fort Knox enforcement)
-validate_integrity("fraud-detection-model", expected_hash, &runtime_hash)?;
-println!("✅ Model integrity verified");
-```
-
-### Example 3: Multi-Source Consensus
+### Example 2: Multi-Source Consensus
 
 ```rust
 use hope_core::consensus::*;
@@ -561,8 +536,6 @@ SOFTWARE.
 
 ### Standards & Projects
 
-- **OWASP AI-SBOM Project** - CycloneDX AI transparency standard
-- **CycloneDX Community** - Software Bill of Materials specification
 - **Rust Cryptography Working Group** - Ed25519 implementation (ed25519-dalek)
 - **RocksDB Project** - Persistent storage backend
 

@@ -5,7 +5,7 @@
 #
 # This script ensures the environment is ready for a secure deployment,
 # verifies the cryptographic integrity of the codebase, and builds a
-# hardened Docker image with OWASP AI-SBOM labels.
+# hardened Docker image.
 #
 # Status: Auditor-Ready
 # ==============================================================================
@@ -66,13 +66,12 @@ cargo test --release --all-features -- --nocapture
 echo "✅ All 131+ tests passed successfully."
 
 
-# --- 4. Build Hardened Docker Image with OWASP AI-SBOM Labels ---
+# --- 4. Build Hardened Docker Image ---
 print_header "Step 4: Building Hardened Docker Image"
 IMAGE_NAME="hope-genome-auditor:1.4.0-hardened"
 BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 VCS_REF=$(git rev-parse --short HEAD)
 
-# See https://owasp.org/www-project-ai-bom/ for label specifications
 docker build \
   --label "org.opencontainers.image.created=$BUILD_DATE" \
   --label "org.opencontainers.image.authors=Máté Róbert <stratosoiteam@gmail.com>" \
@@ -84,9 +83,6 @@ docker build \
   --label "org.opencontainers.image.vendor=Hope-Genome-Project" \
   --label "org.opencontainers.image.title=Hope Genome Auditor" \
   --label "org.opencontainers.image.description=Tamper-evident cryptographic framework for AI accountability." \
-  --label "org.cyclonedx.aibom.format=CycloneDX" \
-  --label "org.cyclonedx.aibom.version=1.5" \
-  --label "org.cyclonedx.aibom.url=file://aibom.xml" \
   -t $IMAGE_NAME .
 
 echo "✅ Docker image '$IMAGE_NAME' built successfully."

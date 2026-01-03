@@ -263,56 +263,6 @@ class AuditEntry:
 
     def to_dict(self) -> Dict[str, Any]: ...
 
-# AIBOM (OWASP AI-SBOM)
-
-class AibomVerifier:
-    """OWASP AI-SBOM compliance verifier."""
-
-    @staticmethod
-    def from_file(file_path: str) -> AibomVerifier: ...
-
-    @staticmethod
-    def from_json_file(file_path: str) -> AibomVerifier: ...
-
-    @staticmethod
-    def from_components(components: List[AibomComponent]) -> AibomVerifier: ...
-
-    def verify_component(
-        self,
-        component_name: str,
-        component_data: bytes
-    ) -> None: ...
-
-    def get_components(self) -> List[AibomComponent]: ...
-    def get_component(self, name: str) -> Optional[AibomComponent]: ...
-    def to_xml(self) -> str: ...
-    def to_json(self) -> str: ...
-
-class AibomComponent:
-    """Single AI model/component in the AIBOM."""
-
-    def __init__(
-        self,
-        name: str,
-        version: str,
-        hash_sha256: str,
-        component_type: str = "ML-Model"
-    ) -> None: ...
-
-    @property
-    def name(self) -> str: ...
-
-    @property
-    def version(self) -> str: ...
-
-    @property
-    def hash_sha256(self) -> str: ...
-
-    @property
-    def component_type(self) -> str: ...
-
-    def to_dict(self) -> Dict[str, Any]: ...
-
 # Exceptions
 
 class GenomeError(Exception):
@@ -329,8 +279,4 @@ class AuditorError(Exception):
 
 class ConsensusError(Exception):
     """Consensus engine error."""
-    ...
-
-class AibomError(Exception):
-    """AI-BOM verification error."""
     ...

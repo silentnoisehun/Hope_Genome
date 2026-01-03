@@ -93,7 +93,6 @@ fn _hope_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add("CryptoError", m.py().get_type::<PyCryptoError>())?;
     m.add("AuditorError", m.py().get_type::<PyAuditorError>())?;
     m.add("ConsensusError", m.py().get_type::<PyConsensusError>())?;
-    m.add("AibomError", m.py().get_type::<PyAibomError>())?;
     m.add("WatchdogError", m.py().get_type::<PyWatchdogError>())?;
 
     // Module metadata

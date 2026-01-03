@@ -50,12 +50,9 @@ from ._hope_core import (
     # NonceStore backends
     MemoryNonceStore,
 
-    # Audit and AIBOM
+    # Audit
     AuditLogger,
     AuditEntry,
-    # TODO v1.5.1: AIBOM components
-    # AibomVerifier,
-    # AibomComponent,
 
     # v1.7.0: Watchdog (Vas Szigora)
     Watchdog,
@@ -77,7 +74,6 @@ from ._hope_core import (
     CryptoError,
     AuditorError,
     ConsensusError,
-    AibomError,
     WatchdogError,
 )
 
@@ -125,12 +121,9 @@ __all__ = [
     "RocksDbNonceStore",
     "RedisNonceStore",
 
-    # Audit & AIBOM
+    # Audit
     "AuditLogger",
     "AuditEntry",
-    # TODO v1.5.1: AIBOM
-    # "AibomVerifier",
-    # "AibomComponent",
 
     # v1.7.0: Watchdog (Vas Szigora)
     "Watchdog",
@@ -152,7 +145,6 @@ __all__ = [
     "CryptoError",
     "AuditorError",
     "ConsensusError",
-    "AibomError",
     "WatchdogError",
 
     # Metadata
