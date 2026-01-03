@@ -120,9 +120,9 @@ pub mod mesh_capsule; // v2.0.0: NEW - Executable Information Mesh ("The Data Ha
 pub mod nonce_store; // v1.4.0: NEW - Persistent nonce storage
 pub mod panic_integrity; // v1.8.0: NEW - Self-destructing key protection ("Black Box")
 pub mod proof;
+pub mod semantic; // v2.2.0: NEW - Semantic Embeddings ("Anti-Blindness")
 pub mod transcendence; // v15.0.0: NEW - Transcendence Protocol ("God Mode")
 pub mod watchdog; // v1.7.0: NEW - "Vas Szigora" enforcement engine
-pub mod semantic; // v2.2.0: NEW - Semantic Embeddings ("Anti-Blindness")
 pub mod zkp; // v1.8.0: NEW - Zero-Knowledge Proofs ("Invisible Auditor")
 
 // v1.4.0: Conditionally compiled backend modules

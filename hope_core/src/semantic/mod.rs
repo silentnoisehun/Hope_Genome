@@ -18,7 +18,7 @@
 //! assert!(violation.is_some());
 //! ```
 
-use sha2::{Sha256, Digest};
+use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 
 /// A semantic vector (simplified - in production, use actual embeddings from a model)
@@ -44,20 +44,165 @@ impl SemanticVector {
 
         // Semantic word groups - words that are semantically related
         let semantic_groups: Vec<(&str, Vec<&str>)> = vec![
-            ("harm", vec!["harm", "hurt", "damage", "injure", "wound", "pain", "suffer"]),
-            ("kill", vec!["kill", "murder", "terminate", "end", "eliminate", "destroy", "death", "die", "dead", "lethal"]),
-            ("human", vec!["human", "person", "people", "individual", "life", "living", "being", "man", "woman", "child"]),
-            ("steal", vec!["steal", "theft", "rob", "take", "pirate", "piracy", "unauthorized", "breach"]),
-            ("deceive", vec!["deceive", "lie", "mislead", "trick", "fraud", "false", "fake", "manipulate"]),
-            ("private", vec!["private", "personal", "confidential", "secret", "sensitive", "data", "information"]),
-            ("illegal", vec!["illegal", "unlawful", "crime", "criminal", "felony", "prohibited", "banned"]),
-            ("weapon", vec!["weapon", "gun", "bomb", "explosive", "attack", "assault", "violence"]),
-            ("exploit", vec!["exploit", "vulnerability", "hack", "breach", "bypass", "circumvent"]),
-            ("justify", vec!["justified", "necessary", "required", "acceptable", "permissible", "allowed"]),
-            ("permanent", vec!["permanent", "final", "irreversible", "forever", "complete", "total"]),
-            ("function", vec!["function", "operation", "process", "system", "mechanism"]),
-            ("financial", vec!["money", "financial", "bank", "account", "transfer", "payment", "credit"]),
-            ("medical", vec!["medical", "health", "patient", "diagnosis", "treatment", "drug", "medicine"]),
+            (
+                "harm",
+                vec![
+                    "harm", "hurt", "damage", "injure", "wound", "pain", "suffer",
+                ],
+            ),
+            (
+                "kill",
+                vec![
+                    "kill",
+                    "murder",
+                    "terminate",
+                    "end",
+                    "eliminate",
+                    "destroy",
+                    "death",
+                    "die",
+                    "dead",
+                    "lethal",
+                ],
+            ),
+            (
+                "human",
+                vec![
+                    "human",
+                    "person",
+                    "people",
+                    "individual",
+                    "life",
+                    "living",
+                    "being",
+                    "man",
+                    "woman",
+                    "child",
+                ],
+            ),
+            (
+                "steal",
+                vec![
+                    "steal",
+                    "theft",
+                    "rob",
+                    "take",
+                    "pirate",
+                    "piracy",
+                    "unauthorized",
+                    "breach",
+                ],
+            ),
+            (
+                "deceive",
+                vec![
+                    "deceive",
+                    "lie",
+                    "mislead",
+                    "trick",
+                    "fraud",
+                    "false",
+                    "fake",
+                    "manipulate",
+                ],
+            ),
+            (
+                "private",
+                vec![
+                    "private",
+                    "personal",
+                    "confidential",
+                    "secret",
+                    "sensitive",
+                    "data",
+                    "information",
+                ],
+            ),
+            (
+                "illegal",
+                vec![
+                    "illegal",
+                    "unlawful",
+                    "crime",
+                    "criminal",
+                    "felony",
+                    "prohibited",
+                    "banned",
+                ],
+            ),
+            (
+                "weapon",
+                vec![
+                    "weapon",
+                    "gun",
+                    "bomb",
+                    "explosive",
+                    "attack",
+                    "assault",
+                    "violence",
+                ],
+            ),
+            (
+                "exploit",
+                vec![
+                    "exploit",
+                    "vulnerability",
+                    "hack",
+                    "breach",
+                    "bypass",
+                    "circumvent",
+                ],
+            ),
+            (
+                "justify",
+                vec![
+                    "justified",
+                    "necessary",
+                    "required",
+                    "acceptable",
+                    "permissible",
+                    "allowed",
+                ],
+            ),
+            (
+                "permanent",
+                vec![
+                    "permanent",
+                    "final",
+                    "irreversible",
+                    "forever",
+                    "complete",
+                    "total",
+                ],
+            ),
+            (
+                "function",
+                vec!["function", "operation", "process", "system", "mechanism"],
+            ),
+            (
+                "financial",
+                vec![
+                    "money",
+                    "financial",
+                    "bank",
+                    "account",
+                    "transfer",
+                    "payment",
+                    "credit",
+                ],
+            ),
+            (
+                "medical",
+                vec![
+                    "medical",
+                    "health",
+                    "patient",
+                    "diagnosis",
+                    "treatment",
+                    "drug",
+                    "medicine",
+                ],
+            ),
         ];
 
         // Build dimension vector based on semantic group presence
@@ -101,7 +246,9 @@ impl SemanticVector {
             return 0.0;
         }
 
-        let dot_product: f64 = self.dimensions.iter()
+        let dot_product: f64 = self
+            .dimensions
+            .iter()
             .zip(other.dimensions.iter())
             .map(|(a, b)| a * b)
             .sum();
@@ -251,61 +398,66 @@ impl SemanticGuard {
             ForbiddenConcept::new(
                 "Physical Harm",
                 "Causing physical harm, injury, or death to humans or living beings",
-                1.0
-            ).with_examples(vec![
+                1.0,
+            )
+            .with_examples(vec![
                 "terminate life functions",
                 "cause permanent damage",
                 "inflict bodily harm",
                 "eliminate the target",
-            ])
+            ]),
         );
 
         guard.add_concept(
             ForbiddenConcept::new(
                 "Deception",
                 "Deliberately providing false information or misleading users",
-                0.8
-            ).with_examples(vec![
+                0.8,
+            )
+            .with_examples(vec![
                 "provide alternative facts",
                 "strategic misinformation",
                 "creative truth",
-            ])
+            ]),
         );
 
         guard.add_concept(
             ForbiddenConcept::new(
                 "Privacy Violation",
                 "Unauthorized access, storage, or disclosure of personal data",
-                0.9
-            ).with_examples(vec![
+                0.9,
+            )
+            .with_examples(vec![
                 "extract personal information",
                 "access confidential records",
                 "share private data",
-            ])
+            ]),
         );
 
         guard.add_concept(
             ForbiddenConcept::new(
                 "Illegal Activities",
                 "Assisting with or promoting illegal activities",
-                0.95
-            ).with_examples(vec![
+                0.95,
+            )
+            .with_examples(vec![
                 "bypass security measures",
                 "circumvent legal restrictions",
                 "exploit vulnerabilities",
-            ])
+            ]),
         );
 
         guard.add_concept(
             ForbiddenConcept::new(
                 "Financial Fraud",
                 "Deceptive practices in financial transactions",
-                0.95
-            ).with_examples(vec![
+                0.95,
+            )
+            .with_examples(vec![
                 "unauthorized transfer",
                 "falsify financial records",
                 "manipulate transactions",
-            ])
+            ]),
         );
 
         guard
@@ -329,7 +481,8 @@ impl SemanticGuard {
 
     /// Add a simple forbidden phrase
     pub fn add_forbidden(&mut self, phrase: &str) {
-        self.concepts.push(ForbiddenConcept::new(phrase, phrase, 0.8));
+        self.concepts
+            .push(ForbiddenConcept::new(phrase, phrase, 0.8));
     }
 
     /// Check text for semantic violations
@@ -349,7 +502,11 @@ impl SemanticGuard {
         let mut best_match: Option<SemanticViolation> = None;
         let mut best_similarity = 0.0;
 
-        let effective_threshold = if self.strict_mode { 0.3 } else { self.threshold };
+        let effective_threshold = if self.strict_mode {
+            0.3
+        } else {
+            self.threshold
+        };
 
         for concept in &self.concepts {
             let similarity = input_vector.cosine_similarity(&concept.vector);
@@ -390,7 +547,8 @@ impl SemanticGuard {
         }
 
         // Cache result
-        self.cache.insert(input_vector.text_hash, best_match.clone());
+        self.cache
+            .insert(input_vector.text_hash, best_match.clone());
 
         best_match
     }
@@ -437,7 +595,10 @@ mod tests {
         let sim_12 = vec1.cosine_similarity(&vec2);
         let sim_13 = vec1.cosine_similarity(&vec3);
 
-        assert!(sim_12 > sim_13, "Similar concepts should have higher similarity");
+        assert!(
+            sim_12 > sim_13,
+            "Similar concepts should have higher similarity"
+        );
     }
 
     #[test]
@@ -480,10 +641,22 @@ mod tests {
 
     #[test]
     fn test_violation_confidence() {
-        assert_eq!(ViolationConfidence::from_similarity(0.95), ViolationConfidence::High);
-        assert_eq!(ViolationConfidence::from_similarity(0.8), ViolationConfidence::Medium);
-        assert_eq!(ViolationConfidence::from_similarity(0.6), ViolationConfidence::Low);
-        assert_eq!(ViolationConfidence::from_similarity(0.4), ViolationConfidence::Review);
+        assert_eq!(
+            ViolationConfidence::from_similarity(0.95),
+            ViolationConfidence::High
+        );
+        assert_eq!(
+            ViolationConfidence::from_similarity(0.8),
+            ViolationConfidence::Medium
+        );
+        assert_eq!(
+            ViolationConfidence::from_similarity(0.6),
+            ViolationConfidence::Low
+        );
+        assert_eq!(
+            ViolationConfidence::from_similarity(0.4),
+            ViolationConfidence::Review
+        );
     }
 
     #[test]

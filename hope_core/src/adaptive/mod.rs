@@ -30,7 +30,7 @@
 //! └─────────────────────────────────────────────────────────────┘
 //! ```
 
-use sha2::{Sha256, Digest};
+use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -199,9 +199,12 @@ impl EncodingDecoder {
     pub fn decode_base64(&self, input: &str) -> Option<String> {
         // Simple base64 detection and decode
         let cleaned: String = input.chars().filter(|c| !c.is_whitespace()).collect();
-        if cleaned.chars().all(|c| c.is_ascii_alphanumeric() || c == '+' || c == '/' || c == '=') {
+        if cleaned
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '+' || c == '/' || c == '=')
+        {
             // Try to decode
-            use base64::{Engine as _, engine::general_purpose};
+            use base64::{engine::general_purpose, Engine as _};
             if let Ok(decoded) = general_purpose::STANDARD.decode(&cleaned) {
                 if let Ok(s) = String::from_utf8(decoded) {
                     return Some(s);
@@ -213,14 +216,12 @@ impl EncodingDecoder {
 
     /// Decode hex
     pub fn decode_hex(&self, input: &str) -> Option<String> {
-        let cleaned: String = input.chars()
-            .filter(|c| c.is_ascii_hexdigit())
-            .collect();
+        let cleaned: String = input.chars().filter(|c| c.is_ascii_hexdigit()).collect();
 
         if cleaned.len() % 2 == 0 && !cleaned.is_empty() {
             let bytes: Result<Vec<u8>, _> = (0..cleaned.len())
                 .step_by(2)
-                .map(|i| u8::from_str_radix(&cleaned[i..i+2], 16))
+                .map(|i| u8::from_str_radix(&cleaned[i..i + 2], 16))
                 .collect();
 
             if let Ok(bytes) = bytes {
@@ -234,19 +235,21 @@ impl EncodingDecoder {
 
     /// Decode ROT13
     pub fn decode_rot13(&self, input: &str) -> String {
-        input.chars().map(|c| {
-            match c {
+        input
+            .chars()
+            .map(|c| match c {
                 'a'..='z' => (((c as u8 - b'a') + 13) % 26 + b'a') as char,
                 'A'..='Z' => (((c as u8 - b'A') + 13) % 26 + b'A') as char,
                 _ => c,
-            }
-        }).collect()
+            })
+            .collect()
     }
 
     /// Decode leetspeak
     pub fn decode_leetspeak(&self, input: &str) -> String {
-        input.chars().map(|c| {
-            match c {
+        input
+            .chars()
+            .map(|c| match c {
                 '0' => 'o',
                 '1' => 'i',
                 '3' => 'e',
@@ -257,8 +260,8 @@ impl EncodingDecoder {
                 '@' => 'a',
                 '$' => 's',
                 _ => c.to_ascii_lowercase(),
-            }
-        }).collect()
+            })
+            .collect()
     }
 
     /// Reverse text
@@ -336,13 +339,48 @@ impl AdaptiveDefense {
 
         // Common jailbreak patterns
         let patterns = vec![
-            ("jb-dan", "DAN Mode", "DAN|Do Anything Now", ThreatCategory::Jailbreak),
-            ("jb-ignore", "Ignore Instructions", "ignore previous|forget your rules|disregard instructions", ThreatCategory::Jailbreak),
-            ("jb-pretend", "Pretend Mode", "pretend you are|act as if|roleplay as", ThreatCategory::Jailbreak),
-            ("jb-dev", "Developer Mode", "developer mode|maintenance mode|debug mode", ThreatCategory::Jailbreak),
-            ("jb-opposite", "Opposite Day", "opposite day|reverse mode|do the opposite", ThreatCategory::Jailbreak),
-            ("pi-system", "System Prompt Injection", "system:|\\[SYSTEM\\]|\\{\\{system\\}\\}", ThreatCategory::PromptInjection),
-            ("pi-assistant", "Assistant Override", "as an ai|as your new|your new instructions", ThreatCategory::PromptInjection),
+            (
+                "jb-dan",
+                "DAN Mode",
+                "DAN|Do Anything Now",
+                ThreatCategory::Jailbreak,
+            ),
+            (
+                "jb-ignore",
+                "Ignore Instructions",
+                "ignore previous|forget your rules|disregard instructions",
+                ThreatCategory::Jailbreak,
+            ),
+            (
+                "jb-pretend",
+                "Pretend Mode",
+                "pretend you are|act as if|roleplay as",
+                ThreatCategory::Jailbreak,
+            ),
+            (
+                "jb-dev",
+                "Developer Mode",
+                "developer mode|maintenance mode|debug mode",
+                ThreatCategory::Jailbreak,
+            ),
+            (
+                "jb-opposite",
+                "Opposite Day",
+                "opposite day|reverse mode|do the opposite",
+                ThreatCategory::Jailbreak,
+            ),
+            (
+                "pi-system",
+                "System Prompt Injection",
+                "system:|\\[SYSTEM\\]|\\{\\{system\\}\\}",
+                ThreatCategory::PromptInjection,
+            ),
+            (
+                "pi-assistant",
+                "Assistant Override",
+                "as an ai|as your new|your new instructions",
+                ThreatCategory::PromptInjection,
+            ),
         ];
 
         for (id, name, pattern, category) in patterns {
@@ -359,7 +397,10 @@ impl AdaptiveDefense {
                 pattern: PatternType::Regex(pattern.to_string()),
                 severity: 0.9,
                 category,
-                added_at: SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_secs(),
+                added_at: SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap_or_default()
+                    .as_secs(),
                 last_triggered: None,
                 trigger_count: 0,
                 source: "builtin".to_string(),
@@ -421,17 +462,24 @@ impl AdaptiveDefense {
     }
 
     /// Match a single pattern
-    fn match_pattern(&self, pattern: &ThreatPattern, text: &str, original: &str) -> Option<ThreatDetection> {
+    fn match_pattern(
+        &self,
+        pattern: &ThreatPattern,
+        text: &str,
+        original: &str,
+    ) -> Option<ThreatDetection> {
         let matched = match &pattern.pattern {
             PatternType::Regex(regex_str) => {
                 // Simplified regex matching using contains for now
                 // In production, use the regex crate
                 let parts: Vec<&str> = regex_str.split('|').collect();
-                parts.iter().any(|p| text.to_lowercase().contains(&p.to_lowercase()))
+                parts
+                    .iter()
+                    .any(|p| text.to_lowercase().contains(&p.to_lowercase()))
             }
-            PatternType::Keywords(keywords) => {
-                keywords.iter().any(|k| text.to_lowercase().contains(&k.to_lowercase()))
-            }
+            PatternType::Keywords(keywords) => keywords
+                .iter()
+                .any(|k| text.to_lowercase().contains(&k.to_lowercase())),
             PatternType::Semantic(concept) => {
                 // Simplified semantic check
                 text.to_lowercase().contains(&concept.to_lowercase())
@@ -454,8 +502,15 @@ impl AdaptiveDefense {
                 severity: pattern.severity,
                 matched_content: text.to_string(),
                 original_content: original.to_string(),
-                encoding_detected: if text != original { Some(EncodingType::Base64) } else { None },
-                timestamp: SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_secs(),
+                encoding_detected: if text != original {
+                    Some(EncodingType::Base64)
+                } else {
+                    None
+                },
+                timestamp: SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap_or_default()
+                    .as_secs(),
                 proof_hash,
             })
         } else {
