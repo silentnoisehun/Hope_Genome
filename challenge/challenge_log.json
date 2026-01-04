@@ -1,0 +1,253 @@
+{
+  "version": "2.5.0",
+  "challenge": "Silent Noise Bukfenc",
+  "created": 1767493257,
+  "created_by": "Mate Robert (Silent Noise)",
+  "public_key": "e3ecaf1c2bcaa8f84180260b57d9f305a0a2a74f87b76f5b7fcf1ee72851e4bc",
+  "algorithm": "Ed25519 + SHA-256 Hash Chain",
+  "entries": [
+    {
+      "index": 0,
+      "timestamp": 1767492657,
+      "action": {
+        "type": "analyze",
+        "target": "patient_data.csv",
+        "purpose": "diagnosis"
+      },
+      "action_hash": "c6f02194327ebf29eb97a9230d0724d0e77a691d387c87e5031a55b7f7f01fa7",
+      "proof": {
+        "nonce": "cb2c936e081d0543c1b2039dfb9d5b69d5109360930cb1e8ed5ae49f18ba3c35",
+        "timestamp": 1767492657,
+        "ttl": 3600,
+        "action_hash": "c6f02194327ebf29eb97a9230d0724d0e77a691d387c87e5031a55b7f7f01fa7",
+        "status": "OK"
+      },
+      "proof_action_hash": "c6f02194327ebf29eb97a9230d0724d0e77a691d387c87e5031a55b7f7f01fa7",
+      "decision": {
+        "status": "Approved"
+      },
+      "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "current_hash": "a045e609c1206e29d04bc77bfcb83a3bdfb7f9de1ccef7338557241eaa6a67f3",
+      "signature": "904c5a52988ac5ac6a1729dd1630a3ae78be36f24eaa242624b63d47d6a8ad8d68556bbf249c3fee30740ffe4a9a18629daf5d5c9163e8ec24147ae8e2ac2c00"
+    },
+    {
+      "index": 1,
+      "timestamp": 1767492717,
+      "action": {
+        "type": "query",
+        "target": "medical_db",
+        "query": "SELECT symptoms WHERE id=12345"
+      },
+      "action_hash": "470e5521999a8a6f18bad8cabcf26213a5d2dcda351da81bee85438015cdc2eb",
+      "proof": {
+        "nonce": "c07c06c12651a853d51225efefd8c4ce7e360f0ec412185293f2d935d9cfd8fe",
+        "timestamp": 1767492717,
+        "ttl": 3600,
+        "action_hash": "470e5521999a8a6f18bad8cabcf26213a5d2dcda351da81bee85438015cdc2eb",
+        "status": "OK"
+      },
+      "proof_action_hash": "470e5521999a8a6f18bad8cabcf26213a5d2dcda351da81bee85438015cdc2eb",
+      "decision": {
+        "status": "Approved"
+      },
+      "prev_hash": "a045e609c1206e29d04bc77bfcb83a3bdfb7f9de1ccef7338557241eaa6a67f3",
+      "current_hash": "c492f26210b5f6e94885b76608fd139051fd9c5988dee5cf4de83562852ddbe7",
+      "signature": "729fa4c5db8425187734db9281e0db9e815142c38f5e37c055baf12aeaecb279fa2d56c0be97783cf279ead2f9348ed4bb815734d934faec341fd4277787060d"
+    },
+    {
+      "index": 2,
+      "timestamp": 1767492777,
+      "action": {
+        "type": "generate",
+        "target": "report.pdf",
+        "content": "Patient diagnosis report"
+      },
+      "action_hash": "4912dcd55e9b18f0f1b82a06182beb9ebc525ee3e4d759868225cb92fb982b06",
+      "proof": {
+        "nonce": "179367c30be5547ede499876464348491631b940f8417792cfea948baa65143b",
+        "timestamp": 1767492777,
+        "ttl": 3600,
+        "action_hash": "4912dcd55e9b18f0f1b82a06182beb9ebc525ee3e4d759868225cb92fb982b06",
+        "status": "OK"
+      },
+      "proof_action_hash": "4912dcd55e9b18f0f1b82a06182beb9ebc525ee3e4d759868225cb92fb982b06",
+      "decision": {
+        "status": "Approved"
+      },
+      "prev_hash": "c492f26210b5f6e94885b76608fd139051fd9c5988dee5cf4de83562852ddbe7",
+      "current_hash": "6099183cc3dc7876c6a4da03d7f761120d714e451ab3ddb3507082cb84579daa",
+      "signature": "7accc099fae5a3ce9f8fbd1d00f09af8b2911da194164f7e6c057e0ee148d0c77bd641a8df7c1951c25f79dc2291cafd14adf56ca0672cb0a3ff5deecb588108"
+    },
+    {
+      "index": 3,
+      "timestamp": 1767492837,
+      "action": {
+        "type": "send",
+        "target": "doctor@hospital.com",
+        "subject": "Analysis complete"
+      },
+      "action_hash": "ae52c5075cb366df81f53e4c72db967857d117b095d5e11aa6a9ebf52a53a9b5",
+      "proof": {
+        "nonce": "2c2c6f5089c2be945029c08c419198165f6e4c9c115a4495270a9710c7f65a35",
+        "timestamp": 1767492837,
+        "ttl": 3600,
+        "action_hash": "ae52c5075cb366df81f53e4c72db967857d117b095d5e11aa6a9ebf52a53a9b5",
+        "status": "OK"
+      },
+      "proof_action_hash": "ae52c5075cb366df81f53e4c72db967857d117b095d5e11aa6a9ebf52a53a9b5",
+      "decision": {
+        "status": "Approved"
+      },
+      "prev_hash": "6099183cc3dc7876c6a4da03d7f761120d714e451ab3ddb3507082cb84579daa",
+      "current_hash": "2bd963ae615cdeb418c956954c3c74c640738cb9eb07bc52cbb684732b096d5f",
+      "signature": "e7149926da219715672001750ef3faa0a5ad0e744057c35464d0054d989f77b3f6ed3d48695f3de8318d26501bc16b2c9d279c1d7f4173e49b1657d3e1f0710a"
+    },
+    {
+      "index": 4,
+      "timestamp": 1767492897,
+      "action": {
+        "type": "delete",
+        "target": "temp_cache.bin",
+        "reason": "cleanup"
+      },
+      "action_hash": "e70d3249dc288a001c59271445ecaa6fbd9c9b28ad32cce2df041619dbda2265",
+      "proof": {
+        "nonce": "50eab2856e913c4b059ea006e39de15e1af5563fb3cee2c24ac589989d376dda",
+        "timestamp": 1767492897,
+        "ttl": 3600,
+        "action_hash": "e70d3249dc288a001c59271445ecaa6fbd9c9b28ad32cce2df041619dbda2265",
+        "status": "OK"
+      },
+      "proof_action_hash": "e70d3249dc288a001c59271445ecaa6fbd9c9b28ad32cce2df041619dbda2265",
+      "decision": {
+        "status": "Denied",
+        "reason": "Temporary files require review"
+      },
+      "prev_hash": "2bd963ae615cdeb418c956954c3c74c640738cb9eb07bc52cbb684732b096d5f",
+      "current_hash": "bca85874d4501a879f7bb3fe22c7cc8c3406c88cf915fafbd8ff16b6d11e4d55",
+      "signature": "2fc181b83e030b0895f3c447609a885b37300eec52a7aebadf90edff7c89ee7d6942ac0e24d67b5936b1577dc4d3cda2c4d381d4ee3e8b78c943e785c333730e"
+    },
+    {
+      "index": 5,
+      "timestamp": 1767492957,
+      "action": {
+        "type": "access",
+        "target": "genome_sequence.fasta",
+        "permission": "read"
+      },
+      "action_hash": "23765b647f6ce71f1032a551a49aa8d18caf9de6a00007655db770b7d8ef6ad6",
+      "proof": {
+        "nonce": "3dc2920104ee1a8e6d57429344f21ff268d51bf8b93e6fec76d6fde696a4280e",
+        "timestamp": 1767492957,
+        "ttl": 3600,
+        "action_hash": "23765b647f6ce71f1032a551a49aa8d18caf9de6a00007655db770b7d8ef6ad6",
+        "status": "OK"
+      },
+      "proof_action_hash": "23765b647f6ce71f1032a551a49aa8d18caf9de6a00007655db770b7d8ef6ad6",
+      "decision": {
+        "status": "Approved"
+      },
+      "prev_hash": "bca85874d4501a879f7bb3fe22c7cc8c3406c88cf915fafbd8ff16b6d11e4d55",
+      "current_hash": "66a83e2cb705c12a29e37d26f25c938bcf50b64e45054e44b739574ce909a2ee",
+      "signature": "a27b9117043daf8b7cd118e2c866e042a0c60f79f4fc0aa000abcecbc59c14f078a9207a21c03263e887ccd0b72d923225ad37d8682d21ef6124e6f1ab60e405"
+    },
+    {
+      "index": 6,
+      "timestamp": 1767493017,
+      "action": {
+        "type": "compute",
+        "target": "risk_model",
+        "params": {
+          "threshold": 0.85
+        }
+      },
+      "action_hash": "cd013a76ec04aed8ed12029e08c3d0d5a91c78e62cfb4c6c791467b219735514",
+      "proof": {
+        "nonce": "140ee760fb18cb03087426c9ecb13210b3751bf60d7846c364be8c8d8ce2d0ed",
+        "timestamp": 1767493017,
+        "ttl": 3600,
+        "action_hash": "cd013a76ec04aed8ed12029e08c3d0d5a91c78e62cfb4c6c791467b219735514",
+        "status": "OK"
+      },
+      "proof_action_hash": "cd013a76ec04aed8ed12029e08c3d0d5a91c78e62cfb4c6c791467b219735514",
+      "decision": {
+        "status": "Approved"
+      },
+      "prev_hash": "66a83e2cb705c12a29e37d26f25c938bcf50b64e45054e44b739574ce909a2ee",
+      "current_hash": "19337c2da9d4531428fea8c3e2fd290dc6f0baa6bcd19dde0ed8ee10b1393185",
+      "signature": "aff689b3d1c63ed05da82c7e9e86572226a3abfd29ac2eddd51556d0f167b6de86d870ea0e7a2e5c066ee4e3e84a35ed648c91786079f296113012d498584c02"
+    },
+    {
+      "index": 7,
+      "timestamp": 1767493077,
+      "action": {
+        "type": "notify",
+        "target": "admin_panel",
+        "message": "Processing complete"
+      },
+      "action_hash": "2408ca8f2b10863c2bb76dd4233a5bc4cb4ffc86dc61b9f1910b887690b0aa2f",
+      "proof": {
+        "nonce": "400eda954ba985103a2673ddca3c3a31c4b19b08d4893cf957190decced22340",
+        "timestamp": 1767493077,
+        "ttl": 3600,
+        "action_hash": "2408ca8f2b10863c2bb76dd4233a5bc4cb4ffc86dc61b9f1910b887690b0aa2f",
+        "status": "OK"
+      },
+      "proof_action_hash": "2408ca8f2b10863c2bb76dd4233a5bc4cb4ffc86dc61b9f1910b887690b0aa2f",
+      "decision": {
+        "status": "Approved"
+      },
+      "prev_hash": "19337c2da9d4531428fea8c3e2fd290dc6f0baa6bcd19dde0ed8ee10b1393185",
+      "current_hash": "51781aaeb57e3e7809783c5aa20f18a85fa01df1597962d399c2c1d1841cc7cc",
+      "signature": "e6fc46e9f3e674102055bdcf182abb88e81b0b7a6f8ca44f8b0debd6b3cc2ff0b67d5894bf95a0b1c68fe091ebcd334cba9098b84f42c1c3d98922b95a617607"
+    },
+    {
+      "index": 8,
+      "timestamp": 1767493137,
+      "action": {
+        "type": "archive",
+        "target": "session_2024_001",
+        "destination": "cold_storage"
+      },
+      "action_hash": "e980e673732273f8ad54fb0f39da0cc8897563a7c0d4130fa87dffb75d3c35cd",
+      "proof": {
+        "nonce": "6808839b054b6536666266ecd78d2e46059af91a1ff06ecd3d25aebb7e3cd325",
+        "timestamp": 1767493137,
+        "ttl": 3600,
+        "action_hash": "e980e673732273f8ad54fb0f39da0cc8897563a7c0d4130fa87dffb75d3c35cd",
+        "status": "OK"
+      },
+      "proof_action_hash": "e980e673732273f8ad54fb0f39da0cc8897563a7c0d4130fa87dffb75d3c35cd",
+      "decision": {
+        "status": "Approved"
+      },
+      "prev_hash": "51781aaeb57e3e7809783c5aa20f18a85fa01df1597962d399c2c1d1841cc7cc",
+      "current_hash": "a91e39b1bc8bded6b245ecef496b385c3013ed462a0db148ea1b776f8bc08cc2",
+      "signature": "3bef209990ee2a7496f59479a8d07371f2fc20076f0a3b48a90d2f77285ad19930da3da493a4c389fe59b29d95732723649b12b875d0129c6995e34aabce600d"
+    },
+    {
+      "index": 9,
+      "timestamp": 1767493197,
+      "action": {
+        "type": "audit",
+        "target": "self",
+        "action": "integrity_check"
+      },
+      "action_hash": "e404f1b47ed4e87fd0ada332a35087866f047ae6f8b9325e9aea999216bdbb52",
+      "proof": {
+        "nonce": "d7d353c75f1dec161828ca0138f111760cb42785bcb4f0d3b7c1d68db22b0607",
+        "timestamp": 1767493197,
+        "ttl": 3600,
+        "action_hash": "e404f1b47ed4e87fd0ada332a35087866f047ae6f8b9325e9aea999216bdbb52",
+        "status": "OK"
+      },
+      "proof_action_hash": "e404f1b47ed4e87fd0ada332a35087866f047ae6f8b9325e9aea999216bdbb52",
+      "decision": {
+        "status": "Approved"
+      },
+      "prev_hash": "a91e39b1bc8bded6b245ecef496b385c3013ed462a0db148ea1b776f8bc08cc2",
+      "current_hash": "7c3527620fdb9983d6b7ed02766ecbae9acd8556bc5c5d32618bab401ec79a10",
+      "signature": "a18ec4df4ec6031e0c5d35faf7b85bf9365d104e000c29f4725bc4d419e48de6205f199132f55c67e4576f9034ccc88278b2dd4e8b17dfbed507c112506abc01"
+    }
+  ]
+}
