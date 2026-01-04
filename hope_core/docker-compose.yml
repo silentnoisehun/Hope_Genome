@@ -1,9 +1,9 @@
 # ==============================================================================
-# Hope Genome v1.4.0 - Production Docker Compose
-# Hardened Security Configuration
+# Hope Genome v2.5.0 - Production Docker Compose
+# Enterprise Security Configuration
 # ==============================================================================
-# Release Date: 2025-12-30
-# Security Level: Hardened (Production-Ready)
+# Release Date: 2026-01-03
+# Security Level: Enterprise (Production-Ready)
 # ==============================================================================
 
 version: '3.8'

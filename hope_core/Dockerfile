@@ -1,9 +1,9 @@
 # ==============================================================================
-# Hope Genome v1.4.0 - Hardened Security Edition
+# Hope Genome v2.5.0 - Enterprise Edition
 # Multi-stage Dockerfile with security best practices
 # ==============================================================================
-# Build Date: 2025-12-30
-# Security Level: Hardened
+# Build Date: 2026-01-03
+# Security Level: Enterprise
 # Base Image: Distroless (minimal attack surface)
 # ==============================================================================
 
@@ -105,7 +105,7 @@ VOLUME ["/data"]
 
 # Default command (library test example)
 # Override this in docker-compose.yml with your actual service
-CMD ["echo", "Hope Genome v1.4.0 - Hardened Security Edition"]
+CMD ["echo", "Hope Genome v2.5.0 - Enterprise Edition"]
 
 # ==============================================================================
 # Security Hardening Summary

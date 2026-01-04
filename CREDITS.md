@@ -172,9 +172,9 @@ Thank you to all who will contribute to making Hope Genome better!
 
 **Preferred Citation**:
 ```
-Hope Genome v1.4.0 - Hardened Security Edition with Ed25519 & OWASP AI-SBOM Integration
+Hope Genome v2.5.0 - Enterprise Edition (Quantum-Ready, Hardware-Secured, AI-Transparent)
 Authors: Máté Róbert, Claude (Anthropic)
-Year: 2025
+Year: 2026
 Repository: https://github.com/silentnoisehun/Hope_Genome
 ```
 

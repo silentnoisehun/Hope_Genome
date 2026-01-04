@@ -1,12 +1,12 @@
-# 🧬 Hope Genome v1.4.0 - Hardened Security Edition
+# 🧬 Hope Genome v2.5.0 - Enterprise Edition
 
 **Tamper-Evident Cryptographic Framework for AI Accountability**
 
-[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](https://github.com/silentnoisehun/Hope_Genome)
+[![Version](https://img.shields.io/badge/version-2.5.0-blue.svg)](https://github.com/silentnoisehun/Hope_Genome)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org)
-[![Security](https://img.shields.io/badge/security-hardened-red.svg)](SECURITY.md)
-[![Release Date](https://img.shields.io/badge/release-2025--12--30-brightgreen.svg)](CHANGELOG.md)
+[![Rust](https://img.shields.io/badge/rust-1.75%2B-orange.svg)](https://www.rust-lang.org)
+[![Security](https://img.shields.io/badge/security-enterprise-red.svg)](SECURITY.md)
+[![Release Date](https://img.shields.io/badge/release-2026--01--03-brightgreen.svg)](CHANGELOG.md)
 
 > **"Not unhackable, but tamper-evident with cryptographic proof."**
 
@@ -239,8 +239,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│                    Hope Genome v1.4.0                       │
-│                 Hardened Security Edition                   │
+│                    Hope Genome v2.5.0                       │
+│                    Enterprise Edition                       │
 └──────────────────────┬─────────────────────────────────────┘
                        │
        ┌───────────────┴───────────────┐
@@ -587,10 +587,10 @@ SOFTWARE.
 
 <div align="center">
 
-**Hope Genome v1.4.0 - Hardened Security Edition**
+**Hope Genome v2.5.0 - Enterprise Edition**
 
 *"Not unhackable, but tamper-evident with cryptographic proof."*
 
-[⬆️ Back to Top](#-hope-genome-v140---hardened-security-edition)
+[⬆️ Back to Top](#-hope-genome-v250---enterprise-edition)
 
 </div>

@@ -1,6 +1,6 @@
 # Security Policy
 
-**Hope Genome v1.4.0 - Hardened Security Edition**
+**Hope Genome v2.5.0 - Enterprise Edition**
 
 ---
 
