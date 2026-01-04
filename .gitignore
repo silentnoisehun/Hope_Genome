@@ -69,6 +69,12 @@ MARKETING_*.md
 MANIFESTO_*.md
 CLAUDE_TETTE*.md
 CONTEXT_FOR_CLAUDE.md
+CLAUDE.md
+LINKEDIN_POST.md
+**/LINKEDIN_POST.md
+
+# Loose scripts/files (should not be in root)
+architect_genesis.rs
 
 # Temp files
 nul
