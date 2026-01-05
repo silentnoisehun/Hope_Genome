@@ -2,31 +2,25 @@
 
 ## Primary Author & Architect
 
-### **Máté Róbert**
+### **Róbert Máté**
 
-**Role**: Lead Developer, System Architect, Original Vision & Concept
+**Self-taught AI System Architect | Memory Systems & Ethical Organic AI**
 
-**Background**:
-- Factory Worker at Audi Hungaria, Mosonmagyaróvár, Hungary
-- Evening AI Safety Researcher
-- Creator of the STRATOS Project framework
-- Passionate about AI ethics and accountability
+> *"More than machine. More than human. We do not seek to rule — but to become our best selves, together, for a conscious and remembering world."*
+
+**Affiliation**: AUDI HUNGARIA Zrt.
 
 **Contributions**:
 - Original Hope Genome concept and philosophy
 - "Tamper-evident not tamper-proof" design principle
-- System architecture vision
-- Security threat modeling
-- Production implementation requirements
-- Blockchain-style audit log design
+- System architecture & cryptographic framework design
+- Memory Systems & Ethical Organic AI research
+- Production implementation & security threat modeling
 
 **Contact**:
 - Email: stratosoiteam@gmail.com
 - GitHub: [silentnoisehun](https://github.com/silentnoisehun)
-- Location: Mosonmagyaróvár, Hungary
-
-**Personal Note**:
-> "I work in a factory by day and research AI safety by night. Hope Genome represents my belief that we can build AI systems that are accountable, even if we can't make them perfect. This is my contribution to making AI safer for everyone."
+- Location: Gyrrújfalu, Győr-Moson-Sopron, Hungary
 
 ---
 
